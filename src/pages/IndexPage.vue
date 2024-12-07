@@ -58,6 +58,7 @@ export default defineComponent({
   border-radius: 10px;
   border: 1px solid #ccc;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  margin-bottom: 20px;
 }
 
 .cards-container {
@@ -65,5 +66,17 @@ export default defineComponent({
   gap: 20px;
   justify-content: center;
   margin-top: 2rem;
+  flex-wrap: wrap;
+}
+
+@media (max-width: 768px) {
+  .cards-container {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .card {
+    max-width: 100%;
+  }
 }
 </style>
