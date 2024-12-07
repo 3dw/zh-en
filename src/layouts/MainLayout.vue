@@ -6,7 +6,11 @@
 
         <q-toolbar-title> Learn English 學英文 </q-toolbar-title>
 
-        <div>Beta</div>
+        <div>
+          <q-btn flat href="https://github.com/3dw/zh-en" target="_blank" rel="noopener noreferrer">
+            Beta版原始碼
+          </q-btn>
+        </div>
       </q-toolbar>
     </q-header>
 
