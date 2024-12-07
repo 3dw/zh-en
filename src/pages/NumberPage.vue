@@ -11,39 +11,20 @@
           class="q-mb-md"
         />
       </div>
-      <div class="cards-container">
-        <div
-          class="card"
-          v-for="(sentence, index) in filteredSentences"
-          :key="index"
-          @click="toggleCard(index)"
-        >
-          <div class="card-inner" :class="{ flipped: sentence.flipped }">
-            <div class="card-front" v-show="!sentence.flipped">
-              <p>{{ sentence.chinese }}</p>
-            </div>
-            <div class="card-back" v-show="sentence.flipped">
-              <p>{{ sentence.english }}</p>
-              <q-btn
-                @click.stop="speak(sentence.english)"
-                icon="volume_up"
-                flat
-                round
-                color="primary"
-              />
-            </div>
-          </div>
-        </div>
-      </div>
+      <flash-card :sentences="sentences" :searchQuery="searchQuery" />
     </div>
   </q-page>
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, computed } from 'vue'
+import { defineComponent, ref } from 'vue'
+import FlashCard from 'src/components/FlashCard.vue'
 
 export default defineComponent({
   name: 'NumberPage',
+  components: {
+    FlashCard,
+  },
 
   setup() {
     const searchQuery = ref('')
@@ -109,74 +90,17 @@ export default defineComponent({
       { chinese: '這是指數。', english: 'This is an exponent.', flipped: false },
     ])
 
-    const filteredSentences = computed(() => {
-      const query = searchQuery.value.toLowerCase().trim()
-      if (!query) return sentences.value
-      return sentences.value.filter((sentence) => {
-        return (
-          sentence.chinese.toLowerCase().includes(query) ||
-          sentence.english.toLowerCase().includes(query)
-        )
-      })
-    })
-
-    const toggleCard = (index: number) => {
-      const sentence = filteredSentences.value[index]
-      if (!sentence) return
-
-      const originalIndex = sentences.value.findIndex(
-        (s) => s.chinese === sentence.chinese && s.english === sentence.english,
-      )
-      if (originalIndex !== -1) {
-        if (!sentences.value[originalIndex]) return
-        sentences.value[originalIndex].flipped = !sentences.value[originalIndex].flipped
-      }
-    }
-
-    const speak = (text: string) => {
-      const utterance = new SpeechSynthesisUtterance(text)
-      utterance.lang = 'en-US'
-      window.speechSynthesis.speak(utterance)
-    }
-
     return {
       searchQuery,
       sentences,
-      filteredSentences,
-      toggleCard,
-      speak,
     }
   },
 })
 </script>
 
 <style scoped>
-/* 保留原有的樣式，但移除與 Quasar 衝突的部份 */
 .word-card-list {
   max-width: 800px;
   margin: 0 auto;
-}
-
-.cards-container {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-  justify-content: center;
-}
-
-.card {
-  position: relative;
-  padding: 10px;
-  width: 200px;
-  height: 200px;
-  perspective: 1000px;
-  cursor: pointer;
-  border: 1px solid #ccc;
-  border-radius: 10px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-}
-
-.card-inner {
-  font-size: 20px;
 }
 </style>
