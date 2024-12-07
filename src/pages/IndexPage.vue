@@ -11,6 +11,15 @@
             </h2>
           </div>
         </router-link>
+        <router-link to="/body" class="card">
+          <div class="card-inner">
+            <h2>
+              <q-icon name="person" />
+              身體部位
+            </h2>
+          </div>
+        </router-link>
+
         <router-link to="/number" class="card">
           <div class="card-inner">
             <h2>

@@ -19,12 +19,17 @@
           </q-item-section>
           <q-item-section> 首頁 </q-item-section>
         </q-item>
-
         <q-item clickable to="/beginner">
           <q-item-section avatar>
             <q-icon name="add" />
           </q-item-section>
           <q-item-section> 初級 </q-item-section>
+        </q-item>
+        <q-item clickable to="/body">
+          <q-item-section avatar>
+            <q-icon name="person" />
+          </q-item-section>
+          <q-item-section> 身體部位 </q-item-section>
         </q-item>
         <q-item clickable to="/number">
           <q-item-section avatar>

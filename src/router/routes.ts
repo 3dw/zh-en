@@ -12,6 +12,11 @@ const routes: RouteRecordRaw[] = [
     children: [{ path: '', component: () => import('pages/NumberPage.vue') }],
   },
   {
+    path: '/body',
+    component: () => import('layouts/MainLayout.vue'),
+    children: [{ path: '', component: () => import('pages/BodyPage.vue') }],
+  },
+  {
     path: '/beginner',
     component: () => import('layouts/MainLayout.vue'),
     children: [{ path: '', component: () => import('pages/BeginnerPage.vue') }],
