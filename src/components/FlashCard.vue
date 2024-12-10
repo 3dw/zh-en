@@ -83,7 +83,7 @@ export default defineComponent({
       sentence.flipped = !sentence.flipped
 
       if (sentence.flipped) {
-        emit('earn-xp', 5)
+        emit('earn-xp', 50)
       }
     }
 
@@ -91,7 +91,7 @@ export default defineComponent({
       const utterance = new SpeechSynthesisUtterance(text)
       utterance.lang = 'en-US'
       window.speechSynthesis.speak(utterance)
-      emit('earn-xp', 30)
+      emit('earn-xp', 50)
     }
 
     const getFavorites = () => {
