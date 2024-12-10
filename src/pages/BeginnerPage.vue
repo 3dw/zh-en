@@ -61,7 +61,7 @@ export default defineComponent({
       { chinese: '我很累，我需要休息。', english: 'I am tired, I need to rest.', flipped: false },
       { chinese: '我們走吧。', english: "Let's go.", flipped: false },
       { chinese: '明天見。', english: 'See you tomorrow.', flipped: false },
-      { chinese: '你知道現在幾點��？', english: 'Do you know what time it is?', flipped: false },
+      { chinese: '你知道現在幾點嗎？', english: 'Do you know what time it is?', flipped: false },
       { chinese: '稍等一下。', english: 'Just a moment, please.', flipped: false },
       { chinese: '沒問題。', english: 'No problem.', flipped: false },
       { chinese: '當然可以。', english: 'Of course.', flipped: false },
