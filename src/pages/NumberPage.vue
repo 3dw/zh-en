@@ -11,7 +11,11 @@
           class="q-mb-md"
         />
       </div>
-      <flash-card :sentences="sentences" :searchQuery="searchQuery" />
+      <flash-card
+        :sentences="sentences"
+        :searchQuery="searchQuery"
+        @earn-xp="(xp) => $emit('earn-xp', xp)"
+      />
     </div>
   </q-page>
 </template>

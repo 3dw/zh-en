@@ -65,7 +65,7 @@ export default defineComponent({
     },
   },
 
-  setup(props) {
+  setup(props, { emit }) {
     const filteredSentences = computed(() => {
       const query = props.searchQuery.toLowerCase().trim()
       if (!query) return props.sentences
@@ -81,12 +81,17 @@ export default defineComponent({
       const sentence = filteredSentences.value[index]
       if (!sentence) return
       sentence.flipped = !sentence.flipped
+
+      if (sentence.flipped) {
+        emit('earn-xp', 5)
+      }
     }
 
     const speak = (text: string) => {
       const utterance = new SpeechSynthesisUtterance(text)
       utterance.lang = 'en-US'
       window.speechSynthesis.speak(utterance)
+      emit('earn-xp', 30)
     }
 
     const getFavorites = () => {
@@ -109,6 +114,7 @@ export default defineComponent({
 
       if (index === -1) {
         favorites.value.push({ english: sentence.english, chinese: sentence.chinese })
+        emit('earn-xp', 100)
       } else {
         favorites.value.splice(index, 1)
       }

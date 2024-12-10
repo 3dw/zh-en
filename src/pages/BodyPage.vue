@@ -11,7 +11,11 @@
           class="q-mb-md"
         />
       </div>
-      <flash-card :sentences="sentences" :searchQuery="searchQuery" />
+      <flash-card
+        :sentences="sentences"
+        :searchQuery="searchQuery"
+        @earn-xp="(xp) => $emit('earn-xp', xp)"
+      />
     </div>
   </q-page>
 </template>
@@ -67,7 +71,7 @@ export default defineComponent({
       { chinese: '我跳躍很靈活。', english: 'I jump agilely.', flipped: false },
       { chinese: '我游泳很擅長。', english: 'I am good at swimming.', flipped: false },
       { chinese: '我運動很在行。', english: 'I am good at sports.', flipped: false },
-      { chinese: '我的體能很好。', english: 'I am physically fit.', flipped: false },
+      { chinese: '我���體能很好。', english: 'I am physically fit.', flipped: false },
       { chinese: '我的姿勢很標準。', english: 'My posture is correct.', flipped: false },
       { chinese: '我的肌力很強。', english: 'I have strong muscles.', flipped: false },
       { chinese: '我很有耐力。', english: 'I have good endurance.', flipped: false },
