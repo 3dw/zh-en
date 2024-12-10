@@ -18,6 +18,13 @@
             />
           </div>
           <p>{{ sentence.chinese }}</p>
+          <q-btn
+            @click.stop="speak(sentence.chinese, 'zh-TW')"
+            icon="volume_up"
+            flat
+            round
+            color="primary"
+          />
         </div>
         <div class="card-back" v-show="sentence.flipped">
           <div class="heart-button">
@@ -31,7 +38,7 @@
           </div>
           <p>{{ sentence.english }}</p>
           <q-btn
-            @click.stop="speak(sentence.english)"
+            @click.stop="speak(sentence.english, 'en-US')"
             icon="volume_up"
             flat
             round
@@ -87,9 +94,9 @@ export default defineComponent({
       }
     }
 
-    const speak = (text: string) => {
+    const speak = (text: string, lang: string) => {
       const utterance = new SpeechSynthesisUtterance(text)
-      utterance.lang = 'en-US'
+      utterance.lang = lang
       window.speechSynthesis.speak(utterance)
       emit('earn-xp', 50)
     }
