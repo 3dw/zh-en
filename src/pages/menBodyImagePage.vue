@@ -1,8 +1,4 @@
 <template>
-  <!--
-    這裡示範放在 MainLayout 的 router-view 區域顯示，
-    或者你可改用 <q-page> 皆可。
-  -->
   <q-page class="q-pa-md">
     <div>
       <h1>男性身體部位（可點選發音）</h1>
@@ -21,9 +17,11 @@
           <!-- 箭頭 -->
           <div class="arrow" :class="part.arrowDirection"></div>
 
-          <!-- 顯示英文 + 音標 -->
+          <!-- 顯示 [英文] + (中文) + 音標 -->
           <div class="label-text">
-            {{ part.english }} <span class="phonetic">({{ part.phonetic }})</span>
+            {{ part.english }}
+            <span class="chinese"> ({{ part.chinese }}) </span>
+            <span class="phonetic">{{ part.phonetic }}</span>
           </div>
         </div>
       </div>
@@ -33,7 +31,6 @@
 
 <script lang="ts">
 import { defineComponent, ref } from 'vue'
-// 請確認 menbody.jpg 的匯入路徑無誤
 import menBodyImage from '../assets/menbody.jpg'
 
 export default defineComponent({
@@ -41,69 +38,79 @@ export default defineComponent({
   setup() {
     /**
      * menBodyParts: 依照需要增加/刪減身體部位
-     *  - english: 顯示在標籤上的英文
-     *  - phonetic: 顯示的音標
+     *  - english: 顯示於標籤的英文
+     *  - chinese: 顯示的中文
+     *  - phonetic: 音標
      *  - position: 標籤在圖片上的絕對定位 class
-     *  - arrowDirection: 箭頭方向（arrow-left / arrow-right / arrow-up / arrow-down），
-     *    以便對應不同位置的身體部位
+     *  - arrowDirection: 箭頭方向
      */
     const menBodyParts = ref([
       {
         english: 'Head',
+        chinese: '頭',
         phonetic: '/hɛd/',
         position: 'head-pos',
         arrowDirection: 'arrow-down',
       },
       {
         english: 'Shoulder',
+        chinese: '肩膀',
         phonetic: '/ˈʃoʊl.dɚ/',
         position: 'shoulder-pos',
         arrowDirection: 'arrow-left',
       },
       {
         english: 'Chest',
+        chinese: '胸部',
         phonetic: '/tʃest/',
         position: 'chest-pos',
         arrowDirection: 'arrow-right',
       },
       {
         english: 'Arm',
+        chinese: '手臂',
         phonetic: '/ɑːrm/',
         position: 'arm-pos',
         arrowDirection: 'arrow-left',
       },
       {
         english: 'Waist',
+        chinese: '腰',
         phonetic: '/weɪst/',
         position: 'waist-pos',
         arrowDirection: 'arrow-right',
       },
       {
         english: 'Hip',
+        chinese: '臀部',
         phonetic: '/hɪp/',
         position: 'hip-pos',
         arrowDirection: 'arrow-left',
       },
       {
         english: 'Thigh',
+        chinese: '大腿',
         phonetic: '/θaɪ/',
         position: 'thigh-pos',
         arrowDirection: 'arrow-right',
       },
       {
         english: 'Knee',
+        chinese: '膝蓋',
         phonetic: '/niː/',
         position: 'knee-pos',
         arrowDirection: 'arrow-left',
       },
       {
         english: 'Calf',
+        chinese: '小腿',
         phonetic: '/kæf/',
         position: 'calf-pos',
         arrowDirection: 'arrow-left',
       },
       {
         english: 'Foot',
+        chinese: '腳',
         phonetic: '/fʊt/',
         position: 'foot-pos',
         arrowDirection: 'arrow-up',
@@ -148,7 +155,7 @@ export default defineComponent({
 .label {
   position: absolute;
   display: flex;
-  align-items: center; /* 讓箭頭和文字在垂直方向對齊 */
+  align-items: center; /* 讓箭頭和文字垂直置中 */
   background-color: #fffde7;
   padding: 4px 6px;
   border-radius: 4px;
@@ -157,12 +164,9 @@ export default defineComponent({
   transition: all 0.2s ease;
   border: 1px solid #ffe082;
   box-shadow: 0 0 5px rgba(0, 0, 0, 0.15);
-
-  /* 讓文字和箭頭的相對位置更好控制 */
-  position: absolute;
 }
 
-/* label 裡的文字 */
+/* label 文字排版 */
 .label-text {
   position: relative;
   z-index: 2; /* 確保文字在箭頭之上 */
@@ -175,39 +179,37 @@ export default defineComponent({
   margin-left: 4px;
 }
 
+/* 中文樣式，可依喜好微調 */
+.chinese {
+  color: #333;
+  margin-left: 4px;
+}
+
 /* 箭頭區塊：透過邊框繪製小三角形 */
 .arrow {
   width: 0;
   height: 0;
   border: 5px solid transparent;
-  position: relative;
-  margin-right: 4px; /* 與文字的間距 */
+  margin-right: 4px;
 }
 
-/* 箭頭向左 -> 右邊顯示為黃 */
+/* 箭頭方向，根據實際位置套用 */
 .arrow-left {
-  border-right-color: #fffde7; /* 與標籤背景一致 */
-  margin-right: 0;
-  margin-left: -10px; /* 往左騰出空間，以「插入」標籤 */
+  border-right-color: #fffde7;
 }
-
 .arrow-right {
   border-left-color: #fffde7;
 }
-
 .arrow-up {
   border-bottom-color: #fffde7;
-  margin-right: 4px;
 }
-
 .arrow-down {
   border-top-color: #fffde7;
-  margin-right: 4px;
 }
 
 /*
-  以下為範例定位（top / left）,
-  實際請依 menbody.jpg 圖像位置微調
+  以下為範例定位（top / left），
+  請依 menbody.jpg 圖像位置微調
 */
 .head-pos {
   top: 1%;
@@ -258,7 +260,8 @@ export default defineComponent({
     font-size: 0.8rem;
     padding: 3px 5px;
   }
-  .phonetic {
+  .phonetic,
+  .chinese {
     font-size: 0.8rem;
   }
 }
@@ -268,7 +271,8 @@ export default defineComponent({
     font-size: 0.7rem;
     padding: 2px 4px;
   }
-  .phonetic {
+  .phonetic,
+  .chinese {
     font-size: 0.7rem;
   }
 }
