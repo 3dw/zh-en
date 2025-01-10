@@ -28,10 +28,10 @@
             </h2>
           </div>
         </router-link>
-        <router-link to="/image" class="card">
+        <router-link to="/main-image" class="card">
           <div class="card-inner">
             <h2>
-              <q-icon name="image" />
+              <q-icon name="grid_view" />
               看圖學習
             </h2>
           </div>
