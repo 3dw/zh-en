@@ -14,6 +14,12 @@
         <img src="../assets/body.jpg" alt="Body" class="menu-image" />
         <p>人體部位 (BodyImagePage)</p>
       </router-link>
+
+      <!-- 點擊 "男性人體部位" 圖，前往 menBodyImagePage.vue -->
+      <router-link to="/men-body-image" class="image-link">
+        <img src="../assets/menbody.jpg" alt="Men Body" class="menu-image" />
+        <p>男性人體部位 (menBodyImagePage)</p>
+      </router-link>
     </div>
   </q-page>
 </template>
