@@ -41,6 +41,13 @@
           </q-item-section>
           <q-item-section> 數字 </q-item-section>
         </q-item>
+        <q-item clickable to="/image">
+          <q-item-section avatar>
+            <q-icon name="image" />
+          </q-item-section>
+          <q-item-section> 圖片 </q-item-section>
+        </q-item>
+
         <q-item clickable to="/favorites">
           <q-item-section avatar>
             <q-icon name="favorite" />
