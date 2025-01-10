@@ -28,6 +28,14 @@
             </h2>
           </div>
         </router-link>
+        <router-link to="/image" class="card">
+          <div class="card-inner">
+            <h2>
+              <q-icon name="image" />
+              看圖學習
+            </h2>
+          </div>
+        </router-link>
       </div>
     </div>
   </q-page>

@@ -17,36 +17,50 @@
     <q-drawer v-model="leftDrawerOpen" show-if-above bordered>
       <q-list>
         <q-item-label header> 常用字卡 </q-item-label>
+
         <q-item clickable to="/">
           <q-item-section avatar>
             <q-icon name="home" />
           </q-item-section>
           <q-item-section> 首頁 </q-item-section>
         </q-item>
+
         <q-item clickable to="/beginner">
           <q-item-section avatar>
             <q-icon name="add" />
           </q-item-section>
           <q-item-section> 初級 </q-item-section>
         </q-item>
+
         <q-item clickable to="/body">
           <q-item-section avatar>
             <q-icon name="person" />
           </q-item-section>
           <q-item-section> 身體部位 </q-item-section>
         </q-item>
+
         <q-item clickable to="/number">
           <q-item-section avatar>
             <q-icon name="school" />
           </q-item-section>
           <q-item-section> 數字 </q-item-section>
         </q-item>
-        <q-item clickable to="/image">
-          <q-item-section avatar>
-            <q-icon name="image" />
-          </q-item-section>
-          <q-item-section> 圖片 </q-item-section>
-        </q-item>
+
+        <q-expansion-item icon="image" label="看圖學習" caption="">
+          <q-item clickable to="/image">
+            <q-item-section avatar>
+              <q-icon name="image" />
+            </q-item-section>
+            <q-item-section> 煮東西 </q-item-section>
+          </q-item>
+
+          <q-item clickable to="/body-image">
+            <q-item-section avatar>
+              <q-icon name="image" />
+            </q-item-section>
+            <q-item-section> 身體部位 </q-item-section>
+          </q-item>
+        </q-expansion-item>
 
         <q-item clickable to="/favorites">
           <q-item-section avatar>
