@@ -58,7 +58,14 @@
             <q-item-section avatar>
               <q-icon name="image" />
             </q-item-section>
-            <q-item-section> 身體部位 </q-item-section>
+            <q-item-section> 女性身體部位 </q-item-section>
+          </q-item>
+
+          <q-item clickable to="/men-body-image">
+            <q-item-section avatar>
+              <q-icon name="image" />
+            </q-item-section>
+            <q-item-section> 男性身體部位 </q-item-section>
           </q-item>
         </q-expansion-item>
 
