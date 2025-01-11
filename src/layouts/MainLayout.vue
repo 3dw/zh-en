@@ -67,6 +67,13 @@
           <q-item-section>初級</q-item-section>
         </q-item>
 
+        <q-item clickable to="/main-game" class="op-drawer-item">
+          <q-item-section avatar>
+            <q-icon name="game" />
+          </q-item-section>
+          <q-item-section>遊戲</q-item-section>
+        </q-item>
+
         <q-item clickable to="/body" class="op-drawer-item">
           <q-item-section avatar>
             <q-icon name="person" />

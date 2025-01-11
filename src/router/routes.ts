@@ -42,6 +42,21 @@ const routes: RouteRecordRaw[] = [
     children: [{ path: '', component: () => import('pages/BeginnerPage.vue') }],
   },
   {
+    path: '/main-game',
+    component: () => import('layouts/MainLayout.vue'),
+    children: [{ path: '', component: () => import('pages/MainGamePage.vue') }],
+  },
+  {
+    path: '/game1',
+    component: () => import('layouts/MainLayout.vue'),
+    children: [{ path: '', component: () => import('pages/Game1Page.vue') }],
+  },
+  {
+    path: '/game2',
+    component: () => import('layouts/MainLayout.vue'),
+    children: [{ path: '', component: () => import('pages/Game2Page.vue') }],
+  },
+  {
     path: '/favorites',
     component: () => import('layouts/MainLayout.vue'),
     children: [{ path: '', component: () => import('pages/FavoritePage.vue') }],

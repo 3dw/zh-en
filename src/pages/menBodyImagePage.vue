@@ -1,16 +1,9 @@
 <template>
   <q-page class="q-pa-md">
     <div>
-      <div class="row items-center q-mb-md">
-        <h1 class="col">男性身體部位（可點選發音）</h1>
-        <div class="col-auto">
-          <q-badge color="primary" class="text-h6"> Level: {{ level }} </q-badge>
-        </div>
-      </div>
-
+      <h1>男性身體部位（可點選發音）</h1>
       <!-- 主容器 -->
       <div class="image-container">
-        <!-- menbody.jpg 放在正確位置，若有異動請修改路徑 -->
         <img src="../assets/menbody.jpg" alt="Men Body" class="men-body-image" />
 
         <!-- 迭代區塊：每個部位標籤 -->
@@ -18,7 +11,7 @@
           v-for="(part, index) in menBodyParts"
           :key="index"
           :class="['label', part.position]"
-          @click="handleClick(part.english)"
+          @click="speakEnglish(part.english)"
         >
           <!-- 箭頭 -->
           <div class="arrow" :class="part.arrowDirection"></div>
@@ -41,12 +34,16 @@ import menBodyImage from '../assets/menbody.jpg'
 
 export default defineComponent({
   name: 'MenBodyImagePage',
-  setup() {
+
+  // 新增 emits: ['earn-xp']，讓父層監聽到此事件即可加經驗值
+  emits: ['earn-xp'],
+
+  setup(_, { emit }) {
     /**
      * menBodyParts: 依照需要增加/刪減身體部位
      *  - english: 顯示於標籤的英文
      *  - chinese: 顯示的中文
-     *  - phonetic: KK 音標 (以方括號表示)
+     *  - phonetic: KK 音標
      *  - position: 標籤在圖片上的絕對定位 class
      *  - arrowDirection: 箭頭方向
      */
@@ -61,7 +58,7 @@ export default defineComponent({
       {
         english: 'Shoulder',
         chinese: '肩膀',
-        phonetic: '[ˋʃoldɚ]', // 多音節有重音 (ˋ)
+        phonetic: '[ˋʃoldɚ]',
         position: 'shoulder-pos',
         arrowDirection: 'arrow-left',
       },
@@ -82,7 +79,7 @@ export default defineComponent({
       {
         english: 'Waist',
         chinese: '腰',
-        phonetic: '[west]', // KK 常標成 [west] (對應 IPA [weɪst])
+        phonetic: '[west]',
         position: 'waist-pos',
         arrowDirection: 'arrow-right',
       },
@@ -123,36 +120,22 @@ export default defineComponent({
       },
     ])
 
-    // 新增 level 參考
-    const level = ref(0)
-
-    // 修改點擊處理函數
-    function handleClick(text: string) {
-      speakEnglish(text)
-      level.value++
-
-      // 可選：將 level 儲存到 localStorage
-      localStorage.setItem('menBodyLevel', level.value.toString())
-    }
-
-    // 語音合成函數保持不變
+    /**
+     * 點選文字後，使用瀏覽器語音合成朗讀對應英文，並觸發 "earn-xp"。
+     * 可根據需求調整每次增加的經驗值數量 (此處示範 +5)
+     */
     function speakEnglish(text: string) {
       const utterance = new SpeechSynthesisUtterance(text)
       speechSynthesis.speak(utterance)
-    }
 
-    // 在組件初始化時讀取已儲存的 level
-    const savedLevel = localStorage.getItem('menBodyLevel')
-    if (savedLevel) {
-      level.value = parseInt(savedLevel)
+      // 朗讀完同時觸發事件，讓父層或 MainLayout 去增加 XP
+      emit('earn-xp', 5)
     }
 
     return {
       menBodyParts,
       speakEnglish,
       menBodyImage,
-      level,
-      handleClick,
     }
   },
 })
@@ -231,8 +214,7 @@ export default defineComponent({
 }
 
 /*
-  以下為範例定位（top / left），
-  您可依據 menbody.jpg 實際圖像位置微調
+  以下為範例定位（top / left），請依 menbody.jpg 圖像位置微調
 */
 .head-pos {
   top: 1%;
@@ -243,12 +225,12 @@ export default defineComponent({
   left: 15%;
 }
 .chest-pos {
-  top: 28%;
-  left: 35%;
+  top: 25%;
+  left: 40%;
 }
 .arm-pos {
   top: 22%;
-  left: 70%;
+  left: 75%;
 }
 .waist-pos {
   top: 38%;
@@ -267,11 +249,11 @@ export default defineComponent({
   left: 15%;
 }
 .calf-pos {
-  top: 75%;
+  top: 68%;
   left: 65%;
 }
 .foot-pos {
-  top: 89%;
+  top: 85%;
   left: 40%;
 }
 

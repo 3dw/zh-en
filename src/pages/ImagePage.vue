@@ -27,7 +27,11 @@ import cookingImage from '../assets/cooking.jpg'
 
 export default defineComponent({
   name: 'ImagePage',
-  setup() {
+
+  // 新增 emits
+  emits: ['earn-xp'],
+
+  setup(_, { emit }) {
     // 存放各種烹飪方式的英文與其在圖片上的定位 class
     const cookingMethods = ref([
       { english: 'smoke', position: 'smoke-pos' },
@@ -44,11 +48,13 @@ export default defineComponent({
       { english: 'blanch', position: 'blanch-pos' },
     ])
 
-    // 點選文字後，使用瀏覽器語音合成朗讀對應英文
+    // 點選文字後，使用瀏覽器語音合成朗讀對應英文，並觸發 "earn-xp"
     function speakEnglish(text: string) {
       const utterance = new SpeechSynthesisUtterance(text)
-      // 如果需要調整語速或口音，可以在這裡設定 utterance.rate / utterance.lang
       speechSynthesis.speak(utterance)
+
+      // 每次發音後，觸發 @earn-xp，父層或 MainLayout 接收到事件後增加 XP
+      emit('earn-xp', 5) // 每次 +5 XP，可自行調整
     }
 
     return {
