@@ -54,6 +54,29 @@
         </q-card>
       </div>
 
+      <!-- 第三首歌 -->
+      <div class="col-12 col-sm-6 col-md-4">
+        <q-card class="song-card cursor-pointer" v-ripple @click="$router.push('/song3-word')">
+          <q-card-section class="bg-accent text-white">
+            <div class="text-h6">
+              <q-icon name="music_note" class="q-mr-sm" />
+              If You're Happy
+            </div>
+          </q-card-section>
+          <q-card-section>
+            <div class="text-subtitle2">情緒與動作學習歌</div>
+            <div class="text-caption q-mt-sm">
+              練習內容：
+              <ul>
+                <li>情緒單字：happy, angry, scared, sleepy</li>
+                <li>動作單字：clap, stomp, say, take</li>
+                <li>簡單句型：If you're...</li>
+              </ul>
+            </div>
+          </q-card-section>
+        </q-card>
+      </div>
+
       <!-- 未來可以繼續添加更多歌曲 -->
       <div class="col-12 col-sm-6 col-md-4">
         <q-card class="song-card coming-soon">
