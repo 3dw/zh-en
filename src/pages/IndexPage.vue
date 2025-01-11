@@ -19,6 +19,14 @@
             </h2>
           </div>
         </router-link>
+        <router-link to="/song-word" class="card">
+          <div class="card-inner">
+            <h2>
+              <q-icon name="music" />
+              英文兒歌克漏字學習
+            </h2>
+          </div>
+        </router-link>
         <router-link to="/body" class="card">
           <div class="card-inner">
             <h2>

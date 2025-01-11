@@ -74,6 +74,13 @@
           <q-item-section>遊戲</q-item-section>
         </q-item>
 
+        <q-item clickable to="/song-word" class="op-drawer-item">
+          <q-item-section avatar>
+            <q-icon name="music" />
+          </q-item-section>
+          <q-item-section>英文兒歌克漏字學習</q-item-section>
+        </q-item>
+
         <q-item clickable to="/body" class="op-drawer-item">
           <q-item-section avatar>
             <q-icon name="person" />
