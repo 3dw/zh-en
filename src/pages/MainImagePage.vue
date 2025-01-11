@@ -72,8 +72,8 @@ export default defineComponent({
 /* 使三張圖都具有相同大小與邊框(編筐) */
 .menu-image {
   width: 220px; /* 統一寬度 */
-  height: 150px; /* 統一高度 */
-  object-fit: cover; /* 裁切圖片，確保不變形 */
+  height: 320px; /* 統一高度 */
+  vertical-align: top; /* 新增這行以確保圖片頂部對齊 */
   cursor: pointer;
   border-radius: 8px;
   border: 3px solid #7a8b62; /* 大地系或棕綠系邊框 */
