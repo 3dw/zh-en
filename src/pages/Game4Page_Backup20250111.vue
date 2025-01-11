@@ -9,7 +9,7 @@
 
     <!-- 遊戲說明和發音按鈕 -->
     <div class="text-h6 q-mb-md text-center">
-      請看圖片，聽對白，選出正確的對話
+      請看圖片，聽對白，選出正確的句子
       <q-btn
         icon="volume_up"
         color="primary"
@@ -29,14 +29,14 @@
 
     <!-- 選項區域 -->
     <div class="row q-col-gutter-md justify-center">
-      <div v-for="option in currentOptions" :key="option.id" class="col-12 col-sm-10 col-md-8">
+      <div v-for="option in currentOptions" :key="option" class="col-12 col-sm-10 col-md-8">
         <q-btn
-          :label="option.dialogue"
+          :label="option"
           class="dialogue-btn full-width"
-          :color="getButtonColor(option.dialogue)"
+          :color="getButtonColor(option)"
           size="lg"
           :disable="showingResult"
-          @click="checkAnswer(option.dialogue)"
+          @click="checkAnswer(option)"
         />
       </div>
     </div>
@@ -54,20 +54,17 @@
 
 <script lang="ts">
 import { defineComponent, ref, onMounted } from 'vue'
-import oldFriendsMeet from '../assets/Conversations/oldfriendsmeet.jpg'
-import couplefight from '../assets/Conversations/couplefight.jpg'
 
-interface DialogueOption {
-  id: number
-  dialogue: string
-  isCorrect: boolean
-}
+// 修改圖片導入路徑
+import conversation1 from '../assets/Conversations/conversation1.jpg'
+import conversation2 from '../assets/Conversations/conversation2.jpg'
+import conversation3 from '../assets/Conversations/conversation3.jpg'
+import conversation4 from '../assets/Conversations/conversation4.jpg'
 
-interface DialogueScene {
-  id: number
+interface DialogueItem {
   image: string
   correctDialogue: string
-  options: DialogueOption[]
+  options: string[]
 }
 
 export default defineComponent({
@@ -76,79 +73,39 @@ export default defineComponent({
     const level = ref(0)
     const currentImage = ref('')
     const currentDialogue = ref('')
-    const currentOptions = ref<DialogueOption[]>([])
+    const currentOptions = ref<string[]>([])
     const showResult = ref(false)
     const resultMessage = ref('')
     const showingResult = ref(false)
     const selectedOption = ref('')
 
     // 定義對話場景
-    const dialogueScenes: DialogueScene[] = [
+    const dialogues: DialogueItem[] = [
       {
-        id: 1,
-        image: oldFriendsMeet,
-        correctDialogue:
-          "A: It's been so long! How have you been?\nB: I missed you so much! Let's catch up!",
+        image: conversation1,
+        correctDialogue: 'How are you today?',
         options: [
-          {
-            id: 1,
-            dialogue:
-              "A: It's been so long! How have you been?\nB: I missed you so much! Let's catch up!",
-            isCorrect: true,
-          },
-          {
-            id: 2,
-            dialogue:
-              'A: Why are you here? I thought we were meeting online.\nB: Oh, I just wanted to surprise you.',
-            isCorrect: false,
-          },
-          {
-            id: 3,
-            dialogue:
-              'A: Do I know you? You look familiar.\nB: Yes, we went to the same school for years!',
-            isCorrect: false,
-          },
-          {
-            id: 4,
-            dialogue:
-              "A: I thought you moved abroad!\nB: No, I've been living next door to you all this time.",
-            isCorrect: false,
-          },
+          'How are you today?',
+          "What's your name?",
+          'Where are you going?',
+          'What time is it?',
         ],
       },
       {
-        id: 2,
-        image: couplefight,
-        correctDialogue:
-          "A: You never listen to me anymore!\nB: I do listen, but you don't give me a chance to explain!",
-        options: [
-          {
-            id: 1,
-            dialogue:
-              "A: You never listen to me anymore!\nB: I do listen, but you don't give me a chance to explain!",
-            isCorrect: true,
-          },
-          {
-            id: 2,
-            dialogue:
-              'A: Why did you eat my dessert?\nB: I didn’t know it was yours, the fridge was empty!',
-            isCorrect: false,
-          },
-          {
-            id: 3,
-            dialogue:
-              'A: Let’s break up! I can’t stand your cooking.\nB: Fine! I was tired of you complaining anyway.',
-            isCorrect: false,
-          },
-          {
-            id: 4,
-            dialogue:
-              'A: You forgot my birthday again!\nB: No, I just wanted to surprise you tomorrow.',
-            isCorrect: false,
-          },
-        ],
+        image: conversation2,
+        correctDialogue: 'Nice to meet you!',
+        options: ['Nice to meet you!', 'Good bye!', 'See you later!', 'Thank you!'],
       },
-      // 可以在這裡添加更多場景
+      {
+        image: conversation3,
+        correctDialogue: 'Have a nice day!',
+        options: ['Have a nice day!', 'Good night!', 'Good morning!', 'Good afternoon!'],
+      },
+      {
+        image: conversation4,
+        correctDialogue: 'Thank you very much!',
+        options: ['Thank you very much!', "You're welcome!", "I'm sorry!", 'Excuse me!'],
+      },
     ]
 
     // 從 localStorage 讀取已保存的 level
@@ -157,10 +114,10 @@ export default defineComponent({
       level.value = parseInt(savedLevel)
     }
 
-    // 選擇隨機場景
-    function selectRandomScene() {
-      const randomIndex = Math.floor(Math.random() * dialogueScenes.length)
-      const selected = dialogueScenes[randomIndex]!
+    // 選擇隨機對話場景
+    function selectRandomDialogue() {
+      const randomIndex = Math.floor(Math.random() * dialogues.length)
+      const selected = dialogues[randomIndex]!
       currentImage.value = selected.image
       currentDialogue.value = selected.correctDialogue
       currentOptions.value = [...selected.options].sort(() => Math.random() - 0.5)
@@ -170,7 +127,7 @@ export default defineComponent({
     function startNewRound() {
       showingResult.value = false
       selectedOption.value = ''
-      selectRandomScene()
+      selectRandomDialogue()
       speakCurrentDialogue()
     }
 
@@ -198,7 +155,7 @@ export default defineComponent({
         setTimeout(() => {
           showResult.value = false
           startNewRound()
-        }, 1500)
+        }, 1000)
       } else {
         resultMessage.value = '答錯了，請再試一次！'
         showResult.value = true
@@ -206,7 +163,7 @@ export default defineComponent({
         setTimeout(() => {
           showResult.value = false
           showingResult.value = false
-        }, 1500)
+        }, 1000)
       }
     }
 
@@ -243,14 +200,13 @@ export default defineComponent({
 
 <style scoped>
 .dialogue-btn {
-  min-height: 80px;
-  font-size: 1.1rem;
+  min-height: 60px;
+  font-size: 1.2rem;
   text-transform: none;
   transition: all 0.3s ease;
-  white-space: pre-line;
+  white-space: normal;
   line-height: 1.4;
-  padding: 12px 20px;
-  text-align: left;
+  padding: 8px 16px;
 }
 
 .dialogue-btn:hover:not(:disabled) {
@@ -259,9 +215,8 @@ export default defineComponent({
 
 @media (max-width: 600px) {
   .dialogue-btn {
-    min-height: 70px;
+    min-height: 50px;
     font-size: 1rem;
-    padding: 8px 16px;
   }
 }
 </style>
