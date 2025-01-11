@@ -1,0 +1,49 @@
+from PIL import Image, ImageDraw, ImageFont
+import os
+
+# 設置字體和輸出目錄
+FONT_PATH = "/usr/share/fonts/truetype/liberation/LiberationSans-Regular.ttf" 
+OUTPUT_DIR = "letters_gif"
+os.makedirs(OUTPUT_DIR, exist_ok=True)
+
+# 配置圖片大小、字體大小和其他參數
+IMAGE_SIZE = (300, 300)
+FONT_SIZE = 200
+BACKGROUND_COLOR = "white"
+TEXT_COLOR = "black"
+DURATION = 200  # 每幀顯示時間（毫秒）
+
+#  字母分解成片段 (這部分需要根據字體和字母調整)
+letter_segments = {
+    "A": ["/", "\\", "-"],
+    "B": ["|", ")", ")"],
+    "C": [")"],
+    "D": ["|", ")"],
+    "E": ["|", "-", "-", "-"],
+    # ... (add more letters and their segments)
+}
+
+def generate_letter_gif(letter):
+    font = ImageFont.truetype(FONT_PATH, FONT_SIZE)
+    frames = []
+
+    segments = letter_segments.get(letter, [letter])  # 使用預設值或字母本身
+
+    for i in range(len(segments) + 1):
+        img = Image.new("RGB", IMAGE_SIZE, BACKGROUND_COLOR)
+        draw = ImageDraw.Draw(img)
+        
+        # 依次繪製片段
+        for j in range(i):
+            draw.text((50, 50), segments[j], font=font, fill=TEXT_COLOR) 
+
+        frames.append(img)
+
+    gif_path = os.path.join(OUTPUT_DIR, f"{letter}.gif")
+    frames[0].save(gif_path, save_all=True, append_images=frames[1:], duration=DURATION, loop=0)
+    print(f"Generated {gif_path}")
+
+# 生成 26 個字母 GIF
+letters = [chr(i) for i in range(65, 91)]  # A-Z
+for letter in letters:
+    generate_letter_gif(letter)
