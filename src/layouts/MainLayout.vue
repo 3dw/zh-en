@@ -69,7 +69,7 @@
 
         <q-item clickable to="/main-game" class="op-drawer-item">
           <q-item-section avatar>
-            <q-icon name="game" />
+            <q-icon name="gamepad" />
           </q-item-section>
           <q-item-section>遊戲</q-item-section>
         </q-item>

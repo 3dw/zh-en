@@ -97,7 +97,7 @@ export default defineComponent({
       if (currentLetter.value) {
         const utterance = new SpeechSynthesisUtterance(currentLetter.value)
         utterance.lang = 'en-US'
-        utterance.rate = 0.8
+        utterance.rate = 0.4
         speechSynthesis.speak(utterance)
       }
     }
