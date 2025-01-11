@@ -1,10 +1,16 @@
 <template>
   <q-page class="q-pa-md">
     <div>
-      <h1>男性身體部位（可點選發音）</h1>
+      <div class="row items-center q-mb-md">
+        <h1 class="col">男性身體部位（可點選發音）</h1>
+        <div class="col-auto">
+          <q-badge color="primary" class="text-h6"> Level: {{ level }} </q-badge>
+        </div>
+      </div>
+
       <!-- 主容器 -->
       <div class="image-container">
-        <!-- 請確保 menbody.jpg 放在正確位置，並修改以下路徑為實際路徑 -->
+        <!-- menbody.jpg 放在正確位置，若有異動請修改路徑 -->
         <img src="../assets/menbody.jpg" alt="Men Body" class="men-body-image" />
 
         <!-- 迭代區塊：每個部位標籤 -->
@@ -12,7 +18,7 @@
           v-for="(part, index) in menBodyParts"
           :key="index"
           :class="['label', part.position]"
-          @click="speakEnglish(part.english)"
+          @click="handleClick(part.english)"
         >
           <!-- 箭頭 -->
           <div class="arrow" :class="part.arrowDirection"></div>
@@ -40,7 +46,7 @@ export default defineComponent({
      * menBodyParts: 依照需要增加/刪減身體部位
      *  - english: 顯示於標籤的英文
      *  - chinese: 顯示的中文
-     *  - phonetic: 音標
+     *  - phonetic: KK 音標 (以方括號表示)
      *  - position: 標籤在圖片上的絕對定位 class
      *  - arrowDirection: 箭頭方向
      */
@@ -48,88 +54,105 @@ export default defineComponent({
       {
         english: 'Head',
         chinese: '頭',
-        phonetic: '/hɛd/',
+        phonetic: '[hɛd]',
         position: 'head-pos',
         arrowDirection: 'arrow-down',
       },
       {
         english: 'Shoulder',
         chinese: '肩膀',
-        phonetic: '/ˈʃoʊl.dɚ/',
+        phonetic: '[ˋʃoldɚ]', // 多音節有重音 (ˋ)
         position: 'shoulder-pos',
         arrowDirection: 'arrow-left',
       },
       {
         english: 'Chest',
         chinese: '胸部',
-        phonetic: '/tʃest/',
+        phonetic: '[tʃɛst]',
         position: 'chest-pos',
         arrowDirection: 'arrow-right',
       },
       {
         english: 'Arm',
         chinese: '手臂',
-        phonetic: '/ɑːrm/',
+        phonetic: '[ɑrm]',
         position: 'arm-pos',
         arrowDirection: 'arrow-left',
       },
       {
         english: 'Waist',
         chinese: '腰',
-        phonetic: '/weɪst/',
+        phonetic: '[west]', // KK 常標成 [west] (對應 IPA [weɪst])
         position: 'waist-pos',
         arrowDirection: 'arrow-right',
       },
       {
         english: 'Hip',
         chinese: '臀部',
-        phonetic: '/hɪp/',
+        phonetic: '[hɪp]',
         position: 'hip-pos',
         arrowDirection: 'arrow-left',
       },
       {
         english: 'Thigh',
         chinese: '大腿',
-        phonetic: '/θaɪ/',
+        phonetic: '[θaɪ]',
         position: 'thigh-pos',
         arrowDirection: 'arrow-right',
       },
       {
         english: 'Knee',
         chinese: '膝蓋',
-        phonetic: '/niː/',
+        phonetic: '[ni]',
         position: 'knee-pos',
         arrowDirection: 'arrow-left',
       },
       {
         english: 'Calf',
         chinese: '小腿',
-        phonetic: '/kæf/',
+        phonetic: '[kæf]',
         position: 'calf-pos',
         arrowDirection: 'arrow-left',
       },
       {
         english: 'Foot',
         chinese: '腳',
-        phonetic: '/fʊt/',
+        phonetic: '[fʊt]',
         position: 'foot-pos',
         arrowDirection: 'arrow-up',
       },
     ])
 
-    // 點選文字後，使用瀏覽器語音合成朗讀對應英文
+    // 新增 level 參考
+    const level = ref(0)
+
+    // 修改點擊處理函數
+    function handleClick(text: string) {
+      speakEnglish(text)
+      level.value++
+
+      // 可選：將 level 儲存到 localStorage
+      localStorage.setItem('menBodyLevel', level.value.toString())
+    }
+
+    // 語音合成函數保持不變
     function speakEnglish(text: string) {
       const utterance = new SpeechSynthesisUtterance(text)
-      // 如果需要調整語速或口音，可於此設定：
-      // utterance.lang = 'en-US'
-      // utterance.rate = 1.0
       speechSynthesis.speak(utterance)
+    }
+
+    // 在組件初始化時讀取已儲存的 level
+    const savedLevel = localStorage.getItem('menBodyLevel')
+    if (savedLevel) {
+      level.value = parseInt(savedLevel)
     }
 
     return {
       menBodyParts,
       speakEnglish,
       menBodyImage,
+      level,
+      handleClick,
     }
   },
 })
@@ -209,7 +232,7 @@ export default defineComponent({
 
 /*
   以下為範例定位（top / left），
-  請依 menbody.jpg 圖像位置微調
+  您可依據 menbody.jpg 實際圖像位置微調
 */
 .head-pos {
   top: 1%;
@@ -220,12 +243,12 @@ export default defineComponent({
   left: 15%;
 }
 .chest-pos {
-  top: 25%;
-  left: 40%;
+  top: 28%;
+  left: 35%;
 }
 .arm-pos {
   top: 22%;
-  left: 75%;
+  left: 70%;
 }
 .waist-pos {
   top: 38%;
@@ -244,11 +267,11 @@ export default defineComponent({
   left: 15%;
 }
 .calf-pos {
-  top: 68%;
+  top: 75%;
   left: 65%;
 }
 .foot-pos {
-  top: 85%;
+  top: 89%;
   left: 40%;
 }
 

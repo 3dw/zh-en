@@ -1,20 +1,16 @@
 <template>
-  <q-page class="q-pa-md">
+  <q-page class="op-page q-pa-md">
     <div class="word-card-list">
-      <h1>常用英文句子字卡(可朗讀)</h1>
-      <div class="search-bar">
-        <q-input
-          v-model="searchQuery"
-          placeholder="輸入關鍵字搜尋（中或英）"
-          outlined
-          dense
-          class="q-mb-md"
-        />
+      <h1 class="page-title">常用英文句子字卡 (可朗讀)</h1>
+      <div class="search-bar q-mb-md">
+        <q-input v-model="searchQuery" placeholder="輸入關鍵字搜尋（中或英）" outlined dense />
       </div>
+
+      <!-- FlashCard 組件 (含翻卡朗讀功能) -->
       <flash-card
         :sentences="sentences"
         :searchQuery="searchQuery"
-        @earn-xp="(xp) => $emit('earn-xp', xp)"
+        @earn-xp="$emit('earn-xp', $event)"
       />
     </div>
   </q-page>
@@ -29,8 +25,9 @@ export default defineComponent({
   components: {
     FlashCard,
   },
+  emits: ['earn-xp'],
 
-  setup() {
+  setup(props, { emit }) {
     const searchQuery = ref('')
     const sentences = ref([
       { chinese: '你好嗎？', english: 'How are you?', flipped: false },
@@ -93,17 +90,45 @@ export default defineComponent({
       { chinese: '下次見。', english: 'See you next time.', flipped: false },
     ])
 
+    const toggleFlip = (sentence: { flipped: boolean }) => {
+      sentence.flipped = !sentence.flipped
+      emit('earn-xp', 5)
+    }
+
     return {
       searchQuery,
       sentences,
+      toggleFlip,
     }
   },
 })
 </script>
 
-<style scoped>
+<style scoped lang="scss">
+/* 與 MainLayout/其他頁面風格一致 */
+.op-page {
+  background-color: #f4f1eb;
+  font-size: 1.1rem;
+}
+
 .word-card-list {
-  max-width: 800px;
+  max-width: 1000px;
   margin: 0 auto;
+  background-color: #fff;
+  border-radius: 8px;
+  padding: 24px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
+}
+
+.page-title {
+  margin-bottom: 16px;
+  font-size: 1.4rem;
+  font-weight: 600;
+  color: #3e3e3e;
+}
+
+.search-bar {
+  display: flex;
+  justify-content: center;
 }
 </style>

@@ -97,9 +97,31 @@ export default defineComponent({
 })
 </script>
 
-<style scoped>
+<style scoped lang="scss">
+/* 與 MainLayout/其他頁面風格一致 */
+.op-page {
+  background-color: #f4f1eb;
+  font-size: 1.1rem;
+}
+
 .word-card-list {
-  max-width: 800px;
+  max-width: 1000px;
   margin: 0 auto;
+  background-color: #fff;
+  border-radius: 8px;
+  padding: 24px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
+}
+
+.page-title {
+  margin-bottom: 16px;
+  font-size: 1.4rem;
+  font-weight: 600;
+  color: #3e3e3e;
+}
+
+.search-bar {
+  display: flex;
+  justify-content: center;
 }
 </style>

@@ -1,21 +1,18 @@
 <template>
-  <q-page class="q-pa-md">
+  <q-page class="op-page q-pa-md">
     <div class="main-container">
-      <h1>選擇想查看的圖示</h1>
+      <h1 class="page-title">選擇想查看的圖示</h1>
 
-      <!-- 點擊 "烹飪方式" 圖，前往 ImagePage.vue -->
       <router-link to="/image" class="image-link">
         <img src="../assets/cooking.jpg" alt="Cooking" class="menu-image" />
         <p>烹飪方式 (ImagePage)</p>
       </router-link>
 
-      <!-- 點擊 "人體部位" 圖，前往 BodyImagePage.vue -->
       <router-link to="/body-image" class="image-link">
         <img src="../assets/body.jpg" alt="Body" class="menu-image" />
         <p>人體部位 (BodyImagePage)</p>
       </router-link>
 
-      <!-- 點擊 "男性人體部位" 圖，前往 menBodyImagePage.vue -->
       <router-link to="/men-body-image" class="image-link">
         <img src="../assets/menbody.jpg" alt="Men Body" class="menu-image" />
         <p>男性人體部位 (menBodyImagePage)</p>
@@ -32,28 +29,55 @@ export default defineComponent({
 })
 </script>
 
-<style scoped>
-.main-container {
-  text-align: center;
+<style scoped lang="scss">
+/* 與 MainLayout 整體一致的大地色背景 / 字體大小 */
+.op-page {
+  background-color: #f4f1eb;
+  font-size: 1.1rem;
 }
 
+/* 容器卡片 */
+.main-container {
+  max-width: 900px;
+  margin: 0 auto;
+  text-align: center;
+  background-color: #fff;
+  padding: 24px;
+  border-radius: 8px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
+}
+
+/* 標題 */
+.page-title {
+  margin-bottom: 24px;
+  font-size: 1.4rem;
+  font-weight: 600;
+  color: #3e3e3e;
+}
+
+/* 圖片連結區塊 */
 .image-link {
   display: inline-block;
   margin: 1rem;
   text-decoration: none;
-  color: inherit;
+  color: #3e3e3e;
+  transition: transform 0.2s ease;
+  vertical-align: top; /* 讓圖片能夠並排且頂部對齊 */
+
+  &:hover {
+    transform: scale(1.03);
+  }
 }
 
+/* 使三張圖都具有相同大小與邊框(編筐) */
 .menu-image {
-  width: 200px; /* 可依需要調整大小 */
-  height: auto;
+  width: 220px; /* 統一寬度 */
+  height: 150px; /* 統一高度 */
+  object-fit: cover; /* 裁切圖片，確保不變形 */
   cursor: pointer;
   border-radius: 8px;
-  transition: transform 0.2s ease;
-}
-
-/* 滑鼠移動到圖片上時，微微放大 */
-.menu-image:hover {
-  transform: scale(1.05);
+  border: 3px solid #7a8b62; /* 大地系或棕綠系邊框 */
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
+  margin-bottom: 8px;
 }
 </style>
