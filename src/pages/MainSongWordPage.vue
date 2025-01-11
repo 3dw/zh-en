@@ -37,7 +37,7 @@
           <q-card-section class="bg-secondary text-white">
             <div class="text-h6">
               <q-icon name="music_note" class="q-mr-sm" />
-              Ten Little Numbers
+              Ten Little Indians
             </div>
           </q-card-section>
           <q-card-section>
@@ -71,6 +71,29 @@
                 <li>情緒單字：happy, angry, scared, sleepy</li>
                 <li>動作單字：clap, stomp, say, take</li>
                 <li>簡單句型：If you're...</li>
+              </ul>
+            </div>
+          </q-card-section>
+        </q-card>
+      </div>
+
+      <!-- 第四首歌 -->
+      <div class="col-12 col-sm-6 col-md-4">
+        <q-card class="song-card cursor-pointer" v-ripple @click="$router.push('/song4-word')">
+          <q-card-section class="bg-purple text-white">
+            <div class="text-h6">
+              <q-icon name="music_note" class="q-mr-sm" />
+              ABC Phonics Song
+            </div>
+          </q-card-section>
+          <q-card-section>
+            <div class="text-subtitle2">字母發音與單字學習歌</div>
+            <div class="text-caption q-mt-sm">
+              練習內容：
+              <ul>
+                <li>26個英文字母的發音</li>
+                <li>每個字母對應的常見單字</li>
+                <li>字母與單字的連結記憶</li>
               </ul>
             </div>
           </q-card-section>
