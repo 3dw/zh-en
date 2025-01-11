@@ -80,6 +80,12 @@
           </q-item-section>
           <q-item-section>英文兒歌克漏字學習</q-item-section>
         </q-item>
+        <q-item clickable to="/hand-written" class="op-drawer-item">
+          <q-item-section avatar>
+            <q-icon name="edit" />
+          </q-item-section>
+          <q-item-section>英文字母手寫練習</q-item-section>
+        </q-item>
 
         <q-item clickable to="/body" class="op-drawer-item">
           <q-item-section avatar>

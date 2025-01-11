@@ -27,6 +27,15 @@
             </h2>
           </div>
         </router-link>
+        <router-link to="/hand-written" class="card">
+          <div class="card-inner">
+            <h2>
+              <q-icon name="edit" />
+              英文字母手寫練習
+            </h2>
+          </div>
+        </router-link>
+
         <router-link to="/body" class="card">
           <div class="card-inner">
             <h2>
