@@ -40,14 +40,14 @@
 
       <!-- 大寫字母發音選字遊戲 -->
       <div class="col-12 col-md-6">
-        <q-card class="game-card" @click="$router.push('/game1')">
+        <q-card class="game-card" @click="$router.push('/game3')">
           <q-card-section class="bg-purple text-white text-center" style="height: 200px">
             <q-icon name="speaker_notes" size="100px" />
-            <div class="text-subtitle2 q-mt-sm">大寫字母發音選字遊戲</div>
+            <div class="text-subtitle2 q-mt-sm">有圖發音選字遊戲</div>
           </q-card-section>
           <q-card-section>
-            <div class="text-h6">大寫字母選字遊戲</div>
-            <div class="text-subtitle2">聽發音選擇正確的大寫字母</div>
+            <div class="text-h6">看圖選單字遊戲</div>
+            <div class="text-subtitle2">看圖選擇正確的單字</div>
             <q-badge color="purple" class="q-mt-sm"> Level: {{ game1Level }} </q-badge>
           </q-card-section>
         </q-card>
