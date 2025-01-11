@@ -1,7 +1,10 @@
 <template>
   <q-page class="q-pa-md">
     <div class="row items-center q-mb-md">
-      <h1 class="col">英文兒歌學習</h1>
+      <h1 class="col">
+        <q-icon name="music_note" size="md" color="primary" class="q-mr-sm" />
+        英文兒歌克漏字學習
+      </h1>
     </div>
 
     <!-- 遊戲說明和發音按鈕 -->
@@ -65,9 +68,11 @@
 
     <!-- 結果提示 -->
     <q-dialog v-model="showResult">
-      <q-card>
-        <q-card-section class="row items-center">
-          <span class="text-h6">{{ resultMessage }}</span>
+      <q-card style="min-width: 350px; max-width: 80vw">
+        <q-card-section class="column items-center">
+          <span class="text-h6 text-center" style="white-space: pre-line">
+            {{ resultMessage }}
+          </span>
         </q-card-section>
       </q-card>
     </q-dialog>
@@ -197,24 +202,47 @@ export default defineComponent({
     function checkAnswer() {
       showingResult.value = true
       let allCorrect = true
-      const incorrectWords: string[] = [] // 添加類型註解
+      const incorrectAnswers: {
+        userInput: string
+        correctAnswer: string
+        position: string
+        wordPosition: string
+      }[] = []
 
-      // 檢查每個填空的答案
-      lyricsLines.value.forEach((line) => {
+      lyricsLines.value.forEach((line, lineIndex) => {
+        let blankCount = 0
         line.forEach((word) => {
-          if (word.isBlank && word.userInput.toLowerCase() !== word.correctAnswer?.toLowerCase()) {
-            allCorrect = false
-            if (word.correctAnswer) {
-              incorrectWords.push(word.correctAnswer)
+          if (word.isBlank) {
+            blankCount++
+            const userAnswer = word.userInput.toLowerCase().trim()
+            const correctAnswer = word.correctAnswer?.toLowerCase() || ''
+
+            if (userAnswer !== correctAnswer) {
+              allCorrect = false
+              incorrectAnswers.push({
+                userInput: word.userInput || '(空白)',
+                correctAnswer: word.correctAnswer || '',
+                position: `第 ${lineIndex + 1} 行`,
+                wordPosition: `第 ${blankCount} 個空格`,
+              })
             }
           }
         })
       })
 
       if (allCorrect) {
-        resultMessage.value = '太棒了！全部答對了！'
+        resultMessage.value =
+          '恭喜你！🎉\n' + '全部答對了！\n' + '你已經完全掌握了這首歌的歌詞！\n' + '繼續保持！'
       } else {
-        resultMessage.value = '再試一次！'
+        let message = '加油！再試一次：\n\n'
+        incorrectAnswers.forEach((item) => {
+          message +=
+            `${item.position}${item.wordPosition}：\n` +
+            `你的答案：「${item.userInput}」\n` +
+            `正確答案：「${item.correctAnswer}」\n\n`
+        })
+        message += '提示：注意單字的拼寫喔！'
+        resultMessage.value = message
       }
 
       showResult.value = true
@@ -222,7 +250,7 @@ export default defineComponent({
       setTimeout(() => {
         showResult.value = false
         showingResult.value = false
-      }, 2000)
+      }, 5000) // 給 5 秒時間閱讀訊息
     }
 
     onMounted(() => {

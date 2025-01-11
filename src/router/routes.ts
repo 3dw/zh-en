@@ -67,9 +67,19 @@ const routes: RouteRecordRaw[] = [
     children: [{ path: '', component: () => import('pages/Game4Page.vue') }],
   },
   {
+    path: '/main-song-word',
+    component: () => import('layouts/MainLayout.vue'),
+    children: [{ path: '', component: () => import('pages/MainSongWordPage.vue') }],
+  },
+  {
     path: '/song-word',
     component: () => import('layouts/MainLayout.vue'),
     children: [{ path: '', component: () => import('pages/SongWordPage.vue') }],
+  },
+  {
+    path: '/song2-word',
+    component: () => import('layouts/MainLayout.vue'),
+    children: [{ path: '', component: () => import('pages/Song2WordPage.vue') }],
   },
   {
     path: '/favorites',

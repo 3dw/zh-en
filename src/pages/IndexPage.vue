@@ -19,7 +19,7 @@
             </h2>
           </div>
         </router-link>
-        <router-link to="/song-word" class="card">
+        <router-link to="/main-song-word" class="card">
           <div class="card-inner">
             <h2>
               <q-icon name="music" />
