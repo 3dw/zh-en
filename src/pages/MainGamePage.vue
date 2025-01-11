@@ -55,14 +55,14 @@
 
       <!-- 小寫字母發音選字遊戲 -->
       <div class="col-12 col-md-6">
-        <q-card class="game-card" @click="$router.push('/game2')">
+        <q-card class="game-card" @click="$router.push('/game4')">
           <q-card-section class="bg-deep-orange text-white text-center" style="height: 200px">
             <q-icon name="record_voice_over" size="100px" />
-            <div class="text-subtitle2 q-mt-sm">小寫字母發音選字遊戲</div>
+            <div class="text-subtitle2 q-mt-sm">看圖搭正確對白選對話遊戲</div>
           </q-card-section>
           <q-card-section>
-            <div class="text-h6">小寫字母選字遊戲</div>
-            <div class="text-subtitle2">聽發音選擇正確的小寫字母</div>
+            <div class="text-h6">看圖搭正確對白選對話遊戲</div>
+            <div class="text-subtitle2">看圖選擇正確的對白</div>
             <q-badge color="deep-orange" class="q-mt-sm"> Level: {{ game2Level }} </q-badge>
           </q-card-section>
         </q-card>

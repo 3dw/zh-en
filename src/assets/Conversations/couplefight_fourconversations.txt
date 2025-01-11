@@ -1,0 +1,21 @@
+四種對白選項：
+
+正確對白：
+
+A: "You never listen to me anymore!"
+B: "I do listen, but you don't give me a chance to explain!"
+
+錯誤對白 1：
+
+A: "Why did you eat my dessert?"
+B: "I didn’t know it was yours, the fridge was empty!"
+
+錯誤對白 2：
+
+A: "Let’s break up! I can’t stand your cooking."
+B: "Fine! I was tired of you complaining anyway."
+
+錯誤對白 3：
+
+A: "You forgot my birthday again!"
+B: "No, I just wanted to surprise you tomorrow."
