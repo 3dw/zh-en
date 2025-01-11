@@ -11,6 +11,14 @@
             </h2>
           </div>
         </router-link>
+        <router-link to="/main-game" class="card">
+          <div class="card-inner">
+            <h2>
+              <q-icon name="game" />
+              遊戲
+            </h2>
+          </div>
+        </router-link>
         <router-link to="/body" class="card">
           <div class="card-inner">
             <h2>

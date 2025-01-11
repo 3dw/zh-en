@@ -1,27 +1,72 @@
 <template>
   <q-page class="q-pa-md">
     <div class="row items-center q-mb-md">
-      <h1 class="col">遊戲選單</h1>
+      <h1 class="col">英文字母遊戲</h1>
       <div class="col-auto">
         <q-badge color="primary" class="text-h6"> 總分: {{ totalLevel }} </q-badge>
       </div>
     </div>
 
     <div class="row q-col-gutter-md">
-      <!-- 字母遊戲卡片 -->
+      <!-- 大寫字母遊戲卡片 -->
       <div class="col-12 col-md-6">
-        <q-card class="game-card" @click="$router.push('/game')">
-          <q-card-section>
-            <div class="text-h6">字母認字遊戲</div>
-            <div class="text-subtitle2">練習英文字母的發音和辨識</div>
+        <q-card class="game-card" @click="$router.push('/game1')">
+          <q-card-section class="bg-primary text-white text-center" style="height: 200px">
+            <q-icon name="abc" size="100px" />
+            <div class="text-subtitle2 q-mt-sm">大寫字母發音認字遊戲</div>
           </q-card-section>
           <q-card-section>
-            <q-badge color="primary"> Level: {{ letterGameLevel }} </q-badge>
+            <div class="text-h6">大寫字母遊戲</div>
+            <div class="text-subtitle2">練習英文大寫字母的發音和辨識</div>
+            <q-badge color="primary" class="q-mt-sm"> Level: {{ upperCaseGameLevel }} </q-badge>
           </q-card-section>
         </q-card>
       </div>
 
-      <!-- 可以在這裡添加更多遊戲卡片 -->
+      <!-- 小寫字母遊戲卡片 -->
+      <div class="col-12 col-md-6">
+        <q-card class="game-card" @click="$router.push('/game2')">
+          <q-card-section class="bg-secondary text-white text-center" style="height: 200px">
+            <q-icon name="text_fields" size="100px" />
+            <div class="text-subtitle2 q-mt-sm">小寫字母發音認字遊戲</div>
+          </q-card-section>
+          <q-card-section>
+            <div class="text-h6">小寫字母遊戲</div>
+            <div class="text-subtitle2">練習英文小寫字母的發音和辨識</div>
+            <q-badge color="secondary" class="q-mt-sm"> Level: {{ lowerCaseGameLevel }} </q-badge>
+          </q-card-section>
+        </q-card>
+      </div>
+
+      <!-- 大寫字母發音選字遊戲 -->
+      <div class="col-12 col-md-6">
+        <q-card class="game-card" @click="$router.push('/game1')">
+          <q-card-section class="bg-purple text-white text-center" style="height: 200px">
+            <q-icon name="speaker_notes" size="100px" />
+            <div class="text-subtitle2 q-mt-sm">大寫字母發音選字遊戲</div>
+          </q-card-section>
+          <q-card-section>
+            <div class="text-h6">大寫字母選字遊戲</div>
+            <div class="text-subtitle2">聽發音選擇正確的大寫字母</div>
+            <q-badge color="purple" class="q-mt-sm"> Level: {{ game1Level }} </q-badge>
+          </q-card-section>
+        </q-card>
+      </div>
+
+      <!-- 小寫字母發音選字遊戲 -->
+      <div class="col-12 col-md-6">
+        <q-card class="game-card" @click="$router.push('/game2')">
+          <q-card-section class="bg-deep-orange text-white text-center" style="height: 200px">
+            <q-icon name="record_voice_over" size="100px" />
+            <div class="text-subtitle2 q-mt-sm">小寫字母發音選字遊戲</div>
+          </q-card-section>
+          <q-card-section>
+            <div class="text-h6">小寫字母選字遊戲</div>
+            <div class="text-subtitle2">聽發音選擇正確的小寫字母</div>
+            <q-badge color="deep-orange" class="q-mt-sm"> Level: {{ game2Level }} </q-badge>
+          </q-card-section>
+        </q-card>
+      </div>
     </div>
   </q-page>
 </template>
@@ -32,23 +77,44 @@ import { defineComponent, ref, computed } from 'vue'
 export default defineComponent({
   name: 'MainGamePage',
   setup() {
-    const letterGameLevel = ref(0)
+    const upperCaseGameLevel = ref(0)
+    const lowerCaseGameLevel = ref(0)
+    const game1Level = ref(0)
+    const game2Level = ref(0)
 
     // 從 localStorage 讀取各個遊戲的 level
-    const savedLetterGameLevel = localStorage.getItem('letterGameLevel')
-    if (savedLetterGameLevel) {
-      letterGameLevel.value = parseInt(savedLetterGameLevel)
+    const savedUpperCaseLevel = localStorage.getItem('letterGameLevel')
+    if (savedUpperCaseLevel) {
+      upperCaseGameLevel.value = parseInt(savedUpperCaseLevel)
+    }
+
+    const savedLowerCaseLevel = localStorage.getItem('lowerCaseGameLevel')
+    if (savedLowerCaseLevel) {
+      lowerCaseGameLevel.value = parseInt(savedLowerCaseLevel)
+    }
+
+    const savedGame1Level = localStorage.getItem('game1Level')
+    if (savedGame1Level) {
+      game1Level.value = parseInt(savedGame1Level)
+    }
+
+    const savedGame2Level = localStorage.getItem('game2Level')
+    if (savedGame2Level) {
+      game2Level.value = parseInt(savedGame2Level)
     }
 
     // 計算總分
     const totalLevel = computed(() => {
-      return letterGameLevel.value
-      // 之後可以加入其他遊戲的分數
-      // + otherGameLevel.value
+      return (
+        upperCaseGameLevel.value + lowerCaseGameLevel.value + game1Level.value + game2Level.value
+      )
     })
 
     return {
-      letterGameLevel,
+      upperCaseGameLevel,
+      lowerCaseGameLevel,
+      game1Level,
+      game2Level,
       totalLevel,
     }
   },
@@ -59,10 +125,21 @@ export default defineComponent({
 .game-card {
   cursor: pointer;
   transition: all 0.3s ease;
+  border-radius: 12px;
+  overflow: hidden;
 }
 
 .game-card:hover {
   transform: translateY(-5px);
-  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+}
+
+.text-center {
+  text-align: center;
+}
+
+.bg-transparent {
+  background: rgba(0, 0, 0, 0.6);
+  padding: 8px;
 }
 </style>
