@@ -27,6 +27,14 @@
             </h2>
           </div>
         </router-link>
+        <router-link to="/nine-grid-game" class="card">
+          <div class="card-inner">
+            <h2>
+              <q-icon name="grid_view" />
+              中英文九宮格對戰
+            </h2>
+          </div>
+        </router-link>
         <router-link to="/hand-written" class="card">
           <div class="card-inner">
             <h2>

@@ -92,6 +92,11 @@ const routes: RouteRecordRaw[] = [
     children: [{ path: '', component: () => import('pages/Song4WordPage.vue') }],
   },
   {
+    path: '/nine-grid-game',
+    component: () => import('layouts/MainLayout.vue'),
+    children: [{ path: '', component: () => import('pages/NineGridGame.vue') }],
+  },
+  {
     path: '/hand-written',
     component: () => import('layouts/MainLayout.vue'),
     children: [{ path: '', component: () => import('pages/HandWrittenPage.vue') }],
