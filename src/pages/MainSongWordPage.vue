@@ -101,7 +101,7 @@
       </div>
 
       <!-- 未來可以繼續添加更多歌曲 -->
-      <div class="col-12 col-sm-6 col-md-4">
+      <!-- <div class="col-12 col-sm-6 col-md-4">
         <q-card class="song-card coming-soon">
           <q-card-section class="bg-grey-6 text-white">
             <div class="text-h6">
@@ -114,7 +114,7 @@
             <div class="text-caption q-mt-sm">未來將新增更多有趣的英文兒歌練習！</div>
           </q-card-section>
         </q-card>
-      </div>
+      </div>-->
     </div>
   </q-page>
 </template>

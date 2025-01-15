@@ -95,7 +95,7 @@ export default defineComponent({
     // 發音當前字母
     function speakCurrentLetter() {
       if (currentLetter.value) {
-        const utterance = new SpeechSynthesisUtterance(currentLetter.value)
+        const utterance = new SpeechSynthesisUtterance(currentLetter.value.toLowerCase())
         utterance.lang = 'en-US'
         utterance.rate = 0.4
         speechSynthesis.speak(utterance)

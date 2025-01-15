@@ -14,7 +14,7 @@
         <router-link to="/main-game" class="card">
           <div class="card-inner">
             <h2>
-              <q-icon name="game" />
+              <q-icon name="gamepad" />
               遊戲
             </h2>
           </div>
@@ -22,7 +22,7 @@
         <router-link to="/main-song-word" class="card">
           <div class="card-inner">
             <h2>
-              <q-icon name="music" />
+              <q-icon name="audiotrack" />
               英文兒歌克漏字學習
             </h2>
           </div>
@@ -61,14 +61,14 @@
             </h2>
           </div>
         </router-link>
-        <router-link to="/main-image" class="card">
+        <!-- <router-link to="/main-image" class="card">
           <div class="card-inner">
             <h2>
               <q-icon name="grid_view" />
               看圖學習
             </h2>
           </div>
-        </router-link>
+        </router-link> -->
       </div>
     </div>
   </q-page>
@@ -94,12 +94,19 @@ export default defineComponent({
   display: block;
   width: 100%;
   max-width: 300px;
-  background-color: #f0f0f0;
+  background-color: #e8f5e9;
   padding: 20px;
   border-radius: 10px;
-  border: 1px solid #ccc;
+  border: 1px solid #a5d6a7;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   margin-bottom: 20px;
+  transition: all 0.3s ease;
+}
+
+.card:hover {
+  background-color: #ffb74d;
+  border-color: #ff9800;
+  transform: translateY(-2px);
 }
 
 .cards-container {

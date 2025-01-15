@@ -97,7 +97,7 @@
           <q-item-section avatar>
             <q-icon name="person" />
           </q-item-section>
-          <q-item-section>身體部位</q-item-section>
+          <q-item-section>身體健康</q-item-section>
         </q-item>
 
         <q-item clickable to="/number" class="op-drawer-item">
@@ -107,6 +107,7 @@
           <q-item-section>數字</q-item-section>
         </q-item>
 
+        <!--
         <q-expansion-item
           icon="image"
           clickable
@@ -136,6 +137,8 @@
             <q-item-section>男性身體部位</q-item-section>
           </q-item>
         </q-expansion-item>
+
+        -->
 
         <q-item clickable to="/favorites" class="op-drawer-item">
           <q-item-section avatar>

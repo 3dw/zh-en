@@ -81,6 +81,7 @@ export default defineComponent({
     const resultMessage = ref('')
     const showingResult = ref(false)
     const selectedOption = ref('')
+    const usedScenes = ref<number[]>([])
 
     // 定義對話場景
     const dialogueScenes: DialogueScene[] = [
@@ -159,8 +160,21 @@ export default defineComponent({
 
     // 選擇隨機場景
     function selectRandomScene() {
-      const randomIndex = Math.floor(Math.random() * dialogueScenes.length)
-      const selected = dialogueScenes[randomIndex]!
+      // 過濾掉已使用過的場景
+      const availableScenes = dialogueScenes.filter((scene) => !usedScenes.value.includes(scene.id))
+
+      // 如果所有場景都用完了，重置已使用場景列表
+      if (availableScenes.length === 0) {
+        usedScenes.value = []
+        return selectRandomScene()
+      }
+
+      const randomIndex = Math.floor(Math.random() * availableScenes.length)
+      const selected = availableScenes[randomIndex]!
+
+      // 將選中的場景ID加入已使用列表
+      usedScenes.value.push(selected.id)
+
       currentImage.value = selected.image
       currentDialogue.value = selected.correctDialogue
       currentOptions.value = [...selected.options].sort(() => Math.random() - 0.5)

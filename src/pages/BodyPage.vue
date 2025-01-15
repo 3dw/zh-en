@@ -1,7 +1,7 @@
 <template>
   <q-page class="q-pa-md">
     <div class="word-card-list">
-      <h1>常用英文身體字卡(可朗讀)</h1>
+      <h1>英文身體健康字卡(可朗讀)</h1>
       <div class="search-bar">
         <q-input
           v-model="searchQuery"

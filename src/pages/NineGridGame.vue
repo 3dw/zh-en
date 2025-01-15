@@ -3,19 +3,27 @@
     <div class="row items-center q-mb-md">
       <h1 class="col">
         <q-icon name="grid_view" size="md" color="primary" class="q-mr-sm" />
-        中英文九宮格對戰
+        雙人中英文九宮格連連看：
       </h1>
+    </div>
+
+    <div class="row q-mb-md justify-around">
+      <p class="col">
+        說明：佛陀(Buddha)和觀音(Guanyin)，<br />
+        輪流翻開九宮格，<br />
+        如果翻開的九宮格中有三個連成一線，遊戲結束，並顯示勝利者。<br />
+      </p>
     </div>
 
     <!-- 分數顯示 -->
     <div class="row q-mb-md justify-around">
       <div class="score-card" :class="{ 'current-player': currentPlayer === 'Buddha' }">
         <q-avatar color="deep-purple" text-color="white">B</q-avatar>
-        <div class="text-h6 q-ml-sm">Buddha: {{ buddhaScore }}</div>
+        <div class="text-h6 q-ml-sm">佛陀(Buddha): {{ buddhaScore }}</div>
       </div>
       <div class="score-card" :class="{ 'current-player': currentPlayer === 'Guanyin' }">
         <q-avatar color="teal" text-color="white">G</q-avatar>
-        <div class="text-h6 q-ml-sm">Guanyin: {{ guanyinScore }}</div>
+        <div class="text-h6 q-ml-sm">觀音(Guanyin): {{ guanyinScore }}</div>
       </div>
     </div>
 
@@ -139,6 +147,44 @@ export default defineComponent({
       return null
     })
 
+    function checkWinningLine() {
+      // 檢查所有可能的獲勝組合
+      const winningCombinations = [
+        // 橫向
+        [0, 1, 2],
+        [3, 4, 5],
+        [6, 7, 8],
+        // 縱向
+        [0, 3, 6],
+        [1, 4, 7],
+        [2, 5, 8],
+        // 斜向
+        [0, 4, 8],
+        [2, 4, 6],
+      ]
+
+      for (let j = 0; j < winningCombinations.length; j++) {
+        const combination = winningCombinations[j] as number[]
+        const a = combination[0] as number
+        const b = combination[1] as number
+        const c = combination[2] as number
+        const cellA = grid.value[a] as GridCell
+        const cellB = grid.value[b] as GridCell
+        const cellC = grid.value[c] as GridCell
+
+        if (
+          cellA.flipped &&
+          cellB.flipped &&
+          cellC.flipped &&
+          cellA.owner === cellB.owner &&
+          cellB.owner === cellC.owner
+        ) {
+          return true
+        }
+      }
+      return false
+    }
+
     function checkAnswer() {
       const lowerAnswer = answer.value.toLowerCase().trim()
       let found = false
@@ -157,9 +203,15 @@ export default defineComponent({
       })
 
       if (found) {
-        // 檢查遊戲是否結束
+        // 檢查是否有連成一線
+        if (checkWinningLine()) {
+          showResult.value = true
+          return
+        }
+        // 檢查是否全部翻開
         if (grid.value.every((cell) => cell.flipped)) {
           showResult.value = true
+          return
         }
       }
 

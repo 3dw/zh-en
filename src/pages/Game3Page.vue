@@ -77,6 +77,7 @@ export default defineComponent({
     const resultMessage = ref('')
     const showingResult = ref(false)
     const selectedOption = ref('')
+    const previousWord = ref('')
 
     // 定義詞彙和圖片的對應關係
     const vocabulary: VocabularyItem[] = [
@@ -94,10 +95,15 @@ export default defineComponent({
 
     // 生成隨機單字和圖片
     function selectRandomWord() {
-      const randomIndex = Math.floor(Math.random() * vocabulary.length)
-      const selected = vocabulary[randomIndex]!
+      let selected
+      do {
+        const randomIndex = Math.floor(Math.random() * vocabulary.length)
+        selected = vocabulary[randomIndex]!
+      } while (selected.word === previousWord.value)
+
       currentWord.value = selected.word
       currentImage.value = selected.image
+      previousWord.value = selected.word
     }
 
     // 生成選項

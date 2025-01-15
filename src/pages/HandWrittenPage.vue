@@ -104,7 +104,7 @@ export default defineComponent({
     const isChecking = ref(false)
     const score = ref(0)
 
-    const letters: string[] = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('')
+    const letters: string[] = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz'.split('')
     let lastX = 0
     let lastY = 0
 
@@ -179,12 +179,12 @@ export default defineComponent({
     }
 
     const nextLetter = () => {
-      const currentIndex = letters.indexOf(currentLetter.value)
-      const nextIndex = (currentIndex + 1) % letters.length
-      const nextLetter = letters[nextIndex]
-      if (nextLetter) {
-        currentLetter.value = nextLetter
-      }
+      let randomIndex: number
+      do {
+        randomIndex = Math.floor(Math.random() * letters.length)
+      } while (letters[randomIndex] === currentLetter.value) // 確保不會選到當前字母
+
+      currentLetter.value = letters[randomIndex] as string
       clearCanvas()
       showResult.value = false
     }
@@ -199,8 +199,8 @@ export default defineComponent({
         await new Promise((resolve) => setTimeout(resolve, 1000))
 
         // 這裡應該要呼叫手寫辨識 API
-        // 目前使用隨機結果作為示範
-        const randomSuccess = Math.random() > 0.3
+        // 目前使用true 當作示範
+        const randomSuccess = true
         isCorrect.value = randomSuccess
 
         if (randomSuccess) {
