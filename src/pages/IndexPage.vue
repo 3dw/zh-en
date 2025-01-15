@@ -35,6 +35,14 @@
             </h2>
           </div>
         </router-link>
+        <router-link to="/relationship" class="card">
+          <div class="card-inner">
+            <h2>
+              <q-icon name="grid_view" />
+              中英文關係稱謂學習
+            </h2>
+          </div>
+        </router-link>
         <router-link to="/hand-written" class="card">
           <div class="card-inner">
             <h2>

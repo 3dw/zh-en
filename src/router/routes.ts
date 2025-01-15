@@ -97,6 +97,11 @@ const routes: RouteRecordRaw[] = [
     children: [{ path: '', component: () => import('pages/NineGridGame.vue') }],
   },
   {
+    path: '/relationship',
+    component: () => import('layouts/MainLayout.vue'),
+    children: [{ path: '', component: () => import('pages/RelationshipPage.vue') }],
+  },
+  {
     path: '/hand-written',
     component: () => import('layouts/MainLayout.vue'),
     children: [{ path: '', component: () => import('pages/HandWrittenPage.vue') }],

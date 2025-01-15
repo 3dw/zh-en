@@ -86,6 +86,12 @@
           </q-item-section>
           <q-item-section>中英文九宮格對戰</q-item-section>
         </q-item>
+        <q-item clickable to="/relationship" class="op-drawer-item">
+          <q-item-section avatar>
+            <q-icon name="grid_view" />
+          </q-item-section>
+          <q-item-section>中英文關係稱謂學習</q-item-section>
+        </q-item>
         <q-item clickable to="/hand-written" class="op-drawer-item">
           <q-item-section avatar>
             <q-icon name="edit" />
