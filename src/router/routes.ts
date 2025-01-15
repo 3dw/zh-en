@@ -102,6 +102,11 @@ const routes: RouteRecordRaw[] = [
     children: [{ path: '', component: () => import('pages/RelationshipPage.vue') }],
   },
   {
+    path: '/ball-direction',
+    component: () => import('layouts/MainLayout.vue'),
+    children: [{ path: '', component: () => import('pages/BallDirectionPage.vue') }],
+  },
+  {
     path: '/hand-written',
     component: () => import('layouts/MainLayout.vue'),
     children: [{ path: '', component: () => import('pages/HandWrittenPage.vue') }],
