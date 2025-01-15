@@ -14,6 +14,7 @@
         :options="[
           { label: '聽力練習', value: 'listening' },
           { label: '填空練習', value: 'quiz' },
+          { label: '配對題', value: 'matching' },
           { label: '進階測驗', value: 'advanced' },
         ]"
         color="primary"
@@ -83,6 +84,62 @@
                 :disable="!userAnswer"
               />
               <q-btn color="secondary" icon="skip_next" label="下一題" @click="nextQuiz" />
+            </q-card-actions>
+          </q-card>
+        </div>
+
+        <!-- 配對題模式 -->
+        <div v-if="gameMode === 'matching'" class="game-section">
+          <q-card class="matching-card">
+            <q-card-section>
+              <div class="text-h6">皇室關係配對 | Royal Family Matching</div>
+
+              <!-- 配對區域 -->
+              <div class="matching-container q-mt-md">
+                <!-- 左側人物列表 -->
+                <div class="people-list">
+                  <div
+                    v-for="(person, index) in matchingPeople"
+                    :key="'person-' + index"
+                    class="person-item"
+                    :class="{ selected: selectedPerson === person }"
+                    @click="selectPerson(person)"
+                  >
+                    <div class="english-text">{{ person.name }}</div>
+                    <div class="chinese-text">{{ person.nameZh }}</div>
+                  </div>
+                </div>
+
+                <!-- 右側關係列表 -->
+                <div class="relations-list">
+                  <div
+                    v-for="(relation, index) in matchingRelations"
+                    :key="'relation-' + index"
+                    class="relation-item"
+                    :class="{ selected: selectedRelation === relation }"
+                    @click="selectRelation(relation)"
+                  >
+                    <div class="english-text">{{ relation.en }}</div>
+                    <div class="chinese-text">{{ relation.zh }}</div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- 已完成的配對 -->
+              <div class="matched-pairs q-mt-lg">
+                <div
+                  v-for="(pair, index) in matchedPairs"
+                  :key="'pair-' + index"
+                  class="matched-pair"
+                >
+                  <q-icon name="check_circle" color="positive" />
+                  <span class="pair-text"> {{ pair.person.name }} → {{ pair.relation.en }} </span>
+                </div>
+              </div>
+            </q-card-section>
+
+            <q-card-actions align="center">
+              <q-btn color="primary" icon="refresh" label="重新開始" @click="resetMatching" />
             </q-card-actions>
           </q-card>
         </div>
@@ -159,6 +216,17 @@ interface AdvancedQuiz {
   }
   answer: string
   answerZh: string
+}
+
+interface MatchingPerson {
+  name: string
+  nameZh: string
+}
+
+interface MatchingRelation {
+  en: string
+  zh: string
+  correctPerson: string
 }
 
 export default defineComponent({
@@ -305,6 +373,78 @@ export default defineComponent({
       advancedAnswer.value = ''
     }
 
+    // 配對遊戲數據
+    const matchingPeople = ref<MatchingPerson[]>([
+      { name: 'Princess Eugenie', nameZh: '尤金妮公主' },
+      { name: 'Prince Edward', nameZh: '愛德華王子' },
+      { name: 'Zara Tindall', nameZh: '扎拉·廷德爾' },
+      { name: 'Catherine', nameZh: '凱薩琳' },
+    ])
+
+    const matchingRelations = ref<MatchingRelation[]>([
+      {
+        en: 'daughter of Prince Andrew',
+        zh: '安德魯王子的女兒',
+        correctPerson: 'Princess Eugenie',
+      },
+      {
+        en: 'son of Queen Elizabeth II',
+        zh: '伊莉莎白二世女王的兒子',
+        correctPerson: 'Prince Edward',
+      },
+      {
+        en: 'daughter of Princess Anne',
+        zh: '安妮公主的女兒',
+        correctPerson: 'Zara Tindall',
+      },
+      {
+        en: 'mother of Prince George, Princess Charlotte, and Prince Louis',
+        zh: '喬治王子、夏洛特公主和路易王子的母親',
+        correctPerson: 'Catherine',
+      },
+    ])
+
+    const selectedPerson = ref<MatchingPerson | null>(null)
+    const selectedRelation = ref<MatchingRelation | null>(null)
+    const matchedPairs = ref<Array<{ person: MatchingPerson; relation: MatchingRelation }>>([])
+
+    const selectPerson = (person: MatchingPerson) => {
+      selectedPerson.value = person
+      checkMatch()
+    }
+
+    const selectRelation = (relation: MatchingRelation) => {
+      selectedRelation.value = relation
+      checkMatch()
+    }
+
+    const checkMatch = () => {
+      if (selectedPerson.value && selectedRelation.value) {
+        if (selectedRelation.value.correctPerson === selectedPerson.value.name) {
+          // 配對成功
+          matchedPairs.value.push({
+            person: selectedPerson.value,
+            relation: selectedRelation.value,
+          })
+          // 清除選擇
+          selectedPerson.value = null
+          selectedRelation.value = null
+        } else {
+          // 配對失敗，清除選擇
+          setTimeout(() => {
+            selectedPerson.value = null
+            selectedRelation.value = null
+          }, 1000)
+        }
+      }
+    }
+
+    const resetMatching = () => {
+      selectedPerson.value = null
+      selectedRelation.value = null
+      matchedPairs.value = []
+    }
+
     return {
       gameMode,
       currentStory,
@@ -320,6 +460,14 @@ export default defineComponent({
       nextQuiz,
       checkAdvancedAnswer,
       nextAdvanced,
+      matchingPeople,
+      matchingRelations,
+      selectedPerson,
+      selectedRelation,
+      matchedPairs,
+      selectPerson,
+      selectRelation,
+      resetMatching,
     }
   },
 })
@@ -378,5 +526,62 @@ export default defineComponent({
 .chinese-text {
   color: #666;
   font-size: 1em;
+}
+
+.matching-card {
+  width: 100%;
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.matching-container {
+  display: flex;
+  gap: 30px;
+  margin-top: 20px;
+}
+
+.people-list,
+.relations-list {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.person-item,
+.relation-item {
+  padding: 15px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.person-item:hover,
+.relation-item:hover {
+  background-color: #e3f2fd;
+}
+
+.selected {
+  background-color: #bbdefb;
+  border-color: #1976d2;
+}
+
+.matched-pairs {
+  margin-top: 20px;
+}
+
+.matched-pair {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+  padding: 8px;
+  background-color: #f5f5f5;
+  border-radius: 4px;
+}
+
+.pair-text {
+  color: #1976d2;
 }
 </style>
