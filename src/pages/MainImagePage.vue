@@ -3,7 +3,7 @@
     <div class="main-container">
       <h1 class="page-title">選擇想查看的圖示</h1>
 
-      <router-link to="/image" class="image-link">
+      <!-- <router-link to="/image" class="image-link">
         <img src="../assets/cooking.jpg" alt="Cooking" class="menu-image" />
         <p>烹飪方式 (ImagePage)</p>
       </router-link>
@@ -11,11 +11,15 @@
       <router-link to="/body-image" class="image-link">
         <img src="../assets/body.jpg" alt="Body" class="menu-image" />
         <p>人體部位 (BodyImagePage)</p>
-      </router-link>
+      </router-link> -->
 
+      <router-link to="/preposition-image" class="image-link">
+        <img src="../assets/learnfromimage/snake.png" alt="Preposition" class="menu-image" />
+        <p>英文介系詞 (PrepositionImagePage)</p>
+      </router-link>
       <router-link to="/men-body-image" class="image-link">
         <img src="../assets/menbody.jpg" alt="Men Body" class="menu-image" />
-        <p>男性人體部位 (menBodyImagePage)</p>
+        <p>人體部位 (menBodyImagePage)</p>
       </router-link>
     </div>
   </q-page>

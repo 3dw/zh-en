@@ -67,6 +67,21 @@ const routes: RouteRecordRaw[] = [
     children: [{ path: '', component: () => import('pages/Game4Page.vue') }],
   },
   {
+    path: '/main-image',
+    component: () => import('layouts/MainLayout.vue'),
+    children: [{ path: '', component: () => import('pages/MainImagePage.vue') }],
+  },
+  {
+    path: '/preposition-image',
+    component: () => import('layouts/MainLayout.vue'),
+    children: [{ path: '', component: () => import('pages/prepositionImagePage.vue') }],
+  },
+  {
+    path: '/men-body-image',
+    component: () => import('layouts/MainLayout.vue'),
+    children: [{ path: '', component: () => import('pages/menBodyImagePage.vue') }],
+  },
+  {
     path: '/main-song-word',
     component: () => import('layouts/MainLayout.vue'),
     children: [{ path: '', component: () => import('pages/MainSongWordPage.vue') }],

@@ -80,6 +80,12 @@
           </q-item-section>
           <q-item-section>英文兒歌克漏字學習</q-item-section>
         </q-item>
+        <q-item clickable to="/main-image" class="op-drawer-item">
+          <q-item-section avatar>
+            <q-icon name="grid_view" />
+          </q-item-section>
+          <q-item-section>看圖學習</q-item-section>
+        </q-item>
         <q-item clickable to="/nine-grid-game" class="op-drawer-item">
           <q-item-section avatar>
             <q-icon name="grid_view" />

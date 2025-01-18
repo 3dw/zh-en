@@ -27,6 +27,14 @@
             </h2>
           </div>
         </router-link>
+        <router-link to="/main-image" class="card">
+          <div class="card-inner">
+            <h2>
+              <q-icon name="grid_view" />
+              看圖學習
+            </h2>
+          </div>
+        </router-link>
         <router-link to="/nine-grid-game" class="card">
           <div class="card-inner">
             <h2>
