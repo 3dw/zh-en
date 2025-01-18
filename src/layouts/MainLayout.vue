@@ -60,12 +60,40 @@
           <q-item-section>首頁</q-item-section>
         </q-item>
 
-        <q-item clickable to="/beginner" class="op-drawer-item">
-          <q-item-section avatar>
-            <q-icon name="add" />
-          </q-item-section>
-          <q-item-section>初級</q-item-section>
-        </q-item>
+        <q-expansion-item
+          icon="library_books"
+          label="雙語字卡"
+          class="op-expansion-item"
+          dense-toggle
+        >
+          <q-item clickable to="/beginner" class="op-drawer-item">
+            <q-item-section avatar>
+              <q-icon name="add" />
+            </q-item-section>
+            <q-item-section>初級</q-item-section>
+          </q-item>
+
+          <q-item clickable to="/body" class="op-drawer-item">
+            <q-item-section avatar>
+              <q-icon name="person" />
+            </q-item-section>
+            <q-item-section>身體健康</q-item-section>
+          </q-item>
+
+          <q-item clickable to="/number" class="op-drawer-item">
+            <q-item-section avatar>
+              <q-icon name="school" />
+            </q-item-section>
+            <q-item-section>數字</q-item-section>
+          </q-item>
+
+          <q-item clickable to="/favorites" class="op-drawer-item">
+            <q-item-section avatar>
+              <q-icon name="favorite" />
+            </q-item-section>
+            <q-item-section>我的最愛</q-item-section>
+          </q-item>
+        </q-expansion-item>
 
         <q-item clickable to="/main-game" class="op-drawer-item">
           <q-item-section avatar>
@@ -82,7 +110,7 @@
         </q-item>
         <q-item clickable to="/main-image" class="op-drawer-item">
           <q-item-section avatar>
-            <q-icon name="grid_view" />
+            <q-icon name="visibility" />
           </q-item-section>
           <q-item-section>看圖學習</q-item-section>
         </q-item>
@@ -94,35 +122,22 @@
         </q-item>
         <q-item clickable to="/relationship" class="op-drawer-item">
           <q-item-section avatar>
-            <q-icon name="grid_view" />
+            <q-icon name="supervisor_account" />
           </q-item-section>
           <q-item-section>中英文關係稱謂學習</q-item-section>
         </q-item>
         <q-item clickable to="/ball-direction" class="op-drawer-item">
           <q-item-section avatar>
-            <q-icon name="grid_view" />
+            <q-icon name="swap_horiz" />
           </q-item-section>
           <q-item-section>英文方向學習</q-item-section>
         </q-item>
+
         <q-item clickable to="/hand-written" class="op-drawer-item">
           <q-item-section avatar>
             <q-icon name="edit" />
           </q-item-section>
           <q-item-section>英文字母手寫練習</q-item-section>
-        </q-item>
-
-        <q-item clickable to="/body" class="op-drawer-item">
-          <q-item-section avatar>
-            <q-icon name="person" />
-          </q-item-section>
-          <q-item-section>身體健康</q-item-section>
-        </q-item>
-
-        <q-item clickable to="/number" class="op-drawer-item">
-          <q-item-section avatar>
-            <q-icon name="school" />
-          </q-item-section>
-          <q-item-section>數字</q-item-section>
         </q-item>
 
         <!--
@@ -157,13 +172,6 @@
         </q-expansion-item>
 
         -->
-
-        <q-item clickable to="/favorites" class="op-drawer-item">
-          <q-item-section avatar>
-            <q-icon name="favorite" />
-          </q-item-section>
-          <q-item-section>我的最愛</q-item-section>
-        </q-item>
       </q-list>
     </q-drawer>
 

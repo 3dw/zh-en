@@ -1,7 +1,7 @@
 <template>
   <q-page class="op-page q-pa-md">
     <div class="word-card-list">
-      <h1 class="page-title">常用英文句子字卡 (可朗讀)</h1>
+      <h1 class="page-title">常用句子(點擊空白處可翻面)</h1>
       <div class="search-bar q-mb-md">
         <q-input v-model="searchQuery" placeholder="輸入關鍵字搜尋（中或英）" outlined dense />
       </div>

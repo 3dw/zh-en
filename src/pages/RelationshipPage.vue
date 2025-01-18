@@ -26,7 +26,12 @@
     <div class="row q-mt-lg">
       <!-- 左側族譜圖 -->
       <div class="col-12 col-md-7 q-pr-md">
-        <q-img src="src/assets/royal_family.jpg" class="family-tree-image" fit="contain">
+        <q-img
+          src="src/assets/royal_family.jpg"
+          class="family-tree-image cursor-pointer"
+          fit="contain"
+          @click="showImageDialog = true"
+        >
           <template v-slot:loading>
             <q-spinner-dots color="primary" />
           </template>
@@ -186,11 +191,69 @@
         </q-card-actions>
       </q-card>
     </q-dialog>
+
+    <!-- 圖片放大對話框 -->
+    <q-dialog v-model="showImageDialog">
+      <q-card style="width: 90vw; max-width: 1200px">
+        <q-card-section class="row items-center justify-end">
+          <q-btn icon="close" flat round dense v-close-popup />
+        </q-card-section>
+        <q-card-section class="q-pa-none relative-position">
+          <div
+            class="image-container"
+            @mousemove="handleMouseMove"
+            @click="handleClick"
+            ref="imageContainer"
+          >
+            <q-img
+              src="src/assets/royal_family.jpg"
+              style="max-height: 85vh"
+              fit="contain"
+              ref="mainImage"
+            >
+              <template v-slot:loading>
+                <q-spinner-dots color="primary" />
+              </template>
+            </q-img>
+            <!-- 放大鏡框 -->
+            <div
+              v-show="showMagnifier"
+              class="magnifier-frame"
+              :style="{
+                left: `${magnifierPos.x - magnifierSize / 2}px`,
+                top: `${magnifierPos.y - magnifierSize / 2}px`,
+                width: `${magnifierSize}px`,
+                height: `${magnifierSize}px`,
+                backgroundImage: `url(src/assets/royal_family.jpg)`,
+                backgroundPosition: `${-magnifierPos.x * zoomLevel + magnifierSize / 2}px ${
+                  -magnifierPos.y * zoomLevel + magnifierSize / 2
+                }px`,
+                backgroundSize: calculateBackgroundSize,
+              }"
+            ></div>
+            <!-- 放大區域 -->
+            <div
+              v-show="showMagnifier"
+              class="magnified-view"
+              :style="{
+                backgroundImage: `url(src/assets/royal_family.jpg)`,
+                backgroundPosition: `${-magnifierPos.x * zoomLevel + magnifiedSize / 2}px ${
+                  -magnifierPos.y * zoomLevel + magnifiedSize / 2
+                }px`,
+                backgroundSize: calculateBackgroundSize,
+                left: magnifiedPos.x + 'px',
+                top: magnifiedPos.y + 'px',
+              }"
+            ></div>
+          </div>
+        </q-card-section>
+      </q-card>
+    </q-dialog>
   </q-page>
 </template>
 
 <script lang="ts">
-import { defineComponent, ref } from 'vue'
+import { defineComponent, ref, computed } from 'vue'
 
 interface Story {
   en: string
@@ -237,6 +300,41 @@ export default defineComponent({
     const resultMessage = ref('')
     const userAnswer = ref('')
     const advancedAnswer = ref('')
+    const showImageDialog = ref(false)
+    const showMagnifier = ref(false)
+    const magnifierPos = ref({ x: 0, y: 0 })
+    const magnifiedPos = ref({ x: 0, y: 0 })
+    const magnifierSize = 200
+    const magnifiedSize = 300
+    const zoomLevel = 2.5
+    const imageContainer = ref<HTMLElement | null>(null)
+    const mainImage = ref<{
+      $el: HTMLElement
+      clientWidth: number
+      clientHeight: number
+    }>({
+      $el: document.createElement('div'),
+      clientWidth: 0,
+      clientHeight: 0,
+    })
+
+    // 新增計算背景尺寸的計算屬性
+    const calculateBackgroundSize = computed(() => {
+      if (!mainImage.value?.$el) return ''
+      const imgElement = mainImage.value.$el.querySelector('img') as HTMLImageElement
+      if (!imgElement) return ''
+
+      const naturalRatio = imgElement.naturalWidth / imgElement.naturalHeight
+      const displayRatio = imgElement.clientWidth / imgElement.clientHeight
+
+      if (naturalRatio > displayRatio) {
+        // 寬度受限
+        return `${imgElement.clientWidth * zoomLevel}px auto`
+      } else {
+        // 高度受限
+        return `auto ${imgElement.clientHeight * zoomLevel}px`
+      }
+    })
 
     // 修改聽力練習故事
     const defaultStory: Story = {
@@ -445,6 +543,38 @@ export default defineComponent({
       matchedPairs.value = []
     }
 
+    const handleMouseMove = (event: MouseEvent) => {
+      if (!imageContainer.value || !mainImage.value?.$el) return
+
+      const rect = imageContainer.value.getBoundingClientRect()
+      const x = event.clientX - rect.left
+      const y = event.clientY - rect.top
+
+      // 計算相對於圖片的實際位置
+      const imageRect = mainImage.value.$el.getBoundingClientRect()
+      const imageX = event.clientX - imageRect.left
+      const imageY = event.clientY - imageRect.top
+
+      magnifierPos.value = { x: imageX, y: imageY }
+
+      // 計算放大區域的位置
+      let magnifiedX = x + 20
+      let magnifiedY = y
+
+      if (magnifiedX + magnifiedSize > rect.width) {
+        magnifiedX = x - magnifiedSize - 20
+      }
+      if (magnifiedY + magnifiedSize > rect.height) {
+        magnifiedY = rect.height - magnifiedSize
+      }
+
+      magnifiedPos.value = { x: magnifiedX, y: magnifiedY }
+    }
+
+    const handleClick = () => {
+      showMagnifier.value = !showMagnifier.value
+    }
+
     return {
       gameMode,
       currentStory,
@@ -468,6 +598,18 @@ export default defineComponent({
       selectPerson,
       selectRelation,
       resetMatching,
+      showImageDialog,
+      showMagnifier,
+      magnifierPos,
+      magnifierSize,
+      magnifiedSize,
+      zoomLevel,
+      handleMouseMove,
+      handleClick,
+      imageContainer,
+      mainImage,
+      magnifiedPos,
+      calculateBackgroundSize,
     }
   },
 })
@@ -583,5 +725,32 @@ export default defineComponent({
 
 .pair-text {
   color: #1976d2;
+}
+
+.image-container {
+  position: relative;
+  overflow: hidden;
+}
+
+.magnifier-frame {
+  position: absolute;
+  border: 2px solid #1976d2;
+  cursor: move;
+  pointer-events: none;
+  z-index: 7000;
+}
+
+.magnified-view {
+  position: absolute;
+  width: v-bind(magnifiedSize + 'px');
+  height: v-bind(magnifiedSize + 'px');
+  border: 2px solid #1976d2;
+  background-repeat: no-repeat;
+  z-index: 7000;
+  pointer-events: none;
+}
+
+.relative-position {
+  position: relative;
 }
 </style>
