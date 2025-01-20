@@ -27,7 +27,7 @@
       <!-- 左側族譜圖 -->
       <div class="col-12 col-md-7 q-pr-md">
         <q-img
-          src="src/assets/royal_family.jpg"
+          src="public/images/royal_family.jpg"
           class="family-tree-image cursor-pointer"
           fit="contain"
           @click="showImageDialog = true"
@@ -206,7 +206,7 @@
             ref="imageContainer"
           >
             <q-img
-              src="src/assets/royal_family.jpg"
+              src="public/images/royal_family.jpg"
               style="max-height: 85vh"
               fit="contain"
               ref="mainImage"
@@ -224,7 +224,7 @@
                 top: `${magnifierPos.y - magnifierSize / 2}px`,
                 width: `${magnifierSize}px`,
                 height: `${magnifierSize}px`,
-                backgroundImage: `url(src/assets/royal_family.jpg)`,
+                backgroundImage: `url(public/images/royal_family.jpg)`,
                 backgroundPosition: `${-magnifierPos.x * zoomLevel + magnifierSize / 2}px ${
                   -magnifierPos.y * zoomLevel + magnifierSize / 2
                 }px`,
@@ -236,7 +236,7 @@
               v-show="showMagnifier"
               class="magnified-view"
               :style="{
-                backgroundImage: `url(src/assets/royal_family.jpg)`,
+                backgroundImage: `url(public/images/royal_family.jpg)`,
                 backgroundPosition: `${-magnifierPos.x * zoomLevel + magnifiedSize / 2}px ${
                   -magnifierPos.y * zoomLevel + magnifiedSize / 2
                 }px`,
