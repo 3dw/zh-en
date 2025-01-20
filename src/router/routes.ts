@@ -77,6 +77,11 @@ const routes: RouteRecordRaw[] = [
     children: [{ path: '', component: () => import('pages/prepositionImagePage.vue') }],
   },
   {
+    path: '/math-image',
+    component: () => import('layouts/MainLayout.vue'),
+    children: [{ path: '', component: () => import('pages/MathImagePage.vue') }],
+  },
+  {
     path: '/men-body-image',
     component: () => import('layouts/MainLayout.vue'),
     children: [{ path: '', component: () => import('pages/menBodyImagePage.vue') }],

@@ -17,8 +17,14 @@
         <img src="../assets/learnfromimage/snake.png" alt="Preposition" class="menu-image" />
         <p>英文介系詞 (PrepositionImagePage)</p>
       </router-link>
+
+      <router-link to="/math-image" class="image-link">
+        <img src="../assets/learnfromimage/math.jpg" alt="Math" class="menu-image" />
+        <p>數學 (MathImagePage)</p>
+      </router-link>
+
       <router-link to="/men-body-image" class="image-link">
-        <img src="../assets/menbody.jpg" alt="Men Body" class="menu-image" />
+        <img src="../assets/learnfromimage/menbody.jpg" alt="Men Body" class="menu-image" />
         <p>人體部位 (menBodyImagePage)</p>
       </router-link>
     </div>
