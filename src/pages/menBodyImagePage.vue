@@ -4,7 +4,7 @@
       <h1>男性身體部位（可點選發音）</h1>
       <!-- 主容器 -->
       <div class="image-container">
-        <img src="../assets/menbody.jpg" alt="Men Body" class="men-body-image" />
+        <img src="../assets/learnfromimage/menbody.jpg" alt="Men Body" class="men-body-image" />
 
         <!-- 迭代區塊：每個部位標籤 -->
         <div
@@ -30,7 +30,7 @@
 
 <script lang="ts">
 import { defineComponent, ref } from 'vue'
-import menBodyImage from '../assets/menbody.jpg'
+import menBodyImage from '../assets/learnfromimage/menbody.jpg'
 
 export default defineComponent({
   name: 'MenBodyImagePage',
