@@ -30,7 +30,7 @@
           <q-btn
             outline
             color="white"
-            label="Beta版原始碼"
+            label="原始碼"
             href="https://github.com/3dw/zh-en"
             target="_blank"
             rel="noopener noreferrer"
@@ -71,6 +71,13 @@
               <q-icon name="add" />
             </q-item-section>
             <q-item-section>初級</q-item-section>
+          </q-item>
+
+          <q-item clickable to="/emotion" class="op-drawer-item">
+            <q-item-section avatar>
+              <q-icon name="sentiment_satisfied" />
+            </q-item-section>
+            <q-item-section>情緒</q-item-section>
           </q-item>
 
           <q-item clickable to="/body" class="op-drawer-item">
