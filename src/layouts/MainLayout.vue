@@ -139,7 +139,12 @@
           </q-item-section>
           <q-item-section>英文方向學習</q-item-section>
         </q-item>
-
+        <q-item clickable to="/image-paint" class="op-drawer-item">
+          <q-item-section avatar>
+            <q-icon name="palette" />
+          </q-item-section>
+          <q-item-section>圖片上色學英文</q-item-section>
+        </q-item>
         <q-item clickable to="/hand-written" class="op-drawer-item">
           <q-item-section avatar>
             <q-icon name="edit" />

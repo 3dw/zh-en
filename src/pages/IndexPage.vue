@@ -59,6 +59,14 @@
             </h2>
           </div>
         </router-link>
+        <router-link to="/image-paint" class="card">
+          <div class="card-inner">
+            <h2>
+              <q-icon name="grid_view" />
+              圖片上色學英文
+            </h2>
+          </div>
+        </router-link>
         <router-link to="/hand-written" class="card">
           <div class="card-inner">
             <h2>
