@@ -14,17 +14,20 @@
           <q-card-section>
             <div class="text-h6">選擇顏色</div>
             <div class="row q-gutter-sm q-mt-sm">
-              <q-btn
-                v-for="color in colors"
-                :key="color"
-                :style="{ backgroundColor: color }"
-                class="color-btn"
-                @click="selectedColor = color"
-              />
+              <div v-for="(color, index) in colors" :key="color" class="color-option">
+                <q-btn
+                  :style="{ backgroundColor: color }"
+                  class="color-btn"
+                  @click="selectedColor = color"
+                />
+                <div class="color-name">{{ colorNames[index] }}</div>
+              </div>
             </div>
             <div class="text-caption q-mt-sm">
               當前顏色：
-              <div class="current-color" :style="{ backgroundColor: selectedColor }" />
+              <div class="current-color" :style="{ backgroundColor: selectedColor }">
+                {{ getColorName(selectedColor) }}
+              </div>
             </div>
           </q-card-section>
         </q-card>
@@ -83,8 +86,10 @@ export default defineComponent({
       '#9C27B0',
       '#00BCD4',
       '#FF5722',
-      '#607D8B',
+      '#999999',
     ]
+
+    const colorNames = ['Pink', 'Blue', 'Green', 'Yellow', 'Purple', 'Cyan', 'Orange', 'Gray']
 
     const elephantParts = ref([
       {
@@ -199,6 +204,11 @@ export default defineComponent({
       },
     ])
 
+    const getColorName = (color: string) => {
+      const index = colors.indexOf(color)
+      return colorNames[index]
+    }
+
     const speakText = (text: string) => {
       const utterance = new SpeechSynthesisUtterance(text)
       utterance.lang = 'en-US'
@@ -218,9 +228,11 @@ export default defineComponent({
     return {
       selectedColor,
       colors,
+      colorNames,
       elephantParts,
       colorPart,
       hoverPart,
+      getColorName,
     }
   },
 })
@@ -242,9 +254,11 @@ export default defineComponent({
 }
 
 .current-color {
-  display: inline-block;
-  width: 24px;
-  height: 24px;
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  width: 50px;
+  height: 50px;
   border-radius: 50%;
   vertical-align: middle;
   border: 2px solid #ddd;
@@ -299,6 +313,18 @@ export default defineComponent({
 
 .part-label.show-label {
   display: block !important;
+}
+
+.color-option {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.color-name {
+  font-size: 12px;
+  color: #666;
 }
 
 @media (max-width: 600px) {

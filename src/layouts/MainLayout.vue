@@ -61,8 +61,29 @@
         </q-item>
 
         <q-expansion-item
+          icon="text_fields"
+          label="字母學習"
+          class="op-expansion-item"
+          dense-toggle
+        >
+          <q-item clickable to="/alphabet" class="op-drawer-item">
+            <q-item-section avatar>
+              <q-icon name="add" />
+            </q-item-section>
+            <q-item-section>ABC之歌</q-item-section>
+          </q-item>
+
+          <q-item clickable to="/hand-written" class="op-drawer-item">
+            <q-item-section avatar>
+              <q-icon name="edit" />
+            </q-item-section>
+            <q-item-section>英文字母手寫練習</q-item-section>
+          </q-item>
+        </q-expansion-item>
+
+        <q-expansion-item
           icon="library_books"
-          label="雙語字卡"
+          label="閱聽學習"
           class="op-expansion-item"
           dense-toggle
         >
@@ -70,28 +91,28 @@
             <q-item-section avatar>
               <q-icon name="add" />
             </q-item-section>
-            <q-item-section>初級</q-item-section>
+            <q-item-section>初級雙語字卡</q-item-section>
           </q-item>
 
           <q-item clickable to="/emotion" class="op-drawer-item">
             <q-item-section avatar>
               <q-icon name="sentiment_satisfied" />
             </q-item-section>
-            <q-item-section>情緒</q-item-section>
+            <q-item-section>情緒雙語字卡</q-item-section>
           </q-item>
 
           <q-item clickable to="/body" class="op-drawer-item">
             <q-item-section avatar>
               <q-icon name="person" />
             </q-item-section>
-            <q-item-section>身體健康</q-item-section>
+            <q-item-section>身體雙語字卡</q-item-section>
           </q-item>
 
           <q-item clickable to="/number" class="op-drawer-item">
             <q-item-section avatar>
               <q-icon name="school" />
             </q-item-section>
-            <q-item-section>數字</q-item-section>
+            <q-item-section>數字雙語字卡</q-item-section>
           </q-item>
 
           <q-item clickable to="/favorites" class="op-drawer-item">
@@ -102,56 +123,154 @@
           </q-item>
         </q-expansion-item>
 
-        <q-item clickable to="/main-game" class="op-drawer-item">
-          <q-item-section avatar>
-            <q-icon name="gamepad" />
-          </q-item-section>
-          <q-item-section>遊戲</q-item-section>
-        </q-item>
+        <q-expansion-item icon="handshake" label="操作學習" class="op-expansion-item" dense-toggle>
+          <q-item clickable to="/main-game" class="op-drawer-item">
+            <q-item-section avatar>
+              <q-icon name="gamepad" />
+            </q-item-section>
+            <q-item-section>小遊戲</q-item-section>
+          </q-item>
 
-        <q-item clickable to="/main-song-word" class="op-drawer-item">
-          <q-item-section avatar>
-            <q-icon name="audiotrack" />
-          </q-item-section>
-          <q-item-section>英文兒歌克漏字學習</q-item-section>
-        </q-item>
-        <q-item clickable to="/main-image" class="op-drawer-item">
-          <q-item-section avatar>
-            <q-icon name="visibility" />
-          </q-item-section>
-          <q-item-section>看圖學習</q-item-section>
-        </q-item>
-        <q-item clickable to="/nine-grid-game" class="op-drawer-item">
-          <q-item-section avatar>
-            <q-icon name="grid_view" />
-          </q-item-section>
-          <q-item-section>中英文九宮格對戰</q-item-section>
-        </q-item>
-        <q-item clickable to="/relationship" class="op-drawer-item">
-          <q-item-section avatar>
-            <q-icon name="supervisor_account" />
-          </q-item-section>
-          <q-item-section>中英文關係稱謂學習</q-item-section>
-        </q-item>
-        <q-item clickable to="/ball-direction" class="op-drawer-item">
-          <q-item-section avatar>
-            <q-icon name="swap_horiz" />
-          </q-item-section>
-          <q-item-section>英文方向學習</q-item-section>
-        </q-item>
-        <q-item clickable to="/image-paint" class="op-drawer-item">
-          <q-item-section avatar>
-            <q-icon name="palette" />
-          </q-item-section>
-          <q-item-section>圖片上色學英文</q-item-section>
-        </q-item>
-        <q-item clickable to="/hand-written" class="op-drawer-item">
-          <q-item-section avatar>
-            <q-icon name="edit" />
-          </q-item-section>
-          <q-item-section>英文字母手寫練習</q-item-section>
-        </q-item>
+          <q-item clickable to="/ball-direction" class="op-drawer-item">
+            <q-item-section avatar>
+              <q-icon name="swap_horiz" />
+            </q-item-section>
+            <q-item-section>英文方向學習</q-item-section>
+          </q-item>
+          <q-item clickable to="/image-paint" class="op-drawer-item">
+            <q-item-section avatar>
+              <q-icon name="palette" />
+            </q-item-section>
+            <q-item-section>圖片上色學英文</q-item-section>
+          </q-item>
+          <q-item clickable to="/nine-grid-game" class="op-drawer-item">
+            <q-item-section avatar>
+              <q-icon name="grid_view" />
+            </q-item-section>
+            <q-item-section>中英文九宮格對戰</q-item-section>
+          </q-item>
+          <q-item clickable to="/relationship" class="op-drawer-item">
+            <q-item-section avatar>
+              <q-icon name="supervisor_account" />
+            </q-item-section>
+            <q-item-section>中英文關係稱謂學習</q-item-section>
+          </q-item>
+        </q-expansion-item>
 
+        <q-expansion-item icon="audiotrack" label="聽覺學習" class="op-expansion-item" dense-toggle>
+          <q-item clickable to="/main-song-word" class="op-drawer-item">
+            <q-item-section avatar>
+              <q-icon name="music_note" />
+            </q-item-section>
+            <q-item-section>英文兒歌</q-item-section>
+          </q-item>
+        </q-expansion-item>
+
+        <q-expansion-item icon="visibility" label="視覺學習" class="op-expansion-item" dense-toggle>
+          <q-item clickable to="/main-image" class="op-drawer-item">
+            <q-item-section avatar>
+              <q-icon name="collections" />
+            </q-item-section>
+            <q-item-section>看圖學單字</q-item-section>
+          </q-item>
+        </q-expansion-item>
+
+        <q-expansion-item icon="share" label="好站連結" class="op-expansion-item" dense-toggle>
+          <q-item
+            clickable
+            tag="a"
+            href="https://www.readingbear.org/"
+            class="op-drawer-item"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <q-item-section avatar>
+              <q-icon>
+                <img
+                  :src="`https://www.google.com/s2/favicons?domain=readingbear.org&sz=24`"
+                  style="width: 24px; height: 24px"
+                />
+              </q-icon>
+            </q-item-section>
+            <q-item-section>Reading Bear<br />(從字母到閱讀)</q-item-section>
+          </q-item>
+
+          <q-item
+            clickable
+            tag="a"
+            href="https://www.starfall.com/h/index.php"
+            class="op-drawer-item"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <q-item-section avatar>
+              <q-icon>
+                <img
+                  :src="`https://www.google.com/s2/favicons?domain=starfall.com&sz=32`"
+                  style="width: 24px; height: 24px"
+                />
+              </q-icon>
+            </q-item-section>
+            <q-item-section>Starfall<br />(綜合學習)</q-item-section>
+          </q-item>
+
+          <q-item
+            clickable
+            tag="a"
+            href="https://www.littlefox.com/"
+            class="op-drawer-item"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <q-item-section avatar>
+              <q-icon>
+                <img
+                  :src="`https://www.google.com/s2/favicons?domain=littlefox.com&sz=32`"
+                  style="width: 24px; height: 24px"
+                />
+              </q-icon>
+            </q-item-section>
+            <q-item-section>Little Fox<br />(線上英文繪本)</q-item-section>
+          </q-item>
+
+          <q-item
+            clickable
+            tag="a"
+            href="https://en.wikipedia.org/wiki/Main_Page"
+            class="op-drawer-item"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <q-item-section avatar>
+              <q-icon>
+                <img
+                  :src="`https://www.google.com/s2/favicons?domain=wikipedia.org&sz=32`"
+                  style="width: 24px; height: 24px"
+                />
+              </q-icon>
+            </q-item-section>
+            <q-item-section>Wikipedia<br />(英文百科全書)</q-item-section>
+          </q-item>
+
+          <q-item
+            clickable
+            tag="a"
+            href="https://translate.google.com/?sl=en&tl=zh-TW&op=translate"
+            class="op-drawer-item"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <q-item-section avatar>
+              <q-icon>
+                <img
+                  :src="`https://www.google.com/s2/favicons?domain=translate.google.com&sz=32`"
+                  style="width: 24px; height: 24px"
+                />
+              </q-icon>
+            </q-item-section>
+            <q-item-section>Google Translate<br />(英文翻譯)</q-item-section>
+          </q-item>
+        </q-expansion-item>
         <!--
         <q-expansion-item
           icon="image"
