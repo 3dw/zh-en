@@ -332,7 +332,7 @@
 
     <!-- 主要頁面內容 -->
     <q-page-container>
-      <router-view @earn-xp="earnXP" />
+      <router-view @earn-xp="earnXP" @toggle-drawer="toggleLeftDrawer" />
     </q-page-container>
   </q-layout>
 </template>
