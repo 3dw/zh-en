@@ -45,11 +45,20 @@ export async function generateStoryContent(
 export async function generateImage(storyContent: string): Promise<string> {
   const response = await openai.images.generate({
     model: 'dall-e-3',
-    prompt: `Create a child-friendly, colorful illustration for this story: ${storyContent.substring(0, 300)}...`,
+    prompt: `Create a modern minimalist French children's book illustration style image with these characteristics:
+    - Simple, clean lines and shapes
+    - Soft, muted pastel color palette
+    - Elegant and sophisticated composition
+    - Minimal details but strong artistic expression
+    - Inspired by modern French illustrators
+    - Gentle textures and subtle gradients
+    - Focus on the essential elements of the story
+    - Whimsical and poetic atmosphere
+    For this story content: ${storyContent.substring(0, 300)}...`,
     n: 1,
     size: '1024x1024',
     quality: 'standard',
-    style: 'vivid'
+    style: 'natural'
   })
 
   const imageUrl = response.data[0]?.url
