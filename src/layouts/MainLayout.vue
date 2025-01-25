@@ -307,7 +307,7 @@
     </q-drawer>
 
     <!-- XP 區塊 (固定右上角) -->
-    <div class="xp-bar-container">
+    <div class="xp-bar-container fat-only">
       <div class="xp-info">
         <div class="level" :class="{ 'level-up': showLevelUpAnimation }">Level {{ level }}</div>
         <div class="xp">{{ currentXP }} / 1000 XP</div>
@@ -402,6 +402,12 @@ export default defineComponent({
 </script>
 
 <style scoped lang="scss">
+@media (max-width: 768px) {
+  .fat-only {
+    display: none !important;
+  }
+}
+
 /* -------------------------
    整體字型與大小調整
 ---------------------------- */
