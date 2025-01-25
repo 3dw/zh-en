@@ -149,18 +149,21 @@ export default defineConfig((/* ctx */) => {
       // manifestFilename: 'manifest.json'
       extendGenerateSWOptions(cfg) {
         Object.assign(cfg, {
-          skipWaiting: true,
-          clientsClaim: true,
-          cleanupOutdatedCaches: true,
+          skipWaiting: true, // 確保新的 Service Worker 立即接管
+          clientsClaim: true, // 立即控制所有開啟的頁面
+          cleanupOutdatedCaches: true, // 清理過期的緩存
           runtimeCaching: [
             {
               urlPattern: /^https:\/\/.*/,
-              handler: 'NetworkFirst',
+              handler: 'StaleWhileRevalidate', // 改用 StaleWhileRevalidate 策略
               options: {
                 cacheName: 'api-cache',
                 expiration: {
                   maxEntries: 100,
-                  maxAgeSeconds: 24 * 60 * 60, // 24小時
+                  maxAgeSeconds: 60 * 60, // 縮短到1小時
+                },
+                cacheableResponse: {
+                  statuses: [0, 200], // 只緩存成功的響應
                 },
               },
             },
