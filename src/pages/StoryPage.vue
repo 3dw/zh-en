@@ -94,23 +94,23 @@
     </div>
 
     <!-- 故事展示部分 -->
-    <div v-if="generatedStory" class="story-section q-mt-xl">
+    <div v-if="generatedStory" ref="storySection" class="story-section q-mt-xl">
       <q-card class="story-card q-pa-lg">
-        <h3 class="text-h5 q-mb-md">{{ formData.childName }} 的故事</h3>
+        <h3 class="story-title q-mb-lg">{{ formData.childName }} 的故事</h3>
 
         <!-- 故事內容和圖片 -->
-        <div v-for="(paragraph, index) in storyParagraphs" :key="index" class="paragraph-section q-mb-xl">
+        <div v-for="(paragraph, index) in storyParagraphs" :key="index" class="paragraph-section q-mb-xl row items-start q-col-gutter-lg">
           <!-- 段落文字 -->
-          <div class="story-content q-mb-lg">
+          <div class="story-content col-12 col-md-7">
             <p class="text-body1">{{ paragraph }}</p>
           </div>
 
           <!-- 段落配圖 -->
-          <div v-if="paragraphImages[index]" class="story-image q-mb-lg">
+          <div v-if="paragraphImages[index]" class="story-image col-12 col-md-5">
             <q-img
               :src="paragraphImages[index]"
               spinner-color="primary"
-              style="max-width: 100%; height: auto"
+              style="border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);"
             />
           </div>
         </div>
@@ -238,6 +238,7 @@ const generatedStory = ref<{ content: string; audioUrl: string } | null>(null)
 const storyParagraphs = ref<string[]>([])
 const paragraphImages = ref<string[]>([])
 const audioPlayer = ref<HTMLAudioElement | null>(null)
+const storySection = ref<HTMLElement | null>(null)
 
 // 表單提交處理
 const generateStory = async () => {
@@ -274,11 +275,16 @@ const generateStory = async () => {
       audioUrl
     }
 
-    // 自動播放音頻
+    // 自動播放音頻並滾動到故事部分
     setTimeout(() => {
       if (audioPlayer.value) {
         audioPlayer.value.play()
       }
+      // 滾動到故事部分
+      storySection.value?.scrollIntoView({
+        behavior: 'smooth',
+        block: 'start'
+      })
     }, 1000)
 
     $q.notify({
@@ -339,35 +345,82 @@ const audioEnded = () => {
   .submit-btn {
     width: 100%;
   }
+
+  .story-title {
+    font-size: 1.8rem;
+  }
+
+  .story-content {
+    font-size: 1.1rem;
+    padding: 1rem;
+  }
+
+  .story-image {
+    position: static;
+    margin-bottom: 2rem;
+  }
+}
+
+.story-section {
+  max-width: 1200px;
+  margin: 0 auto;
+  scroll-margin-top: 2rem;
+}
+
+.story-title {
+  font-size: 2.5rem;
+  font-weight: 300;
+  color: #2c3e50;
+  text-align: center;
+  font-family: 'Noto Serif TC', serif;
 }
 
 .story-card {
   margin-top: 2rem;
   border-radius: 12px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.06);
+  background-color: #fafafa;
 }
 
 .story-content {
   line-height: 1.8;
   white-space: pre-wrap;
+  font-size: 1.25rem;
+  font-family: 'Noto Serif TC', serif;
+  color: #34495e;
+  padding: 1.5rem;
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.03);
 }
 
 .story-image {
   border-radius: 8px;
   overflow: hidden;
+  position: sticky;
+  top: 2rem;
 }
 
 .paragraph-section {
-  border-bottom: 1px solid #eee;
   padding-bottom: 2rem;
+  margin-bottom: 3rem;
   &:last-child {
     border-bottom: none;
+    margin-bottom: 0;
   }
 }
 
 .audio-player {
   margin-top: 2rem;
   padding-top: 1rem;
-  border-top: 1px solid #eee;
+  background-color: white;
+  border-radius: 8px;
+  padding: 1rem;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.03);
+}
+
+audio {
+  width: 100%;
+  height: 40px;
 }
 </style>
