@@ -1,12 +1,14 @@
 <template>
-  <q-page class="q-pa-md">
+  <q-page class="story-page">
     <div class="story-container">
-      <h2 class="text-h4 q-mb-lg text-center">
+      <h2 class="hero-title">
         <q-icon name="auto_stories" size="md" color="primary" class="q-mr-sm" />
-        創建英文睡前故事
+        Create your own
+        <span class="highlight">Bedtime Stories</span>
+        <div class="subtitle">為您的孩子創造獨特的睡前故事</div>
       </h2>
 
-      <q-card class="form-card q-pa-lg">
+      <q-card class="form-card q-pa-xl">
         <q-form @submit.prevent="generateStory" class="q-gutter-md">
           <!-- 孩子名字輸入 -->
           <div class="input-group">
@@ -99,7 +101,11 @@
         <h3 class="story-title q-mb-lg">{{ formData.childName }} 的故事</h3>
 
         <!-- 故事內容和圖片 -->
-        <div v-for="(paragraph, index) in storyParagraphs" :key="index" class="paragraph-section q-mb-xl row items-start q-col-gutter-lg">
+        <div
+          v-for="(paragraph, index) in storyParagraphs"
+          :key="index"
+          class="paragraph-section q-mb-xl row items-start q-col-gutter-lg"
+        >
           <!-- 段落文字 -->
           <div class="story-content col-12 col-md-7">
             <p class="text-body1">{{ paragraph }}</p>
@@ -312,15 +318,65 @@ const audioEnded = () => {
 </script>
 
 <style scoped>
+/* 若需要引入外部字體，可視需求增加下列字體 (範例為 Google Fonts) */
+/* @import url('https://fonts.googleapis.com/css2?family=Libre+Caslon+Text:wght@400;700&family=Poppins:wght@400;700&display=swap'); */
+
+/* 建議可在 :root 中定義全站色彩、字體或其他參數，方便全域控管 */
+:root {
+  --primary-color: #8f68ee;       /* 主色調，可參考 OscarStories 的紫色系 */
+  --secondary-color: #f6f0ff;     /* 輔助色/淡色系 */
+  --bg-gradient-start: #fffefc;   /* 漸層背景起始色 */
+  --bg-gradient-end: #fdf1f2;     /* 漸層背景結束色 */
+
+  /* 字體示例：可換成你想使用的字體 */
+  --font-primary: 'Poppins', sans-serif;
+  --font-hero: 'Libre Caslon Text', serif;
+}
+
+.story-page {
+  /* 使用柔和漸層背景 */
+  background: linear-gradient(120deg, var(--bg-gradient-start) 0%, var(--bg-gradient-end) 100%);
+  min-height: 100vh;
+  font-family: var(--font-primary);
+  color: #2c3e50;
+}
+
 .story-container {
-  max-width: 600px;
+  max-width: 720px;
   margin: 0 auto;
-  padding-top: 2rem;
+  padding: 5rem 1rem 3rem;
+  text-align: center;
+}
+
+.hero-title {
+  font-family: var(--font-hero);
+  font-weight: 700;
+  font-size: 3rem;
+  color: #2c3e50;
+  margin-bottom: 2rem;
+  position: relative;
+  line-height: 1.2;
+  display: inline-block;
+}
+
+.hero-title .highlight {
+  color: var(--primary-color);
+  display: inline-block;
+  margin-left: 0.25rem;
+}
+
+.subtitle {
+  font-size: 1.2rem;
+  color: #636e72;
+  margin-top: 0.5rem;
+  font-weight: 400;
 }
 
 .form-card {
-  border-radius: 12px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  border-radius: 16px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.06);
+  background-color: #fff;
+  text-align: left;
 }
 
 .input-group {
@@ -328,36 +384,32 @@ const audioEnded = () => {
 }
 
 .submit-btn {
+  background-color: var(--primary-color);
+  color: #fff;
+  border-radius: 8px;
   min-width: 200px;
   padding: 10px 20px;
+  font-weight: 600;
+  transition: all 0.3s ease;
+
+  &:hover {
+    background-color: #7b52e5; /* hover 狀態再深一點 */
+  }
 }
 
 /* 響應式設計 */
 @media (max-width: 600px) {
   .story-container {
-    padding: 1rem;
+    padding: 2rem 1rem;
   }
 
-  .form-card {
-    padding: 1rem !important;
+  .hero-title {
+    font-size: 2rem;
   }
 
   .submit-btn {
     width: 100%;
-  }
-
-  .story-title {
-    font-size: 1.8rem;
-  }
-
-  .story-content {
-    font-size: 1.1rem;
-    padding: 1rem;
-  }
-
-  .story-image {
-    position: static;
-    margin-bottom: 2rem;
+    margin-top: 1rem;
   }
 }
 
@@ -367,31 +419,31 @@ const audioEnded = () => {
   scroll-margin-top: 2rem;
 }
 
-.story-title {
-  font-size: 2.5rem;
-  font-weight: 300;
-  color: #2c3e50;
-  text-align: center;
-  font-family: 'Noto Serif TC', serif;
-}
-
 .story-card {
   margin-top: 2rem;
-  border-radius: 12px;
+  border-radius: 16px;
   box-shadow: 0 6px 24px rgba(0, 0, 0, 0.06);
   background-color: #fafafa;
+}
+
+.story-title {
+  font-family: var(--font-hero);
+  font-weight: 700;
+  color: #2c3e50;
+  text-align: center;
+  font-size: 2.2rem;
 }
 
 .story-content {
   line-height: 1.8;
   white-space: pre-wrap;
-  font-size: 1.25rem;
-  font-family: 'Noto Serif TC', serif;
+  font-size: 1.15rem;
   color: #34495e;
   padding: 1.5rem;
-  background-color: white;
+  background-color: #fff;
   border-radius: 8px;
   box-shadow: 0 2px 12px rgba(0, 0, 0, 0.03);
+  font-family: var(--font-primary);
 }
 
 .story-image {
@@ -404,8 +456,8 @@ const audioEnded = () => {
 .paragraph-section {
   padding-bottom: 2rem;
   margin-bottom: 3rem;
+
   &:last-child {
-    border-bottom: none;
     margin-bottom: 0;
   }
 }
@@ -413,7 +465,7 @@ const audioEnded = () => {
 .audio-player {
   margin-top: 2rem;
   padding-top: 1rem;
-  background-color: white;
+  background-color: #fff;
   border-radius: 8px;
   padding: 1rem;
   box-shadow: 0 2px 12px rgba(0, 0, 0, 0.03);
