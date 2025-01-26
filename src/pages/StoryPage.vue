@@ -18,15 +18,13 @@
               label="孩子的名字"
               :rules="[
                 (val) => !!val || '請輸入名字',
-                (val) => val.length <= 20 || '名字不能超過20個字符'
+                (val) => val.length <= 20 || '名字不能超過20個字符',
               ]"
             >
               <template v-slot:prepend>
                 <q-icon name="person" />
               </template>
-              <template v-slot:hint>
-                可以輸入中文或英文名字
-              </template>
+              <template v-slot:hint> 可以輸入中文或英文名字 </template>
             </q-input>
           </div>
 
@@ -116,7 +114,7 @@
             <q-img
               :src="paragraphImages[index]"
               spinner-color="primary"
-              style="border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);"
+              style="border-radius: 12px; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1)"
             />
           </div>
         </div>
@@ -151,11 +149,7 @@
       <q-card style="min-width: 300px">
         <q-card-section class="row items-center">
           <span class="q-ml-sm">{{ progressMessage }}</span>
-          <q-linear-progress
-            indeterminate
-            class="q-mt-md"
-            color="primary"
-          />
+          <q-linear-progress indeterminate class="q-mt-md" color="primary" />
         </q-card-section>
       </q-card>
     </q-dialog>
@@ -186,7 +180,7 @@ const loading = ref(false)
 const formData = reactive<FormData>({
   childName: '',
   ageGroup: '',
-  storyType: ''
+  storyType: '',
 })
 
 // 年齡段選項
@@ -194,18 +188,18 @@ const ageOptions: Option[] = [
   {
     label: '2-4歲 (學前)',
     value: '2-4',
-    description: '簡單有趣的故事，適合幼兒園前的寶寶'
+    description: '簡單有趣的故事，適合幼兒園前的寶寶',
   },
   {
     label: '5-7歲 (幼兒園)',
     value: '5-7',
-    description: '包含基礎生活詞彙的故事'
+    description: '包含基礎生活詞彙的故事',
   },
   {
     label: '8-10歲 (小學)',
     value: '8-10',
-    description: '較長的故事，包含更豐富的詞彙和情節'
-  }
+    description: '較長的故事，包含更豐富的詞彙和情節',
+  },
 ]
 
 // 故事類型選項
@@ -213,28 +207,28 @@ const storyTypeOptions: Option[] = [
   {
     label: '冒險故事',
     value: 'adventure',
-    description: '充滿刺激和挑戰的冒險故事'
+    description: '充滿刺激和挑戰的冒險故事',
   },
   {
     label: '童話故事',
     value: 'fairy_tale',
-    description: '充滿魔法和想像力的奇幻故事'
+    description: '充滿魔法和想像力的奇幻故事',
   },
   {
     label: '教育故事',
     value: 'educational',
-    description: '包含生活教育意義的啟發性故事'
+    description: '包含生活教育意義的啟發性故事',
   },
   {
     label: '動物故事',
     value: 'animal',
-    description: '以可愛動物為主角的溫馨故事'
+    description: '以可愛動物為主角的溫馨故事',
   },
   {
     label: '科幻故事',
     value: 'sci_fi',
-    description: '激發想像力的科學幻想故事'
-  }
+    description: '激發想像力的科學幻想故事',
+  },
 ]
 
 // 新增的狀態
@@ -253,18 +247,18 @@ const generateStory = async () => {
     showProgress.value = true
 
     // 1. 生成故事內容
-    progressMessage.value = '正在創作故事...'
+    progressMessage.value = '正在創作故事...請耐心等候'
     const storyContent = await generateStoryContent(
       formData.childName,
       formData.ageGroup,
-      formData.storyType
+      formData.storyType,
     )
 
     // 將故事分段
-    storyParagraphs.value = storyContent.split('\n\n').filter(p => p.trim())
+    storyParagraphs.value = storyContent.split('\n\n').filter((p) => p.trim())
 
     // 2. 為每個段落生成配圖
-    progressMessage.value = '正在繪製插圖...'
+    progressMessage.value = '正在繪製插圖...請耐心等候'
     paragraphImages.value = []
     for (const paragraph of storyParagraphs.value) {
       const imageUrl = await generateImage(paragraph)
@@ -272,13 +266,13 @@ const generateStory = async () => {
     }
 
     // 3. 生成語音
-    progressMessage.value = '正在生成語音...'
+    progressMessage.value = '正在生成語音...請耐心等候'
     const audioUrl = await generateAudio(storyContent)
 
     // 保存生成的內容
     generatedStory.value = {
       content: storyContent,
-      audioUrl
+      audioUrl,
     }
 
     // 自動播放音頻並滾動到故事部分
@@ -289,20 +283,20 @@ const generateStory = async () => {
       // 滾動到故事部分
       storySection.value?.scrollIntoView({
         behavior: 'smooth',
-        block: 'start'
+        block: 'start',
       })
     }, 1000)
 
     $q.notify({
       type: 'positive',
       message: '故事生成完成！',
-      position: 'top'
+      position: 'top',
     })
   } catch (error: unknown) {
     $q.notify({
       type: 'negative',
       message: `發生錯誤：${error instanceof Error ? error.message : '請稍後重試'}`,
-      position: 'top'
+      position: 'top',
     })
     console.error('生成故事時發生錯誤：', error)
   } finally {
@@ -323,10 +317,10 @@ const audioEnded = () => {
 
 /* 建議可在 :root 中定義全站色彩、字體或其他參數，方便全域控管 */
 :root {
-  --primary-color: #8f68ee;       /* 主色調，可參考 OscarStories 的紫色系 */
-  --secondary-color: #f6f0ff;     /* 輔助色/淡色系 */
-  --bg-gradient-start: #fffefc;   /* 漸層背景起始色 */
-  --bg-gradient-end: #fdf1f2;     /* 漸層背景結束色 */
+  --primary-color: #8f68ee; /* 主色調，可參考 OscarStories 的紫色系 */
+  --secondary-color: #f6f0ff; /* 輔助色/淡色系 */
+  --bg-gradient-start: #fffefc; /* 漸層背景起始色 */
+  --bg-gradient-end: #fdf1f2; /* 漸層背景結束色 */
 
   /* 字體示例：可換成你想使用的字體 */
   --font-primary: 'Poppins', sans-serif;

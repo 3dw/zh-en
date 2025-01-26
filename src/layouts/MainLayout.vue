@@ -164,12 +164,12 @@
             </q-item-section>
             <q-item-section>英文兒歌</q-item-section>
           </q-item>
-          <!-- <q-item clickable to="/story" class="op-drawer-item">
+          <q-item clickable to="/story" class="op-drawer-item">
             <q-item-section avatar>
               <q-icon name="music_note" />
             </q-item-section>
             <q-item-section>英文睡前故事</q-item-section>
-          </q-item> --> 
+          </q-item>
         </q-expansion-item>
 
         <q-expansion-item icon="visibility" label="視覺學習" class="op-expansion-item" dense-toggle>
