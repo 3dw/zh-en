@@ -89,6 +89,7 @@
 
 <script lang="ts">
 import { defineComponent, ref, onMounted } from 'vue'
+import axios from 'axios'
 
 export default defineComponent({
   name: 'HandWrittenPage',
@@ -110,15 +111,21 @@ export default defineComponent({
 
     onMounted(() => {
       initCanvas()
+      window.addEventListener('resize', initCanvas)
     })
 
     const initCanvas = () => {
       if (!canvas.value) return
 
-      canvas.value.width = 280
-      canvas.value.height = 280
+      const CANVAS_SIZE = 280
+      canvas.value.width = CANVAS_SIZE
+      canvas.value.height = CANVAS_SIZE
 
-      ctx.value = canvas.value.getContext('2d')
+      canvas.value.style.width = '100%'
+      canvas.value.style.height = 'auto'
+      canvas.value.style.aspectRatio = '1/1'
+
+      ctx.value = canvas.value.getContext('2d', { willReadFrequently: true })
       if (ctx.value) {
         ctx.value.strokeStyle = '#000'
         ctx.value.lineWidth = 8
@@ -156,8 +163,13 @@ export default defineComponent({
       const touch = e.touches[0]
       if (!touch) return
 
-      const x = touch.clientX - rect.left
-      const y = touch.clientY - rect.top
+      // 計算畫布的縮放比例
+      const scaleX = canvas.value.width / rect.width
+      const scaleY = canvas.value.height / rect.height
+
+      // 根據縮放比例調整觸控座標
+      const x = (touch.clientX - rect.left) * scaleX
+      const y = (touch.clientY - rect.top) * scaleY
 
       if (e.type === 'touchstart') {
         isDrawing.value = true
@@ -189,35 +201,69 @@ export default defineComponent({
       showResult.value = false
     }
 
-    const checkAnswer = async () => {
-      if (!canvas.value) return
+    const detectLetterCase = (letter: string) => {
+      if (letter.toLowerCase() === letter) {
+        return 'lowercase'
+      } else {
+        return 'capital'
+      }
+    }
 
+    const checkAnswer = async () => {
+      if (!canvas.value || !ctx.value) return
       isChecking.value = true
 
       try {
-        // 模擬 API 呼叫延遲
-        await new Promise((resolve) => setTimeout(resolve, 1000))
+        // 確保 canvas 內容完整性
+        const imageData = ctx.value.getImageData(0, 0, canvas.value.width, canvas.value.height)
+        const tempCanvas = document.createElement('canvas')
+        tempCanvas.width = canvas.value.width
+        tempCanvas.height = canvas.value.height
+        const tempCtx = tempCanvas.getContext('2d')
+        tempCtx?.putImageData(imageData, 0, 0)
 
-        // 這裡應該要呼叫手寫辨識 API
-        // 目前使用true 當作示範
-        const randomSuccess = true
-        isCorrect.value = randomSuccess
+        // 將臨時 canvas 轉換為 blob
+        const blob = await new Promise<Blob>((resolve) => {
+          tempCanvas.toBlob((blob) => {
+            if (blob) resolve(blob)
+          }, 'image/png')
+        })
 
-        if (randomSuccess) {
+        const formData = new FormData()
+        formData.append('image', blob, 'drawing.png')
+
+        const letterCase = detectLetterCase(currentLetter.value)
+        console.log('字母大小寫:', letterCase)
+        console.log('當前字母:', currentLetter.value)
+
+        const response = await axios.post(
+          `https://zh-en-backend.alearn13994229.workers.dev/detect-letter/${letterCase}/${currentLetter.value}`,
+          formData,
+          {
+            headers: {
+              'Content-Type': 'multipart/form-data',
+            },
+          },
+        )
+        console.log('response:', response)
+        console.log('response.data:', response.data)
+        console.log('response.data.letter:', response.data.letter)
+
+        if (response.data.letter === currentLetter.value) {
+          isCorrect.value = true
           resultMessage.value = '太棒了！寫得很好！'
           score.value += 10
-        } else {
-          resultMessage.value = '再試一次，記得要寫工整喔！'
-        }
-
-        showResult.value = true
-
-        // 如果答對，延遲後自動進入下一題
-        if (randomSuccess) {
+          showResult.value = true
           setTimeout(() => {
             nextLetter()
           }, 1500)
+        } else {
+          isCorrect.value = false
+          resultMessage.value = '再試一次，記得要寫工整喔！'
+          showResult.value = true
         }
+      } catch (error) {
+        console.error('Error checking answer:', error)
       } finally {
         isChecking.value = false
       }
