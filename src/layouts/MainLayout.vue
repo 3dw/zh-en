@@ -155,6 +155,12 @@
             </q-item-section>
             <q-item-section>中英文關係稱謂學習</q-item-section>
           </q-item>
+          <q-item clickable to="/opposites" class="op-drawer-item">
+            <q-item-section avatar>
+              <q-icon name="supervisor_account" />
+            </q-item-section>
+            <q-item-section>相反詞拉鋸戰</q-item-section>
+          </q-item>
         </q-expansion-item>
 
         <q-expansion-item icon="audiotrack" label="聽覺學習" class="op-expansion-item" dense-toggle>
