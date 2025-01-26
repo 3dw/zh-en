@@ -238,11 +238,11 @@ export default defineComponent({
         })
 
         // 下載圖片
-        const imageUrl = URL.createObjectURL(blob)
+        /* const imageUrl = URL.createObjectURL(blob)
         const a = document.createElement('a')
         a.href = imageUrl
         a.download = 'drawing.png'
-        a.click()
+        a.click() */
 
         const formData = new FormData()
         formData.append('image', blob, 'drawing.png')
