@@ -18,7 +18,7 @@
                 <q-btn
                   :style="{ backgroundColor: color }"
                   class="color-btn"
-                  @click="selectedColor = color"
+                  @click="selectColor(color, index)"
                 />
                 <div class="color-name">{{ colorNames[index] }}</div>
               </div>
@@ -216,6 +216,15 @@ export default defineComponent({
       speechSynthesis.speak(utterance)
     }
 
+    const selectColor = (color: string, index: number) => {
+      selectedColor.value = color
+      const colorName = colorNames[index] || 'unknown'
+      const utterance = new SpeechSynthesisUtterance(`This is ${colorName} color`)
+      utterance.lang = 'en-US'
+      utterance.rate = 0.9
+      speechSynthesis.speak(utterance)
+    }
+
     const colorPart = (part: ElephantPart) => {
       part.color = selectedColor.value
       speakText(part.name)
@@ -233,6 +242,7 @@ export default defineComponent({
       colorPart,
       hoverPart,
       getColorName,
+      selectColor,
     }
   },
 })
