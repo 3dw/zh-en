@@ -36,27 +36,33 @@
       <!-- 右側大象圖 -->
       <div class="col-12 col-md-9">
         <div class="elephant-container">
-          <!-- 修改圖片路徑 -->
           <img src="../assets/elephant.png" class="elephant-image" alt="Elephant" />
 
-          <!-- 可點擊區域 -->
+          <!-- 使用 SVG 來創建可點擊區域 -->
+          <svg class="clickable-areas" viewBox="0 0 100 100" preserveAspectRatio="none">
+            <polygon
+              v-for="part in elephantParts"
+              :key="part.name"
+              :points="part.points"
+              :class="{ hovered: part.isHovered }"
+              :fill="part.color === 'transparent' ? 'transparent' : part.color"
+              :fill-opacity="part.color === 'transparent' ? 0 : 0.7"
+              @click="colorPart(part)"
+              @mouseover="hoverPart(part, true)"
+              @mouseout="hoverPart(part, false)"
+              class="clickable-polygon"
+            />
+          </svg>
+
+          <!-- 標籤 -->
           <div
             v-for="part in elephantParts"
-            :key="part.name"
-            class="clickable-area"
-            :style="{
-              ...part.style,
-              backgroundColor: part.color,
-              opacity: part.color === 'transparent' ? 0 : 0.7,
-            }"
-            :class="{ hovered: part.isHovered }"
-            @click="colorPart(part)"
-            @mouseover="hoverPart(part, true)"
-            @mouseout="hoverPart(part, false)"
+            :key="`label-${part.name}`"
+            class="part-label"
+            :class="{ 'show-label': part.color !== 'transparent' || part.isHovered }"
+            :style="getLabelPosition(part.points)"
           >
-            <span class="part-label" :class="{ 'show-label': part.color !== 'transparent' }">
-              {{ part.name }}
-            </span>
+            {{ part.name }}
           </div>
         </div>
       </div>
@@ -66,10 +72,16 @@
 
 <script lang="ts">
 import { defineComponent, ref } from 'vue'
+import type { CSSProperties } from 'vue'
+
+interface Point {
+  x: number
+  y: number
+}
 
 interface ElephantPart {
   name: string
-  style: object
+  points: string
   color: string
   isHovered: boolean
 }
@@ -94,111 +106,59 @@ export default defineComponent({
     const elephantParts = ref([
       {
         name: 'Head頭',
-        style: {
-          top: '10%',
-          left: '55%',
-          width: '20%',
-          height: '15%',
-        },
+        points: '55,10 75,10 75,25 55,25', // 改用多邊形點座標
         color: 'transparent',
         isHovered: false,
       },
       {
         name: 'Eye',
-        style: {
-          top: '24%',
-          left: '60%',
-          width: '10%',
-          height: '5%',
-        },
+        points: '60,24 70,24 70,29 60,29',
         color: 'transparent',
         isHovered: false,
       },
       {
         name: 'Ear耳朵',
-        style: {
-          top: '13%',
-          left: '35%',
-          width: '22%',
-          height: '25%',
-        },
+        points: '35,13 57,13 57,38 35,38',
         color: 'transparent',
         isHovered: false,
       },
       {
         name: 'Trunk大象鼻子',
-        style: {
-          top: '25%',
-          left: '70%',
-          width: '10%',
-          height: '35%',
-        },
+        // 使用更多點來創建彎曲的鼻子形狀
+        points: '70,25 80,25 85,40 80,50 75,60 70,60 65,50 70,40',
         color: 'transparent',
         isHovered: false,
       },
       {
         name: 'Tusk象牙',
-        style: {
-          top: '30%',
-          left: '61%',
-          width: '25%',
-          height: '8%',
-        },
+        points: '61,30 86,30 86,38 61,38',
         color: 'transparent',
         isHovered: false,
       },
-      // {
-      //   name: 'Mouth and Lips',
-      //   style: {
-      //     top: '55%',
-      //     left: '45%',
-      //     width: '20%',
-      //     height: '15%',
-      //   },
-      //   color: 'transparent',
-      //   isHovered: false,
-      // },
       {
         name: 'Leg腿',
-        style: {
-          top: '60%',
-          left: '20%',
-          width: '45%',
-          height: '15%',
-        },
+        // 使用多個點來創建更自然的腿部形狀
+        points: '20,60 65,60 65,75 55,75 50,70 35,70 30,75 20,75',
         color: 'transparent',
         isHovered: false,
       },
       {
         name: 'Foot腳',
-        style: {
-          top: '75%',
-          left: '15%',
-          width: '60%',
-          height: '8%',
-        },
+        points: '15,75 75,75 75,83 15,83',
         color: 'transparent',
         isHovered: false,
       },
       {
         name: 'Tail尾巴',
-        style: {
-          top: '22%',
-          left: '10%',
-          width: '12%',
-          height: '15%',
-        },
+        // 使用多個點來創建彎曲的尾巴
+        points: '10,22 22,22 22,37 15,37 10,32',
         color: 'transparent',
         isHovered: false,
       },
       {
         name: 'Skin皮膚',
-        style: {
-          top: '35%',
-          left: '20%',
-          width: '42%',
-          height: '25%',
-        },
+        // 使用多個點來創建身體輪廓
+        points: '20,35 62,35 62,60 20,60 20,35',
         color: 'transparent',
         isHovered: false,
       },
@@ -234,6 +194,26 @@ export default defineComponent({
       part.isHovered = isHovered
     }
 
+    const getLabelPosition = (points: string): CSSProperties => {
+      // 解析點座標
+      const coordinates: Point[] = points.split(' ').map((point) => {
+        const [x, y] = point.split(',').map(Number)
+        return { x: x || 0, y: y || 0 } // 提供默認值
+      })
+
+      // 計算中心點
+      const centerX = coordinates.reduce((sum, point) => sum + point.x, 0) / coordinates.length
+      const centerY = coordinates.reduce((sum, point) => sum + point.y, 0) / coordinates.length
+
+      // 返回 style 對象
+      return {
+        position: 'absolute' as const, // 使用 as const 來固定類型
+        left: `${centerX}%`,
+        top: `${centerY}%`,
+        transform: 'translate(-50%, -150%)',
+      }
+    }
+
     return {
       selectedColor,
       colors,
@@ -243,6 +223,7 @@ export default defineComponent({
       hoverPart,
       getColorName,
       selectColor,
+      getLabelPosition,
     }
   },
 })
@@ -286,25 +267,31 @@ export default defineComponent({
   height: auto;
 }
 
-.clickable-area {
+.clickable-areas {
   position: absolute;
-  cursor: pointer;
-  border: 2px solid transparent;
-  border-radius: 8px;
-  transition: all 0.3s ease;
-  mix-blend-mode: multiply;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
 }
 
-.clickable-area.hovered {
-  border-color: #ff4081;
-  background-color: rgba(255, 64, 129, 0.1);
+.clickable-polygon {
+  pointer-events: all;
+  cursor: pointer;
+  stroke: transparent;
+  stroke-width: 2;
+  transition: all 0.3s ease;
+}
+
+.clickable-polygon:hover,
+.clickable-polygon.hovered {
+  stroke: #ff4081;
+  stroke-opacity: 0.8;
 }
 
 .part-label {
   position: absolute;
-  top: -30px;
-  left: 50%;
-  transform: translateX(-50%);
   background-color: rgba(255, 255, 255, 0.9);
   padding: 4px 12px;
   border-radius: 4px;
@@ -315,14 +302,11 @@ export default defineComponent({
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   color: #1976d2;
   z-index: 10;
-}
-
-.clickable-area:hover .part-label {
-  display: block;
+  pointer-events: none; /* 防止標籤干擾點擊 */
 }
 
 .part-label.show-label {
-  display: block !important;
+  display: block;
 }
 
 .color-option {
