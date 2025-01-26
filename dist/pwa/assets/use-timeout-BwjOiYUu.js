@@ -1,1 +1,0 @@
-import{al as r,d as i,ar as s,g as a}from"./index-DBj8VgWK.js";function m(){let e=null;const n=a();function t(){e!==null&&(clearTimeout(e),e=null)}return r(t),i(t),{removeTimeout:t,registerTimeout(o,u){t(),s(n)===!1&&(e=setTimeout(()=>{e=null,o()},u))}}}export{m as u};
