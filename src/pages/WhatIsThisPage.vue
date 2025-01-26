@@ -49,7 +49,7 @@
 
         <!-- 預覽圖片 -->
         <div v-if="imagePreview" class="image-preview q-mt-md">
-          <img :src="imagePreview" alt="預覽圖片" style="max-width: 300px" />
+          <img :src="imagePreview" alt="預覽圖片" style="max-width: 200px" />
         </div>
       </div>
 
@@ -81,6 +81,7 @@
 import { defineComponent, ref, onUnmounted } from 'vue'
 import axios from 'axios'
 import heic2any from 'heic2any'
+import Pica from 'pica'
 
 export default defineComponent({
   name: 'WhatIsThisPage',
@@ -96,6 +97,9 @@ export default defineComponent({
 
     const handleImageUpload = async (file: File) => {
       if (!file) return
+
+      // 檢查檔案大小是否超過 1.5MB
+      const MAX_FILE_SIZE = 1.5 * 1024 * 1024 // 1.5MB in bytes
 
       let processedFile = file
       const isHeic = /\.(heic|HEIC|heif|HEIF)$/.test(file.name)
@@ -128,6 +132,67 @@ export default defineComponent({
             window.alert('HEIC 圖片轉換失敗，請重試')
             return
           }
+        }
+      }
+
+      // 如果檔案大於 1.5MB，進行壓縮
+      if (processedFile.size > MAX_FILE_SIZE) {
+        try {
+          const img = new Image()
+          const imgLoadPromise = new Promise((resolve, reject) => {
+            img.onload = () => resolve(img)
+            img.onerror = reject
+          })
+
+          img.src = URL.createObjectURL(processedFile)
+          await imgLoadPromise
+
+          // 計算新的尺寸，保持原始比例
+          let width = img.width
+          let height = img.height
+          const aspectRatio = width / height
+
+          // 初始縮放比例為 0.8
+          let scale = 0.8
+
+          const canvas = document.createElement('canvas')
+          const pica = new Pica({
+            features: ['js', 'wasm', 'cib'],
+          })
+
+          // 使用迴圈嘗試壓縮，直到檔案小於 1.5MB
+          let attempts = 0
+          let compressedBlob
+
+          do {
+            width = Math.floor(img.width * scale)
+            height = Math.floor(width / aspectRatio)
+
+            canvas.width = width
+            canvas.height = height
+
+            await pica.resize(img, canvas, {
+              quality: 3,
+              unsharpAmount: 80,
+              unsharpRadius: 0.6,
+              unsharpThreshold: 2,
+            })
+
+            compressedBlob = await new Promise<Blob>((resolve) => {
+              canvas.toBlob((blob) => resolve(blob!), 'image/jpeg', 0.95)
+            })
+
+            scale *= 0.9
+            attempts++
+          } while (compressedBlob.size > MAX_FILE_SIZE && attempts < 5)
+
+          processedFile = new File([compressedBlob], processedFile.name, {
+            type: 'image/jpeg',
+          })
+        } catch (error) {
+          console.error('圖片壓縮失敗:', error)
+          window.alert('圖片壓縮失敗，請重試')
+          return
         }
       }
 
@@ -164,7 +229,7 @@ export default defineComponent({
       if (result.value) {
         const utterance = new SpeechSynthesisUtterance(result.value)
         utterance.lang = 'en-US'
-        utterance.rate = 0.4
+        utterance.rate = 0.6
         window.speechSynthesis.speak(utterance)
       }
     }
@@ -287,7 +352,7 @@ export default defineComponent({
 
 .camera-preview {
   width: 100%;
-  max-width: 500px;
+  max-width: 300px;
   margin: 0 auto;
   border-radius: 8px;
 }
