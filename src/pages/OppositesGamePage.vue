@@ -115,11 +115,11 @@ export default defineComponent({
       },
       {
         leftPhrase: 'Pick up',
-        rightPhrase: 'Drop off',
-        leftTranslation: '接人、撿起',
-        rightTranslation: '放下、讓人下車',
+        rightPhrase: 'Pick off',
+        leftTranslation: '撿起',
+        rightTranslation: '摘下',
         leftImage: '/images/phrasal-verbs/pick-up.png',
-        rightImage: '/images/phrasal-verbs/drop-off.png',
+        rightImage: '/images/phrasal-verbs/pick-off.png',
       },
       {
         leftPhrase: 'Get on',
