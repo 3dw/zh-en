@@ -126,7 +126,13 @@ export default defineComponent({
       canvas.value.style.aspectRatio = '1/1'
 
       ctx.value = canvas.value.getContext('2d', { willReadFrequently: true })
+
       if (ctx.value) {
+        // 先填滿白色背景
+        ctx.value.fillStyle = '#FFFFFF'
+        ctx.value.fillRect(0, 0, canvas.value.width, canvas.value.height)
+
+        // 筆畫參數
         ctx.value.strokeStyle = '#000'
         ctx.value.lineWidth = 8
         ctx.value.lineCap = 'round'
@@ -187,7 +193,9 @@ export default defineComponent({
 
     const clearCanvas = () => {
       if (!ctx.value || !canvas.value) return
-      ctx.value.clearRect(0, 0, canvas.value.width, canvas.value.height)
+      // 清除時也要重新填入白色背景
+      ctx.value.fillStyle = '#FFFFFF'
+      ctx.value.fillRect(0, 0, canvas.value.width, canvas.value.height)
     }
 
     const nextLetter = () => {
@@ -229,6 +237,13 @@ export default defineComponent({
           }, 'image/png')
         })
 
+        // 下載圖片
+        const imageUrl = URL.createObjectURL(blob)
+        const a = document.createElement('a')
+        a.href = imageUrl
+        a.download = 'drawing.png'
+        a.click()
+
         const formData = new FormData()
         formData.append('image', blob, 'drawing.png')
 
@@ -239,11 +254,6 @@ export default defineComponent({
         const response = await axios.post(
           `https://zh-en-backend.alearn13994229.workers.dev/detect-letter/${letterCase}/${currentLetter.value}`,
           formData,
-          {
-            headers: {
-              'Content-Type': 'multipart/form-data',
-            },
-          },
         )
         console.log('response:', response)
         console.log('response.data:', response.data)
