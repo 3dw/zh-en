@@ -83,7 +83,7 @@
 
         <q-expansion-item
           icon="library_books"
-          label="閱聽學習"
+          label="讀寫學習"
           class="op-expansion-item"
           dense-toggle
         >
@@ -121,6 +121,13 @@
             </q-item-section>
             <q-item-section>我的最愛</q-item-section>
           </q-item>
+
+          <q-item clickable to="/playback" class="op-drawer-item" v-if="devMode">
+            <q-item-section avatar>
+              <q-icon name="music_note" />
+            </q-item-section>
+            <q-item-section>今日回顧</q-item-section>
+          </q-item>
         </q-expansion-item>
 
         <q-expansion-item icon="handshake" label="操作學習" class="op-expansion-item" dense-toggle>
@@ -157,7 +164,7 @@
           </q-item>
           <q-item clickable to="/opposites" class="op-drawer-item">
             <q-item-section avatar>
-              <q-icon name="supervisor_account" />
+              <q-icon name="swap_horiz" />
             </q-item-section>
             <q-item-section>相反詞拉鋸戰</q-item-section>
           </q-item>
@@ -187,17 +194,11 @@
           </q-item>
           <q-item clickable to="/what_this_this" class="op-drawer-item">
             <q-item-section avatar>
-              <q-icon name="question_mark" />
+              <q-icon name="camera_alt" />
             </q-item-section>
-            <q-item-section>這是什麼？</q-item-section>
+            <q-item-section>拍照分析</q-item-section>
           </q-item>
         </q-expansion-item>
-        <q-item clickable to="/playback" class="op-drawer-item">
-          <q-item-section avatar>
-            <q-icon name="music_note" />
-          </q-item-section>
-          <q-item-section>Playback聆聽學習</q-item-section>
-        </q-item>
 
         <q-expansion-item icon="share" label="好站連結" class="op-expansion-item" dense-toggle>
           <q-item
@@ -411,6 +412,8 @@ export default defineComponent({
       leftDrawerOpen.value = !leftDrawerOpen.value
     }
 
+    const devMode = ref(false)
+
     return {
       leftDrawerOpen,
       currentXP,
@@ -420,6 +423,7 @@ export default defineComponent({
       xpProgress,
       earnXP,
       toggleLeftDrawer,
+      devMode,
     }
   },
 })
