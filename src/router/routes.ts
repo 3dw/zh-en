@@ -4,22 +4,30 @@ const routes: RouteRecordRaw[] = [
   {
     path: '/',
     component: () => import('layouts/MainLayout.vue'),
-    children: [{ path: '', component: () => import('pages/IndexPage.vue') }],
+    children: [
+      { path: '', component: () => import('pages/IndexPage.vue'), meta: { title: '首頁' } },
+    ],
   },
   {
     path: '/alphabet',
     component: () => import('layouts/MainLayout.vue'),
-    children: [{ path: '', component: () => import('pages/AlphabetPage.vue') }],
+    children: [
+      { path: '', component: () => import('pages/AlphabetPage.vue'), meta: { title: '字母' } },
+    ],
   },
   {
     path: '/number',
     component: () => import('layouts/MainLayout.vue'),
-    children: [{ path: '', component: () => import('pages/NumberPage.vue') }],
+    children: [
+      { path: '', component: () => import('pages/NumberPage.vue'), meta: { title: '數字' } },
+    ],
   },
   {
     path: '/body',
     component: () => import('layouts/MainLayout.vue'),
-    children: [{ path: '', component: () => import('pages/BodyPage.vue') }],
+    children: [
+      { path: '', component: () => import('pages/BodyPage.vue'), meta: { title: '身體部位' } },
+    ],
   },
   /* {
     path: '/main-image',
@@ -44,17 +52,23 @@ const routes: RouteRecordRaw[] = [
   {
     path: '/beginner',
     component: () => import('layouts/MainLayout.vue'),
-    children: [{ path: '', component: () => import('pages/BeginnerPage.vue') }],
+    children: [
+      { path: '', component: () => import('pages/BeginnerPage.vue'), meta: { title: '初學者' } },
+    ],
   },
   {
     path: '/emotion',
     component: () => import('layouts/MainLayout.vue'),
-    children: [{ path: '', component: () => import('pages/EmotionCardsPage.vue') }],
+    children: [
+      { path: '', component: () => import('pages/EmotionCardsPage.vue'), meta: { title: '情緒' } },
+    ],
   },
   {
     path: '/main-game',
     component: () => import('layouts/MainLayout.vue'),
-    children: [{ path: '', component: () => import('pages/MainGamePage.vue') }],
+    children: [
+      { path: '', component: () => import('pages/MainGamePage.vue'), meta: { title: '主遊戲' } },
+    ],
   },
   {
     path: '/game1',
@@ -139,38 +153,59 @@ const routes: RouteRecordRaw[] = [
   {
     path: '/hand-written',
     component: () => import('layouts/MainLayout.vue'),
-    children: [{ path: '', component: () => import('pages/HandWrittenPage.vue') }],
+    children: [
+      { path: '', component: () => import('pages/HandWrittenPage.vue'), meta: { title: '手寫' } },
+    ],
   },
   {
     path: '/image-paint',
     component: () => import('layouts/MainLayout.vue'),
-    children: [{ path: '', component: () => import('pages/ImagePaintPage.vue') }],
+    children: [
+      { path: '', component: () => import('pages/ImagePaintPage.vue'), meta: { title: '畫圖' } },
+    ],
   },
   {
     path: '/favorites',
     component: () => import('layouts/MainLayout.vue'),
-    children: [{ path: '', component: () => import('pages/FavoritePage.vue') }],
+    children: [
+      { path: '', component: () => import('pages/FavoritePage.vue'), meta: { title: '最愛' } },
+    ],
   },
   {
     path: '/story',
     component: () => import('layouts/MainLayout.vue'),
-    children: [{ path: '', component: () => import('pages/StoryPage.vue') }],
+    children: [
+      { path: '', component: () => import('pages/StoryPage.vue'), meta: { title: '故事' } },
+    ],
   },
   {
     path: '/what_this_this',
     component: () => import('layouts/MainLayout.vue'),
-    children: [{ path: '', component: () => import('pages/WhatIsThisPage.vue') }],
+    children: [
+      {
+        path: '',
+        component: () => import('pages/WhatIsThisPage.vue'),
+        meta: { title: '這是什麼？' },
+      },
+    ],
   },
   {
     path: '/opposites',
     component: () => import('layouts/MainLayout.vue'),
-    children: [{ path: '', component: () => import('pages/OppositesGamePage.vue') }],
+    children: [
+      {
+        path: '',
+        component: () => import('pages/OppositesGamePage.vue'),
+        meta: { title: '反義詞' },
+      },
+    ],
   },
   // Always leave this as last one,
   // but you can also remove it
   {
     path: '/:catchAll(.*)*',
     component: () => import('pages/ErrorNotFound.vue'),
+    meta: { title: '錯誤' },
   },
 ]
 
