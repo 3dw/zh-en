@@ -1,5 +1,23 @@
 <template>
   <q-layout view="lHh Lpr lFf" class="op-layout">
+    <q-dialog v-model="showLoginDialog">
+      <q-card>
+        <q-card-section>
+          <div class="text-h6">登入/註冊</div>
+          <!-- 用 Google 登入 -->
+          <q-btn
+            @click="loginWithGoogle"
+            label="使用 Google 登入"
+            color="primary"
+            text-color="white"
+            class="op-beta-btn"
+          />
+          <!-- 用checkbox 登入 -->
+          <q-checkbox v-model="rememberMe" label="記住我" />
+        </q-card-section>
+      </q-card>
+    </q-dialog>
+
     <!-- 頂部導覽列 (Header) -->
     <q-header elevated class="op-header-bg text-white">
       <q-toolbar class="op-toolbar">
@@ -27,17 +45,29 @@
 
         <!-- 右側：連結 -->
         <div>
+          <q-img
+            v-if="photoURL"
+            :src="photoURL"
+            style="width: 32px; height: 32px; border-radius: 50%"
+            rounded
+            class="op-avatar"
+          />
           <q-btn
-            outline
+            v-if="!uid"
+            @click="toggleLogin"
+            label="登入/註冊"
             color="white"
-            label="原始碼"
-            href="https://github.com/3dw/zh-en"
-            target="_blank"
-            rel="noopener noreferrer"
+            text-color="black"
             class="op-beta-btn"
-          >
-            <q-icon name="open_in_new" class="q-ml-xs" />
-          </q-btn>
+          />
+          <q-btn
+            v-else
+            @click="logout"
+            label="登出"
+            color="white"
+            text-color="black"
+            class="op-beta-btn"
+          />
         </div>
       </q-toolbar>
     </q-header>
@@ -296,6 +326,20 @@
             <q-item-section>Google Translate<br />(英文翻譯)</q-item-section>
           </q-item>
         </q-expansion-item>
+
+        <q-item
+          clickable
+          tag="a"
+          href="https://github.com/3dw/zh-en"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          <q-item-section avatar>
+            <q-icon name="open_in_new" />
+          </q-item-section>
+          <q-item-section>本站原始碼</q-item-section>
+        </q-item>
+
         <!--
         <q-expansion-item
           icon="image"
@@ -364,6 +408,15 @@
 
 <script lang="ts">
 import { defineComponent, ref, computed, onMounted, watch } from 'vue'
+import type { User, UserInfo } from 'firebase/auth'
+import { GoogleAuthProvider, signInWithPopup, signOut } from 'firebase/auth'
+import { getAuth, setPersistence, browserLocalPersistence } from 'firebase/auth'
+import { ref as dbRef, onValue, get, set } from 'firebase/database'
+import { getDatabase } from 'firebase/database'
+
+// 建立 Google 驗證提供者
+const googleAuthProvider = new GoogleAuthProvider()
+const database = getDatabase()
 
 export default defineComponent({
   name: 'MainLayout',
@@ -374,6 +427,14 @@ export default defineComponent({
     const level = ref(1)
     const showLevelUpAnimation = ref(false)
     const showLevelUpDialog = ref(false)
+    const rememberMe = ref(false)
+
+    const uid = ref('')
+    const email = ref('')
+    const displayName = ref('')
+    const photoURL = ref('')
+
+    const user = ref({})
 
     // 讀取 localStorage
     onMounted(() => {
@@ -382,12 +443,25 @@ export default defineComponent({
 
       if (savedXP) currentXP.value = parseInt(savedXP)
       if (savedLevel) level.value = parseInt(savedLevel)
+
+      const auth = getAuth()
+      auth.onAuthStateChanged(async (user) => {
+        if (user) {
+          uid.value = user.uid
+          email.value = user.email || ''
+          photoURL.value = user.photoURL || ''
+        }
+      })
     })
 
     // 監聽變化並保存
     watch([currentXP, level], () => {
       localStorage.setItem('currentXP', currentXP.value.toString())
       localStorage.setItem('level', level.value.toString())
+
+      if (uid.value) {
+        setXPandLevel()
+      }
     })
 
     const xpProgress = computed(() => currentXP.value / 1000)
@@ -412,9 +486,149 @@ export default defineComponent({
       leftDrawerOpen.value = !leftDrawerOpen.value
     }
 
+    const toggleLogin = () => {
+      showLoginDialog.value = !showLoginDialog.value
+    }
+
     const devMode = ref(false)
+    const showLoginDialog = ref(false)
+
+    const logout = () => {
+      const auth = getAuth()
+      signOut(auth).then(() => {
+        uid.value = ''
+        email.value = ''
+        photoURL.value = ''
+        user.value = {}
+      })
+    }
+
+    const setXPandLevel = () => {
+      if (uid.value) {
+        set(dbRef(database, `users/${uid.value}/xp`), currentXP.value)
+        set(dbRef(database, `users/${uid.value}/level`), level.value)
+      }
+    }
+
+    const updateUserData = async (user: User) => {
+      if (!user) {
+        console.error('User is undefined in updateUserData')
+        return
+      }
+      email.value = user.email || ''
+      uid.value = user.uid
+      photoURL.value = user.photoURL || ''
+
+      const pvdata = user.providerData || [
+        {
+          displayName: email.value?.split('@')[0] || 'Unknown',
+          email: email.value,
+          photoURL: photoURL.value,
+        },
+      ]
+
+      await fetchUserData(pvdata)
+    }
+    const fetchUserData = async (pvdata: UserInfo[]) => {
+      try {
+        if (!uid.value) {
+          console.error('No user ID available')
+          return
+        }
+
+        const userRef = dbRef(database, `users/${uid.value}`)
+        onValue(
+          userRef,
+          (snapshot) => {
+            const userData = snapshot.val()
+            if (userData) {
+              currentXP.value = userData.xp || 0
+              level.value = userData.level || 1
+              user.value = { ...userData, providerData: pvdata }
+              if (
+                userData.photoURL &&
+                userData.photoURL !== 'undefined' &&
+                userData.photoURL !== 'null'
+              ) {
+                photoURL.value = userData.photoURL
+              }
+            } else {
+              user.value = { providerData: pvdata }
+            }
+          },
+          (error) => {
+            user.value = { providerData: pvdata }
+            console.error('Error fetching user data:', error)
+          },
+        )
+      } catch (error) {
+        console.error('Error in fetchUserData:', error)
+        user.value = { providerData: pvdata }
+      }
+    }
+
+    const loginWithGoogle = async () => {
+      try {
+        const auth = getAuth()
+        if (!auth) return
+
+        // 設定持久化登入
+        if (rememberMe.value) {
+          await setPersistence(auth, browserLocalPersistence)
+        }
+
+        const result = await signInWithPopup(auth, googleAuthProvider)
+        console.log('登入成功:', result.user)
+
+        // 取得使用者資料
+        const user = result.user
+        uid.value = user.uid
+        email.value = user.email || ''
+        displayName.value = user.displayName || ''
+        photoURL.value = user.photoURL || ''
+        console.log('使用者資料:', user)
+
+        const userRef = dbRef(database, 'users/' + user.uid)
+        const snapshot = await get(userRef)
+
+        if (!snapshot.exists()) {
+          await set(userRef, {
+            email: user.email,
+            name: user.displayName || user.email?.split('@')[0] || 'Unknown',
+            connect_me: user.email,
+            photoURL: photoURL.value || '',
+            login_method: 'google',
+            xp: 0,
+            level: 1,
+          })
+        } else {
+          console.log('user already exists')
+          if (snapshot.val().photoURL !== photoURL.value) {
+            await set(dbRef(database, 'users/' + user.uid + '/photoURL'), photoURL)
+          }
+        }
+
+        updateUserData(user)
+
+        showLoginDialog.value = false
+      } catch (error) {
+        console.error('登入失敗:', error)
+      }
+    }
 
     return {
+      user,
+      uid,
+      email,
+      displayName,
+      photoURL,
+      showLoginDialog,
+      toggleLogin,
+      rememberMe,
+      loginWithGoogle,
+      updateUserData,
+      fetchUserData,
+      logout,
       leftDrawerOpen,
       currentXP,
       level,
@@ -424,6 +638,7 @@ export default defineComponent({
       earnXP,
       toggleLeftDrawer,
       devMode,
+      setXPandLevel,
     }
   },
 })
