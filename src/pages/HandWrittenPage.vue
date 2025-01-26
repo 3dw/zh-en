@@ -111,8 +111,27 @@ export default defineComponent({
 
     onMounted(() => {
       initCanvas()
+      randomLetter()
       window.addEventListener('resize', initCanvas)
     })
+
+    const randomLetter = () => {
+      const randomIndex = Math.floor(Math.random() * letters.length)
+      currentLetter.value = letters[randomIndex] as string
+      sayPleaseWrite()
+    }
+
+    const sayPleaseWrite = () => {
+      console.log('currentLetter.value:', currentLetter.value)
+      const speech = new SpeechSynthesisUtterance(
+        'Please write the letter: ' + detectLetterCase(currentLetter.value) + ' ' + currentLetter.value,
+      )
+      speech.lang = 'en'
+      speech.rate = 1.2
+      speech.pitch = 1.1
+      speech.volume = 0.8
+      speechSynthesis.speak(speech)
+    }
 
     const initCanvas = () => {
       if (!canvas.value) return
@@ -142,19 +161,32 @@ export default defineComponent({
 
     const startDrawing = (e: MouseEvent) => {
       isDrawing.value = true
-      lastX = e.offsetX
-      lastY = e.offsetY
+      if (!canvas.value) return
+
+      const rect = canvas.value.getBoundingClientRect()
+      const scaleX = canvas.value.width / rect.width
+      const scaleY = canvas.value.height / rect.height
+
+      lastX = (e.clientX - rect.left) * scaleX
+      lastY = (e.clientY - rect.top) * scaleY
     }
 
     const draw = (e: MouseEvent) => {
-      if (!isDrawing.value || !ctx.value) return
+      if (!isDrawing.value || !ctx.value || !canvas.value) return
+
+      const rect = canvas.value.getBoundingClientRect()
+      const scaleX = canvas.value.width / rect.width
+      const scaleY = canvas.value.height / rect.height
+
+      const x = (e.clientX - rect.left) * scaleX
+      const y = (e.clientY - rect.top) * scaleY
 
       ctx.value.beginPath()
       ctx.value.moveTo(lastX, lastY)
-      ctx.value.lineTo(e.offsetX, e.offsetY)
+      ctx.value.lineTo(x, y)
       ctx.value.stroke()
-      lastX = e.offsetX
-      lastY = e.offsetY
+      lastX = x
+      lastY = y
     }
 
     const stopDrawing = () => {
@@ -173,9 +205,9 @@ export default defineComponent({
       const scaleX = canvas.value.width / rect.width
       const scaleY = canvas.value.height / rect.height
 
-      // 根據縮放比例調整觸控座標
-      const x = (touch.clientX - rect.left) * scaleX
-      const y = (touch.clientY - rect.top) * scaleY
+      // 加入頁面滾動位置的補償
+      const x = (touch.clientX - rect.left + window.pageXOffset) * scaleX
+      const y = (touch.clientY - rect.top + window.pageYOffset) * scaleY
 
       if (e.type === 'touchstart') {
         isDrawing.value = true
@@ -205,6 +237,7 @@ export default defineComponent({
       } while (letters[randomIndex] === currentLetter.value) // 確保不會選到當前字母
 
       currentLetter.value = letters[randomIndex] as string
+      sayPleaseWrite()
       clearCanvas()
       showResult.value = false
     }
@@ -295,6 +328,10 @@ export default defineComponent({
       clearCanvas,
       checkAnswer,
       nextLetter,
+      randomLetter,
+      letters,
+      detectLetterCase,
+      sayPleaseWrite,
     }
   },
 })
