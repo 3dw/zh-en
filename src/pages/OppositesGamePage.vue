@@ -19,6 +19,21 @@
           <div v-if="currentPair" class="tug-of-war">
             <!-- 左側短語 -->
             <div class="phrase-container left-phrase">
+              <!-- 左側血量格 -->
+              <div class="health-bar">
+                <div
+                  v-for="i in 10"
+                  :key="`left-${i}`"
+                  class="health-point"
+                  :class="{
+                    'health-green':
+                      tugPosition >= 50 && i > 10 - Math.floor((tugPosition - 50) * 0.2),
+                    'health-red':
+                      tugPosition < 50 || i <= 10 - Math.floor((tugPosition - 50) * 0.2),
+                  }"
+                ></div>
+              </div>
+
               <q-img
                 :src="currentPair.leftImage"
                 class="phrase-image"
@@ -53,6 +68,21 @@
 
             <!-- 右側短語 -->
             <div class="phrase-container right-phrase">
+              <!-- 右側血量格 -->
+              <div class="health-bar">
+                <div
+                  v-for="i in 10"
+                  :key="`right-${i}`"
+                  class="health-point"
+                  :class="{
+                    'health-green':
+                      tugPosition <= 50 && i > 10 - Math.floor((50 - tugPosition) * 0.2),
+                    'health-red':
+                      tugPosition > 50 || i <= 10 - Math.floor((50 - tugPosition) * 0.2),
+                  }"
+                ></div>
+              </div>
+
               <q-img
                 :src="currentPair.rightImage"
                 class="phrase-image"
@@ -74,13 +104,7 @@
 
           <!-- 下一組按鈕 -->
           <div class="text-center q-mt-lg">
-            <q-btn
-              color="primary"
-              label="下一組"
-              @click="nextPair"
-              icon-right="arrow_forward"
-              :disable="currentIndex >= phrasePairs.length - 1"
-            />
+            <q-btn color="primary" label="下一組" @click="nextPair" icon-right="arrow_forward" />
           </div>
         </q-card>
       </div>
@@ -149,12 +173,35 @@ export default defineComponent({
 
     const currentIndex = ref(0)
     const score = ref(0)
-    const tugPosition = ref(50) // 拔河點的位置（百分比）
+    const tugPosition = ref(50)
     const isMoving = ref(false)
 
     const currentPair = computed(() => phrasePairs[currentIndex.value])
 
-    // 播放語音
+    // 監視血量狀態
+    const checkHealthStatus = () => {
+      // 計算左側紅色血量格數量
+      const leftRedCount = Math.floor((tugPosition.value - 50) * 0.2)
+      // 計算右側紅色血量格數量
+      const rightRedCount = Math.floor((50 - tugPosition.value) * 0.2)
+
+      // 如果任一側達到滿血（10格）
+      if (leftRedCount >= 10 || rightRedCount >= 10) {
+        score.value++ // 增加得分
+
+        // 播放得分音效
+        new Audio('/sounds/correct.mp3').play().catch(() => {
+          console.log('無法播放音效')
+        })
+
+        // 延遲一下再切換，讓用戶看到滿血效果
+        setTimeout(() => {
+          nextPair()
+        }, 1000)
+      }
+    }
+
+    // 修改播放語音函數
     const speakPhrase = (text: string) => {
       const utterance = new SpeechSynthesisUtterance(text)
       utterance.lang = 'en-US'
@@ -169,15 +216,20 @@ export default defineComponent({
 
       setTimeout(() => {
         isMoving.value = false
+        // 檢查血量狀態
+        checkHealthStatus()
       }, 500)
     }
 
     // 下一組
     const nextPair = () => {
-      if (currentIndex.value < phrasePairs.length - 1) {
+      // 如果是最後一組，則回到第一組
+      if (currentIndex.value >= phrasePairs.length - 1) {
+        currentIndex.value = 0
+      } else {
         currentIndex.value++
-        tugPosition.value = 50 // 重置拔河點位置
       }
+      tugPosition.value = 50 // 重置拔河點位置
     }
 
     return {
@@ -278,10 +330,37 @@ export default defineComponent({
   }
 }
 
+.health-bar {
+  display: flex;
+  gap: 4px;
+  justify-content: center;
+  margin-bottom: 8px;
+}
+
+.health-point {
+  width: 16px; /* 稍微縮小一點以適應更多格子 */
+  height: 16px;
+  border-radius: 4px;
+  border: 2px solid #fff;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transition: background-color 0.3s ease;
+}
+
+.health-green {
+  background-color: #4caf50;
+}
+
+.health-red {
+  background-color: #f44336;
+}
+
 .phrase-container {
-  flex: 0 0 35%; /* 固定寬度，避免擠壓中間的拔河線 */
+  flex: 0 0 35%;
   text-align: center;
   padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
 }
 
 .phrase-image {
