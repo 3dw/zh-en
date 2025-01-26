@@ -192,6 +192,12 @@
             <q-item-section>這是什麼？</q-item-section>
           </q-item>
         </q-expansion-item>
+        <q-item clickable to="/playback" class="op-drawer-item">
+          <q-item-section avatar>
+            <q-icon name="music_note" />
+          </q-item-section>
+          <q-item-section>Playback聆聽學習</q-item-section>
+        </q-item>
 
         <q-expansion-item icon="share" label="好站連結" class="op-expansion-item" dense-toggle>
           <q-item
