@@ -49,6 +49,14 @@
               />
             </div>
           </q-card-section>
+          <q-card-section>
+            <!-- 顯示圖片的createdAt 和 createdBy -->
+            <div class="text-body2">
+              upload by
+              <img :src="getPhotoById(card.createdBy || '未知')" class="avatar" />
+              {{ (card.createdAt || '未知').split('T')[0] }}
+            </div>
+          </q-card-section>
         </q-card>
       </div>
     </div>
@@ -65,10 +73,14 @@ const database = getDatabase()
 interface Card {
   image: string
   description: string
+  createdAt?: string
+  createdBy?: string
 }
 
 interface User {
+  uid: string
   isAdmin: boolean
+  photoURL: string
 }
 
 export default defineComponent({
@@ -83,12 +95,21 @@ export default defineComponent({
       type: Object as PropType<User>,
       default: () => ({}),
     },
+    users: {
+      type: Array as PropType<User[]>,
+      default: () => [],
+    },
   },
 
   emits: ['delete-card'],
 
   setup(props) {
     const searchQuery = ref('')
+
+    const getPhotoById = (id: string) => {
+      const user = props.users.find((user) => user.uid === id)
+      return user?.photoURL || 'https://cdn.quasar.dev/img/boy-avatar.png'
+    }
 
     // 添加過濾邏輯
     const filteredCards = computed(() => {
@@ -114,6 +135,7 @@ export default defineComponent({
     }
 
     return {
+      getPhotoById,
       playCardAudio,
       deleteCard,
       searchQuery,
@@ -128,6 +150,14 @@ export default defineComponent({
 .op-page {
   background-color: #f4f1eb;
   font-size: 1.1rem;
+}
+
+.avatar {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  margin: 2px;
+  display: inline-block !important;
 }
 
 .word-card-list {
@@ -205,5 +235,11 @@ export default defineComponent({
 .search-input {
   width: 100%;
   max-width: 400px;
+}
+
+.text-body2 {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
 }
 </style>

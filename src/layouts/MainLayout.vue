@@ -410,6 +410,7 @@
       <router-view
         :cards="cards"
         :user="user"
+        :users="users"
         :uid="uid"
         @earn-xp="earnXP"
         @toggle-drawer="toggleLeftDrawer"
@@ -447,6 +448,7 @@ export default defineComponent({
     const photoURL = ref('')
 
     const user = ref({})
+    const users = ref([])
 
     const cards = ref([])
 
@@ -471,6 +473,11 @@ export default defineComponent({
 
       onValue(dbRef(database, 'cards'), (snapshot) => {
         cards.value = snapshot.val()
+      })
+
+      onValue(dbRef(database, 'users'), (snapshot) => {
+        users.value = Object.values(snapshot.val())
+        console.log('users', users.value)
       })
     })
 
@@ -613,6 +620,7 @@ export default defineComponent({
 
         if (!snapshot.exists()) {
           await set(userRef, {
+            uid: user.uid,
             email: user.email,
             name: user.displayName || user.email?.split('@')[0] || 'Unknown',
             connect_me: user.email,
@@ -641,6 +649,7 @@ export default defineComponent({
     return {
       cards,
       user,
+      users,
       uid,
       email,
       displayName,
