@@ -64,6 +64,7 @@
         <div class="text-h6">AI 描述：</div>
         <q-card class="q-pa-md q-mt-sm">
           <div class="text-body1">{{ result }}</div>
+
           <q-btn
             class="q-mt-sm"
             color="primary"
@@ -79,6 +80,19 @@
             label="上傳至資料庫"
             @click="uploadCard"
           />
+
+          <div class="q-mt-sm">
+            <!-- check box -->
+            <q-checkbox v-model="isChecked" label="我已閱讀並同意"></q-checkbox>
+
+            <a
+              href="https://github.com/3dw/zh-en/wiki/%E9%9A%B1%E7%A7%81%E6%AC%8A%E6%94%BF%E7%AD%96"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              隱私權政策
+            </a>
+          </div>
         </q-card>
       </div>
     </div>
@@ -110,6 +124,7 @@ export default defineComponent({
   },
 
   setup(props) {
+    const isChecked = ref(false)
     const imageFile = ref(null)
     const imagePreview = ref('')
     const loading = ref(false)
@@ -120,6 +135,11 @@ export default defineComponent({
 
     const uploadCard = async () => {
       if (props.cards) {
+        if (!isChecked.value) {
+          window.alert('請先閱讀並同意隱私權政策')
+          return
+        }
+
         console.log('上傳卡片')
 
         if (!imagePreview.value) {
@@ -396,6 +416,7 @@ export default defineComponent({
     })
 
     return {
+      isChecked,
       imageFile,
       imagePreview,
       loading,
