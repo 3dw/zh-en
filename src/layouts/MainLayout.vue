@@ -597,16 +597,6 @@ export default defineComponent({
           await setPersistence(auth, browserLocalPersistence)
         }
 
-        // 配置 Google Provider
-        googleAuthProvider.setCustomParameters({
-          // 強制顯示帳號選擇視窗
-          prompt: 'select_account',
-          // 建議使用 popup 模式
-          display: 'popup',
-          // 允許在 iOS 上使用 popup
-          mobile: 'true',
-        })
-
         const result = await signInWithPopup(auth, googleAuthProvider)
         console.log('登入成功:', result.user)
 
