@@ -186,6 +186,8 @@ export default defineComponent({
           const newCard = {
             image: base64,
             description: result.value,
+            createdAt: new Date().toISOString(),
+            createdBy: props.uid,
           }
           const newIndex = props.cards.length
           set(dbRef(database, `cards/${newIndex}`), newCard).then(() => {
