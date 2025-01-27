@@ -401,7 +401,7 @@
 
     <!-- 主要頁面內容 -->
     <q-page-container>
-      <router-view @earn-xp="earnXP" @toggle-drawer="toggleLeftDrawer" />
+      <router-view :cards="cards" @earn-xp="earnXP" @toggle-drawer="toggleLeftDrawer" />
     </q-page-container>
   </q-layout>
 </template>
@@ -436,6 +436,8 @@ export default defineComponent({
 
     const user = ref({})
 
+    const cards = ref([])
+
     // 讀取 localStorage
     onMounted(() => {
       const savedXP = localStorage.getItem('currentXP')
@@ -451,6 +453,10 @@ export default defineComponent({
           email.value = user.email || ''
           photoURL.value = user.photoURL || ''
         }
+      })
+
+      onValue(dbRef(database, 'cards'), (snapshot) => {
+        cards.value = snapshot.val()
       })
     })
 
@@ -617,6 +623,7 @@ export default defineComponent({
     }
 
     return {
+      cards,
       user,
       uid,
       email,

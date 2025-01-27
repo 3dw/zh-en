@@ -71,6 +71,13 @@
             label="播放發音"
             @click="playAudio"
           />
+          <q-btn
+            class="q-mt-sm"
+            color="secondary"
+            icon="arrow_upward"
+            label="上傳至資料庫"
+            @click="uploadCard"
+          />
         </q-card>
       </div>
     </div>
@@ -82,11 +89,22 @@ import { defineComponent, ref, onUnmounted } from 'vue'
 import axios from 'axios'
 import heic2any from 'heic2any'
 import Pica from 'pica'
+import { set, ref as dbRef } from 'firebase/database'
+import { getDatabase } from 'firebase/database'
+
+const database = getDatabase()
 
 export default defineComponent({
   name: 'WhatIsThisPage',
 
-  setup() {
+  props: {
+    cards: {
+      type: Array,
+      default: () => [],
+    },
+  },
+
+  setup(props) {
     const imageFile = ref(null)
     const imagePreview = ref('')
     const loading = ref(false)
@@ -94,6 +112,87 @@ export default defineComponent({
     const videoRef = ref<HTMLVideoElement | null>(null)
     const showCamera = ref(false)
     let stream: MediaStream | null = null
+
+    const uploadCard = async () => {
+      if (props.cards) {
+        console.log('上傳卡片')
+
+        if (!imagePreview.value) {
+          console.error('無法取得圖片')
+          return
+        }
+
+        try {
+          // 從 blob URL 讀取圖片
+          const response = await fetch(imagePreview.value)
+          const blob = await response.blob()
+
+          // 創建 Image 物件
+          const img = new Image()
+          const imgLoadPromise = new Promise((resolve, reject) => {
+            img.onload = () => resolve(img)
+            img.onerror = reject
+          })
+          img.src = URL.createObjectURL(blob)
+          await imgLoadPromise
+
+          // 計算新的尺寸，保持原始比例
+          let width = img.width
+          let height = img.height
+          const aspectRatio = width / height
+          const MAX_FILE_SIZE = 400 * 1024 // 400KB
+
+          // 初始縮放比例
+          let scale = 0.8
+          const canvas = document.createElement('canvas')
+          const pica = new Pica()
+          let compressedBlob
+
+          do {
+            width = Math.floor(img.width * scale)
+            height = Math.floor(width / aspectRatio)
+
+            canvas.width = width
+            canvas.height = height
+
+            await pica.resize(img, canvas, {
+              quality: 3,
+              unsharpAmount: 80,
+              unsharpRadius: 0.6,
+              unsharpThreshold: 2,
+            })
+
+            compressedBlob = await new Promise<Blob>((resolve) => {
+              canvas.toBlob((blob) => resolve(blob!), 'image/jpeg', 0.9)
+            })
+
+            scale *= 0.9
+          } while (compressedBlob.size > MAX_FILE_SIZE)
+
+          // 轉換為 base64
+          const base64 = await new Promise<string>((resolve) => {
+            const reader = new FileReader()
+            reader.onloadend = () => resolve(reader.result as string)
+            reader.readAsDataURL(compressedBlob)
+          })
+
+          console.log(base64)
+
+          const newCard = {
+            image: base64,
+            description: result.value,
+          }
+          const newIndex = props.cards.length
+          set(dbRef(database, `cards/${newIndex}`), newCard).then(() => {
+            alert('上傳成功')
+            console.log('上傳成功')
+          })
+        } catch (error) {
+          console.error('處理圖片失敗:', error)
+          window.alert('處理圖片失敗，請重試')
+        }
+      }
+    }
 
     const handleImageUpload = async (file: File) => {
       if (!file) return
@@ -300,6 +399,7 @@ export default defineComponent({
       showCamera,
       openCamera,
       takePhoto,
+      uploadCard,
     }
   },
 })
