@@ -185,7 +185,130 @@ const paragraphImages = ref<string[]>([])
 const audioPlayer = ref<HTMLAudioElement | null>(null)
 const storySection = ref<HTMLElement | null>(null)
 
-// 表單提交處理
+// 修改 generateStory 函數
+const generateStory = async () => {
+  try {
+    loading.value = true
+    showProgress.value = true
+
+    // 步驟 1: 生成故事內容
+    progressMessage.value = '正在創作故事...'
+    const storyResponse = await fetch(
+      'https://zh-en-backend.alearn13994229.workers.dev/StoryGeneration',
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          childName: formData.childName,
+          ageGroup: formData.ageGroup,
+          storyType: formData.storyType,
+          step: 1,
+        }),
+      },
+    )
+
+    if (!storyResponse.ok) {
+      throw new Error('故事生成失敗')
+    }
+
+    const storyData = await storyResponse.json()
+    console.log('storyData', storyData)
+    if (!storyData.success) {
+      throw new Error(storyData.error || '故事生成失敗')
+    }
+
+    // 將故事分段
+    storyParagraphs.value = storyData.content.split('\n\n').filter((p: string) => p.trim())
+
+    // 步驟 2: 生成圖片
+    progressMessage.value = '正在生成配圖...'
+    const imagesResponse = await fetch(
+      'https://zh-en-backend.alearn13994229.workers.dev/StoryGeneration',
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          step: 2,
+          content: storyData.content,
+        }),
+      },
+    )
+
+    if (!imagesResponse.ok) {
+      throw new Error('圖片生成失敗')
+    }
+
+    const imagesData = await imagesResponse.json()
+    if (!imagesData.success) {
+      throw new Error(imagesData.error || '圖片生成失敗')
+    }
+
+    paragraphImages.value = imagesData.images
+
+    // 步驟 3: 生成語音
+    progressMessage.value = '正在生成語音...'
+    const voiceResponse = await fetch(
+      'https://zh-en-backend.alearn13994229.workers.dev/StoryGeneration',
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          step: 3,
+          content: storyData.content,
+        }),
+      },
+    )
+
+    if (!voiceResponse.ok) {
+      throw new Error('語音生成失敗')
+    }
+
+    const voiceData = await voiceResponse.json()
+    if (!voiceData.success) {
+      throw new Error(voiceData.error || '語音生成失敗')
+    }
+
+    // 保存生成的內容
+    generatedStory.value = {
+      content: storyData.content,
+      audioUrl: voiceData.audioUrl,
+    }
+
+    // 自動播放音頻並滾動到故事部分
+    setTimeout(() => {
+      if (audioPlayer.value) {
+        audioPlayer.value.play()
+      }
+      storySection.value?.scrollIntoView({
+        behavior: 'smooth',
+        block: 'start',
+      })
+    }, 1000)
+
+    $q.notify({
+      type: 'positive',
+      message: '故事生成完成！',
+      position: 'top',
+    })
+  } catch (error: unknown) {
+    $q.notify({
+      type: 'negative',
+      message: `發生錯誤：${error instanceof Error ? error.message : '請稍後重試'}`,
+      position: 'top',
+    })
+    console.error('生成故事時發生錯誤：', error)
+  } finally {
+    loading.value = false
+    showProgress.value = false
+  }
+}
+/* // 表單提交處理
 const generateStory = async () => {
   try {
     loading.value = true
@@ -252,7 +375,7 @@ const generateStory = async () => {
     loading.value = false
     showProgress.value = false
   }
-}
+} */
 
 // 音頻播放結束處理
 const audioEnded = () => {
