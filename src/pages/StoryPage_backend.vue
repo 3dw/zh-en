@@ -156,279 +156,224 @@
   </q-page>
 </template>
 
-<script setup lang="ts">
-import { ref, reactive } from 'vue'
+<script lang="ts">
+import { ref, reactive, defineComponent } from 'vue'
 import { useQuasar } from 'quasar'
 
-interface FormData {
-  childName: string
-  ageGroup: string
-  storyType: string
-}
+export default defineComponent({
+  name: 'StoryPageBackend',
+  setup() {
+    const $q = useQuasar()
+    const loading = ref(false)
 
-const $q = useQuasar()
-const loading = ref(false)
+    // 表單數據
+    const formData = reactive({
+      childName: '',
+      ageGroup: '',
+      storyType: '',
+    })
 
-// 表單數據
-const formData = reactive<FormData>({
-  childName: '',
-  ageGroup: '',
-  storyType: '',
+    // 新增的狀態
+    const showProgress = ref(false)
+    const progressMessage = ref('正在生成故事...')
+    const generatedStory = ref<{ content: string; audioUrl: string } | null>(null)
+    const storyParagraphs = ref<string[]>([])
+    const paragraphImages = ref<string[]>([])
+    const audioPlayer = ref<HTMLAudioElement | null>(null)
+    const storySection = ref<HTMLElement | null>(null)
+
+    // 修改 generateStory 函數
+    const generateStory = async () => {
+      try {
+        loading.value = true
+        showProgress.value = true
+
+        // 步驟 1: 生成故事內容
+        progressMessage.value = '正在創作故事...'
+        const storyResponse = await fetch(
+          'https://zh-en-backend.alearn13994229.workers.dev/StoryGeneration',
+          {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              childName: formData.childName,
+              ageGroup: formData.ageGroup,
+              storyType: formData.storyType,
+              step: 1,
+            }),
+          },
+        )
+
+        if (!storyResponse.ok) {
+          throw new Error('故事生成失敗')
+        }
+
+        const storyData = await storyResponse.json()
+        if (!storyData.success) {
+          throw new Error(storyData.error || '故事生成失敗')
+        }
+
+        // 將故事分段
+        storyParagraphs.value = storyData.content.split('\n\n').filter((p: string) => p.trim())
+
+        // 步驟 2: 生成圖片
+        for (let i = 0; i < storyParagraphs.value.length; i++) {
+          const paragraph = storyParagraphs.value[i]
+
+          progressMessage.value = `正在生成配圖...${i + 1}/${storyParagraphs.value.length}`
+          const imagesResponse = await fetch(
+            'https://zh-en-backend.alearn13994229.workers.dev/generate-image-by-single-paragraph',
+            {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({
+                storyParagraph: paragraph,
+              }),
+            },
+          )
+
+          if (!imagesResponse.ok) {
+            throw new Error('圖片生成失敗')
+          }
+
+          const imagesData = await imagesResponse.json()
+          paragraphImages.value.push(imagesData.image)
+        }
+
+        // 步驟 3: 生成語音
+        progressMessage.value = '正在生成語音...'
+        const voiceResponse = await fetch(
+          'https://zh-en-backend.alearn13994229.workers.dev/StoryGeneration',
+          {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              step: 3,
+              content: storyData.content,
+            }),
+          },
+        )
+
+        if (!voiceResponse.ok) {
+          throw new Error('語音生成失敗')
+        }
+
+        const voiceData = await voiceResponse.json()
+        if (!voiceData.success) {
+          throw new Error(voiceData.error || '語音生成失敗')
+        }
+
+        // 保存生成的內容
+        generatedStory.value = {
+          content: storyData.content,
+          audioUrl: voiceData.audioUrl,
+        }
+
+        // 自動播放音頻並滾動到故事部分
+        setTimeout(() => {
+          if (audioPlayer.value) {
+            audioPlayer.value.play()
+          }
+          storySection.value?.scrollIntoView({
+            behavior: 'smooth',
+            block: 'start',
+          })
+        }, 1000)
+
+        $q.notify({
+          type: 'positive',
+          message: '故事生成完成！',
+          position: 'top',
+        })
+      } catch (error: unknown) {
+        $q.notify({
+          type: 'negative',
+          message: `發生錯誤：${error instanceof Error ? error.message : '請稍後重試'}`,
+          position: 'top',
+        })
+        console.error('生成故事時發生錯誤：', error)
+      } finally {
+        loading.value = false
+        showProgress.value = false
+      }
+    }
+
+    // 音頻播放結束處理
+    const audioEnded = () => {
+      console.log('音頻播放結束')
+    }
+
+    // 年齡段選項
+    const ageOptions = [
+      {
+        label: '2-4歲 (學前)',
+        value: '2-4',
+        description: '簡單有趣的故事，適合幼兒園前的寶寶',
+      },
+      {
+        label: '5-7歲 (幼兒園)',
+        value: '5-7',
+        description: '包含基礎生活詞彙的故事',
+      },
+      {
+        label: '8-10歲 (小學)',
+        value: '8-10',
+        description: '較長的故事，包含更豐富的詞彙和情節',
+      },
+    ]
+
+    // 故事類型選項
+    const storyTypeOptions = [
+      {
+        label: '冒險故事',
+        value: 'adventure',
+        description: '充滿刺激和挑戰的冒險故事',
+      },
+      {
+        label: '童話故事',
+        value: 'fairy_tale',
+        description: '充滿魔法和想像力的奇幻故事',
+      },
+      {
+        label: '教育故事',
+        value: 'educational',
+        description: '包含生活教育意義的啟發性故事',
+      },
+      {
+        label: '動物故事',
+        value: 'animal',
+        description: '以可愛動物為主角的溫馨故事',
+      },
+      {
+        label: '科幻故事',
+        value: 'sci_fi',
+        description: '激發想像力的科學幻想故事',
+      },
+    ]
+
+    return {
+      formData,
+      loading,
+      showProgress,
+      progressMessage,
+      generatedStory,
+      storyParagraphs,
+      paragraphImages,
+      audioPlayer,
+      storySection,
+      generateStory,
+      audioEnded,
+      ageOptions,
+      storyTypeOptions,
+    }
+  },
 })
-
-// 新增的狀態
-const showProgress = ref(false)
-const progressMessage = ref('正在生成故事...')
-const generatedStory = ref<{ content: string; audioUrl: string } | null>(null)
-const storyParagraphs = ref<string[]>([])
-const paragraphImages = ref<string[]>([])
-const audioPlayer = ref<HTMLAudioElement | null>(null)
-const storySection = ref<HTMLElement | null>(null)
-
-// 修改 generateStory 函數
-const generateStory = async () => {
-  try {
-    loading.value = true
-    showProgress.value = true
-
-    // 步驟 1: 生成故事內容
-    progressMessage.value = '正在創作故事...'
-    const storyResponse = await fetch(
-      'https://zh-en-backend.alearn13994229.workers.dev/StoryGeneration',
-      {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          childName: formData.childName,
-          ageGroup: formData.ageGroup,
-          storyType: formData.storyType,
-          step: 1,
-        }),
-      },
-    )
-
-    if (!storyResponse.ok) {
-      throw new Error('故事生成失敗')
-    }
-
-    const storyData = await storyResponse.json()
-    console.log('storyData', storyData)
-    if (!storyData.success) {
-      throw new Error(storyData.error || '故事生成失敗')
-    }
-
-    // 將故事分段
-    storyParagraphs.value = storyData.content.split('\n\n').filter((p: string) => p.trim())
-
-    // 步驟 2: 生成圖片
-    progressMessage.value = '正在生成配圖...'
-    const imagesResponse = await fetch(
-      'https://zh-en-backend.alearn13994229.workers.dev/StoryGeneration',
-      {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          step: 2,
-          content: storyData.content,
-        }),
-      },
-    )
-
-    if (!imagesResponse.ok) {
-      throw new Error('圖片生成失敗')
-    }
-
-    const imagesData = await imagesResponse.json()
-    if (!imagesData.success) {
-      throw new Error(imagesData.error || '圖片生成失敗')
-    }
-
-    paragraphImages.value = imagesData.images
-
-    // 步驟 3: 生成語音
-    progressMessage.value = '正在生成語音...'
-    const voiceResponse = await fetch(
-      'https://zh-en-backend.alearn13994229.workers.dev/StoryGeneration',
-      {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          step: 3,
-          content: storyData.content,
-        }),
-      },
-    )
-
-    if (!voiceResponse.ok) {
-      throw new Error('語音生成失敗')
-    }
-
-    const voiceData = await voiceResponse.json()
-    if (!voiceData.success) {
-      throw new Error(voiceData.error || '語音生成失敗')
-    }
-
-    // 保存生成的內容
-    generatedStory.value = {
-      content: storyData.content,
-      audioUrl: voiceData.audioUrl,
-    }
-
-    // 自動播放音頻並滾動到故事部分
-    setTimeout(() => {
-      if (audioPlayer.value) {
-        audioPlayer.value.play()
-      }
-      storySection.value?.scrollIntoView({
-        behavior: 'smooth',
-        block: 'start',
-      })
-    }, 1000)
-
-    $q.notify({
-      type: 'positive',
-      message: '故事生成完成！',
-      position: 'top',
-    })
-  } catch (error: unknown) {
-    $q.notify({
-      type: 'negative',
-      message: `發生錯誤：${error instanceof Error ? error.message : '請稍後重試'}`,
-      position: 'top',
-    })
-    console.error('生成故事時發生錯誤：', error)
-  } finally {
-    loading.value = false
-    showProgress.value = false
-  }
-}
-/* // 表單提交處理
-const generateStory = async () => {
-  try {
-    loading.value = true
-    showProgress.value = true
-    progressMessage.value = '正在創作故事...請耐心等候'
-
-    // 發送請求到 Cloudflare Worker 後端
-    const response = await fetch(
-      'https://zh-en-backend.alearn13994229.workers.dev/StoryGeneration',
-      {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          childName: formData.childName,
-          ageGroup: formData.ageGroup,
-          storyType: formData.storyType,
-        }),
-      },
-    )
-
-    if (!response.ok) {
-      throw new Error('故事生成失敗')
-    }
-
-    const data = await response.json()
-
-    // 將故事分段
-    storyParagraphs.value = data.content.split('\n\n').filter((p: string) => p.trim())
-    paragraphImages.value = data.images
-
-    // 保存生成的內容
-    generatedStory.value = {
-      content: data.content,
-      audioUrl: data.audioUrl,
-    }
-
-    // 自動播放音頻並滾動到故事部分
-    setTimeout(() => {
-      if (audioPlayer.value) {
-        audioPlayer.value.play()
-      }
-      // 滾動到故事部分
-      storySection.value?.scrollIntoView({
-        behavior: 'smooth',
-        block: 'start',
-      })
-    }, 1000)
-
-    $q.notify({
-      type: 'positive',
-      message: '故事生成完成！',
-      position: 'top',
-    })
-  } catch (error: unknown) {
-    $q.notify({
-      type: 'negative',
-      message: `發生錯誤：${error instanceof Error ? error.message : '請稍後重試'}`,
-      position: 'top',
-    })
-    console.error('生成故事時發生錯誤：', error)
-  } finally {
-    loading.value = false
-    showProgress.value = false
-  }
-} */
-
-// 音頻播放結束處理
-const audioEnded = () => {
-  console.log('音頻播放結束')
-}
-
-// 年齡段選項
-const ageOptions = [
-  {
-    label: '2-4歲 (學前)',
-    value: '2-4',
-    description: '簡單有趣的故事，適合幼兒園前的寶寶',
-  },
-  {
-    label: '5-7歲 (幼兒園)',
-    value: '5-7',
-    description: '包含基礎生活詞彙的故事',
-  },
-  {
-    label: '8-10歲 (小學)',
-    value: '8-10',
-    description: '較長的故事，包含更豐富的詞彙和情節',
-  },
-]
-
-// 故事類型選項
-const storyTypeOptions = [
-  {
-    label: '冒險故事',
-    value: 'adventure',
-    description: '充滿刺激和挑戰的冒險故事',
-  },
-  {
-    label: '童話故事',
-    value: 'fairy_tale',
-    description: '充滿魔法和想像力的奇幻故事',
-  },
-  {
-    label: '教育故事',
-    value: 'educational',
-    description: '包含生活教育意義的啟發性故事',
-  },
-  {
-    label: '動物故事',
-    value: 'animal',
-    description: '以可愛動物為主角的溫馨故事',
-  },
-  {
-    label: '科幻故事',
-    value: 'sci_fi',
-    description: '激發想像力的科學幻想故事',
-  },
-]
 </script>
 
 <style scoped>
