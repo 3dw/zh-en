@@ -218,7 +218,7 @@
         <q-expansion-item icon="visibility" label="視覺學習" class="op-expansion-item" dense-toggle>
           <q-item clickable to="/main-image" class="op-drawer-item">
             <q-item-section avatar>
-              <q-icon name="collections" />
+              <q-icon name="visibility" />
             </q-item-section>
             <q-item-section>看圖學單字</q-item-section>
           </q-item>
@@ -227,6 +227,12 @@
               <q-icon name="camera_alt" />
             </q-item-section>
             <q-item-section>拍照分析</q-item-section>
+          </q-item>
+          <q-item clickable to="/gallery" class="op-drawer-item">
+            <q-item-section avatar>
+              <q-icon name="collections" />
+            </q-item-section>
+            <q-item-section>AI 圖片描述畫廊</q-item-section>
           </q-item>
         </q-expansion-item>
 
@@ -401,7 +407,13 @@
 
     <!-- 主要頁面內容 -->
     <q-page-container>
-      <router-view :cards="cards" @earn-xp="earnXP" @toggle-drawer="toggleLeftDrawer" />
+      <router-view
+        :cards="cards"
+        :user="user"
+        :uid="uid"
+        @earn-xp="earnXP"
+        @toggle-drawer="toggleLeftDrawer"
+      />
     </q-page-container>
   </q-layout>
 </template>
@@ -447,11 +459,13 @@ export default defineComponent({
       if (savedLevel) level.value = parseInt(savedLevel)
 
       const auth = getAuth()
-      auth.onAuthStateChanged(async (user) => {
-        if (user) {
-          uid.value = user.uid
-          email.value = user.email || ''
-          photoURL.value = user.photoURL || ''
+      auth.onAuthStateChanged(async (usr) => {
+        if (usr) {
+          console.log('user', usr)
+          uid.value = usr.uid
+          email.value = usr.email || ''
+          photoURL.value = usr.photoURL || ''
+          updateUserData(usr)
         }
       })
 

@@ -72,6 +72,7 @@
             @click="playAudio"
           />
           <q-btn
+            v-if="uid"
             class="q-mt-sm"
             color="secondary"
             icon="arrow_upward"
@@ -98,6 +99,10 @@ export default defineComponent({
   name: 'WhatIsThisPage',
 
   props: {
+    uid: {
+      type: String,
+      default: '',
+    },
     cards: {
       type: Array,
       default: () => [],

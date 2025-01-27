@@ -190,6 +190,11 @@ const routes: RouteRecordRaw[] = [
     ],
   },
   {
+    path: '/gallery',
+    component: () => import('layouts/MainLayout.vue'),
+    children: [{ path: '', component: () => import('pages/GalleryPage.vue') }],
+  },
+  {
     path: '/opposites',
     component: () => import('layouts/MainLayout.vue'),
     children: [
