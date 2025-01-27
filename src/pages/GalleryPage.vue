@@ -3,10 +3,26 @@
     <div class="word-card-list">
       <h1>AI 圖片描述畫廊</h1>
 
+      <!-- 添加搜尋框 -->
+      <div class="search-bar q-mb-md">
+        <q-input
+          v-model="searchQuery"
+          outlined
+          dense
+          placeholder="搜尋圖片描述..."
+          class="search-input"
+          clearable
+        >
+          <template v-slot:append>
+            <q-icon name="search" />
+          </template>
+        </q-input>
+      </div>
+
       <!-- 顯示卡片畫廊 -->
       <div class="gallery-grid q-mt-lg">
         <q-card
-          v-for="(card, index) in cards"
+          v-for="(card, index) in filteredCards"
           :key="index"
           class="gallery-card q-ma-sm"
           flat
@@ -40,9 +56,9 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue'
+import { defineComponent, ref, computed } from 'vue'
 import type { PropType } from 'vue'
-import { ref as dbRef, set, getDatabase } from 'firebase/database'
+import { set, ref as dbRef, getDatabase } from 'firebase/database'
 
 const database = getDatabase()
 
@@ -72,6 +88,15 @@ export default defineComponent({
   emits: ['delete-card'],
 
   setup(props) {
+    const searchQuery = ref('')
+
+    // 添加過濾邏輯
+    const filteredCards = computed(() => {
+      if (!searchQuery.value) return props.cards
+      const query = searchQuery.value.toLowerCase()
+      return props.cards.filter((card) => card.description.toLowerCase().includes(query))
+    })
+
     const playCardAudio = (text: string) => {
       if (text) {
         const utterance = new SpeechSynthesisUtterance(text)
@@ -91,6 +116,8 @@ export default defineComponent({
     return {
       playCardAudio,
       deleteCard,
+      searchQuery,
+      filteredCards,
     }
   },
 })
@@ -173,5 +200,10 @@ export default defineComponent({
 .gallery-image {
   object-fit: cover;
   border-radius: 8px 8px 0 0;
+}
+
+.search-input {
+  width: 100%;
+  max-width: 400px;
 }
 </style>
