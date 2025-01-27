@@ -179,6 +179,11 @@ const routes: RouteRecordRaw[] = [
     ],
   },
   {
+    path: '/story_backend',
+    component: () => import('layouts/MainLayout.vue'),
+    children: [{ path: '', component: () => import('pages/StoryPage_backend.vue') }],
+  },
+  {
     path: '/what_this_this',
     component: () => import('layouts/MainLayout.vue'),
     children: [
