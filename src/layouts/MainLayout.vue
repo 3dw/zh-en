@@ -597,6 +597,16 @@ export default defineComponent({
           await setPersistence(auth, browserLocalPersistence)
         }
 
+        // 配置 Google Provider
+        googleAuthProvider.setCustomParameters({
+          // 強制顯示帳號選擇視窗
+          prompt: 'select_account',
+          // 建議使用 popup 模式
+          display: 'popup',
+          // 允許在 iOS 上使用 popup
+          mobile: 'true',
+        })
+
         const result = await signInWithPopup(auth, googleAuthProvider)
         console.log('登入成功:', result.user)
 
@@ -633,6 +643,8 @@ export default defineComponent({
         showLoginDialog.value = false
       } catch (error) {
         console.error('登入失敗:', error)
+        // 顯示錯誤訊息給使用者
+        alert('登入失敗，請確認是否允許彈出視窗，並再試一次')
       }
     }
 
