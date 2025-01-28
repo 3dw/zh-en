@@ -228,7 +228,7 @@
             </q-item-section>
             <q-item-section>看圖學單字</q-item-section>
           </q-item>
-          <q-item clickable to="/what_this_this" class="op-drawer-item">
+          <q-item clickable to="/what_is_this" class="op-drawer-item">
             <q-item-section avatar>
               <q-icon name="camera_alt" />
             </q-item-section>

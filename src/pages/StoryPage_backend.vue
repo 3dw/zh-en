@@ -273,10 +273,10 @@ export default defineComponent({
         }
 
         // 步驟 3: 生成圖片
-        for (let i = 0; i < storyParagraphs.value.length; i++) {
-          const paragraph = storyParagraphs.value[i]
+        for (let i = 0; i < translatedParagraphs.value.length; i++) {
+          const paragraph = translatedParagraphs.value[i]
 
-          progressMessage.value = `正在生成配圖...${i + 1}/${storyParagraphs.value.length}`
+          progressMessage.value = `正在生成配圖...${i + 1}/${translatedParagraphs.value.length}`
           const imagesResponse = await fetch(
             'https://zh-en-backend.alearn13994229.workers.dev/generate-image-by-single-paragraph',
             {
