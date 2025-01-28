@@ -215,7 +215,7 @@
           </q-item>
           <q-item clickable to="/story_backend" class="op-drawer-item">
             <q-item-section avatar>
-              <q-icon name="music_note" />
+              <q-icon name="image" />
             </q-item-section>
             <q-item-section>英文睡前故事</q-item-section>
           </q-item>

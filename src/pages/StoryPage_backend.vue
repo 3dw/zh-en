@@ -136,6 +136,14 @@
           <q-btn
             flat
             color="primary"
+            label="列印故事"
+            :disable="loading"
+            @click="printStory"
+            icon="print"
+          />
+          <q-btn
+            flat
+            color="primary"
             label="重新生成"
             :disable="loading"
             @click="generateStory"
@@ -184,6 +192,19 @@ export default defineComponent({
     const audioPlayer = ref<HTMLAudioElement | null>(null)
     const storySection = ref<HTMLElement | null>(null)
 
+    // 列印故事
+    const printStory = () => {
+      console.log('列印故事')
+      // 列印故事
+      if (generatedStory.value) {
+        window.print()
+      } else {
+        $q.notify({
+          type: 'negative',
+          message: '故事尚未生成',
+        })
+      }
+    }
     // 修改 generateStory 函數
     const generateStory = async () => {
       try {
@@ -399,6 +420,7 @@ export default defineComponent({
       translatedParagraphs,
       audioPlayer,
       storySection,
+      printStory,
       generateStory,
       audioEnded,
       ageOptions,
