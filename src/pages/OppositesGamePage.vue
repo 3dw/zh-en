@@ -251,9 +251,9 @@ export default defineComponent({
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 2rem;
+  padding: 1rem;
   position: relative;
-  min-height: 400px; /* 確保有足夠的空間 */
+  min-height: 300px;
 }
 
 .tug-line {
@@ -383,5 +383,115 @@ export default defineComponent({
 .left-phrase:hover,
 .right-phrase:hover {
   opacity: 1;
+}
+
+/* 添加 RWD 樣式 */
+@media (max-width: 600px) {
+  .tug-of-war {
+    flex-direction: column;
+    min-height: auto;
+    gap: 2rem;
+  }
+
+  .phrase-container {
+    flex: 1;
+    width: 100%;
+    padding: 0.5rem;
+  }
+
+  .tug-line {
+    width: 100%;
+    margin: 1rem 0;
+  }
+
+  .phrase-image {
+    width: 120px;
+    height: 120px;
+  }
+
+  .text-h5 {
+    font-size: 1.2rem;
+  }
+
+  .text-subtitle2 {
+    font-size: 0.9rem;
+  }
+
+  .health-point {
+    width: 12px;
+    height: 12px;
+  }
+
+  .arrow {
+    font-size: 18px;
+  }
+
+  .left-arrow {
+    left: -20px;
+  }
+
+  .right-arrow {
+    right: -20px;
+  }
+
+  .tug-point {
+    width: 20px;
+    height: 20px;
+  }
+
+  .q-card {
+    margin: 0.5rem;
+  }
+}
+
+/* 超小螢幕的額外調整 */
+@media (max-width: 320px) {
+  .tug-of-war {
+    padding: 0.5rem;
+  }
+
+  .phrase-image {
+    width: 100px;
+    height: 100px;
+  }
+
+  .text-h5 {
+    font-size: 1rem;
+  }
+
+  .text-subtitle2 {
+    font-size: 0.8rem;
+  }
+
+  .health-point {
+    width: 10px;
+    height: 10px;
+  }
+
+  .q-btn {
+    padding: 4px;
+    min-height: 32px;
+  }
+}
+
+/* 確保內容不會超出容器 */
+.q-page {
+  overflow-x: hidden;
+}
+
+.q-card {
+  overflow: hidden;
+}
+
+/* 優化圖片容器 */
+.phrase-image {
+  object-fit: contain;
+  max-width: 100%;
+}
+
+/* 優化文字換行 */
+.phrase-text {
+  word-break: break-word;
+  hyphens: auto;
 }
 </style>
