@@ -86,7 +86,6 @@
               label="開始創建故事"
               :loading="loading"
               class="submit-btn"
-              icon="magic_button"
             />
           </div>
         </q-form>
@@ -587,5 +586,90 @@ export default defineComponent({
 audio {
   width: 100%;
   height: 40px;
+}
+
+/* 列印樣式設定 */
+@media print {
+  /* 隱藏不需要列印的元素 */
+  .form-card,
+  .submit-btn,
+  .audio-player,
+  .q-btn,
+  .q-dialog {
+    display: none !important;
+  }
+
+  /* 調整列印時的整體樣式 */
+  .story-page {
+    background: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .story-section {
+    margin: 0;
+    padding: 0;
+  }
+
+  .story-card {
+    box-shadow: none;
+    padding: 0 !important;
+  }
+
+  /* 調整故事內容的列印樣式 */
+  .story-content {
+    page-break-inside: avoid;
+    break-inside: avoid;
+    box-shadow: none;
+    padding: 0;
+    font-size: 12pt;
+    line-height: 1.6;
+  }
+
+  /* 確保圖片正確顯示 */
+  .story-image {
+    page-break-inside: avoid;
+    break-inside: avoid;
+  }
+
+  .story-image img {
+    max-width: 100%;
+    height: auto;
+  }
+
+  /* 調整標題樣式 */
+  .story-title {
+    font-size: 18pt;
+    margin-bottom: 1cm;
+  }
+
+  /* 設定頁面邊距 */
+  @page {
+    margin: 2cm;
+  }
+
+  /* 調整段落分頁控制 */
+  .paragraph-section {
+    margin-bottom: 1cm;
+    padding-bottom: 0;
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+    display: block;
+  }
+
+  /* 確保段落和圖片在同一頁 */
+  .story-content,
+  .story-image {
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+    display: block;
+  }
+
+  /* 強制每個段落區塊保持完整 */
+  .row {
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+    display: block;
+  }
 }
 </style>
