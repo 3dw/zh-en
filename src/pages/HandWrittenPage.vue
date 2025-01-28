@@ -48,7 +48,7 @@
         </div>
 
         <!-- 提示區域 -->
-        <div class="text-center q-mt-md">
+        <div class="text-center q-mt-md" v-if="devMode">
           <q-btn flat color="info" icon="help" label="顯示筆順" @click="showHint = true" />
         </div>
       </div>
@@ -93,6 +93,12 @@ import axios from 'axios'
 
 export default defineComponent({
   name: 'HandWrittenPage',
+  props: {
+    devMode: {
+      type: Boolean,
+      default: false,
+    },
+  },
   setup() {
     const canvas = ref<HTMLCanvasElement | null>(null)
     const ctx = ref<CanvasRenderingContext2D | null>(null)
@@ -124,7 +130,10 @@ export default defineComponent({
     const sayPleaseWrite = () => {
       console.log('currentLetter.value:', currentLetter.value)
       const speech = new SpeechSynthesisUtterance(
-        'Please write the letter: ' + detectLetterCase(currentLetter.value) + ' ' + currentLetter.value,
+        'Please write the letter: ' +
+          detectLetterCase(currentLetter.value) +
+          ' ' +
+          currentLetter.value,
       )
       speech.lang = 'en'
       speech.rate = 1.2

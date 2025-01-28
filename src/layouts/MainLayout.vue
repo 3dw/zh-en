@@ -414,6 +414,7 @@
     <!-- 主要頁面內容 -->
     <q-page-container>
       <router-view
+        :dev-mode="devMode"
         :cards="cards"
         :user="user"
         :users="users"
