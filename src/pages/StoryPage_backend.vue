@@ -135,6 +135,14 @@
           <q-btn
             flat
             color="primary"
+            label="下載語音"
+            :disable="loading || !generatedStory?.audioUrl"
+            @click="downloadAudio"
+            icon="download"
+          />
+          <q-btn
+            flat
+            color="primary"
             label="列印故事"
             :disable="loading"
             @click="printStory"
@@ -355,6 +363,39 @@ export default defineComponent({
       console.log('音頻播放結束')
     }
 
+    // 下載語音檔案
+    const downloadAudio = async () => {
+      try {
+        if (!generatedStory.value?.audioUrl) {
+          throw new Error('找不到音頻檔案')
+        }
+
+        const response = await fetch(generatedStory.value.audioUrl)
+        const blob = await response.blob()
+        const url = window.URL.createObjectURL(blob)
+        const a = document.createElement('a')
+        a.href = url
+        a.download = `${formData.childName}的故事.mp3`
+        document.body.appendChild(a)
+        a.click()
+        window.URL.revokeObjectURL(url)
+        document.body.removeChild(a)
+
+        $q.notify({
+          type: 'positive',
+          message: '音頻檔案下載成功！',
+          position: 'top',
+        })
+      } catch (error) {
+        $q.notify({
+          type: 'negative',
+          message: `下載失敗：${error instanceof Error ? error.message : '請稍後重試'}`,
+          position: 'top',
+        })
+        console.error('下載音頻時發生錯誤：', error)
+      }
+    }
+
     // 年齡段選項
     const ageOptions = [
       {
@@ -422,6 +463,7 @@ export default defineComponent({
       printStory,
       generateStory,
       audioEnded,
+      downloadAudio,
       ageOptions,
       storyTypeOptions,
     }
@@ -602,18 +644,18 @@ audio {
   /* 調整列印時的整體樣式 */
   .story-page {
     background: none;
-    padding: 0;
+    padding: 1em;
     margin: 0;
   }
 
   .story-section {
-    margin: 0;
+    margin: 1em;
     padding: 0;
   }
 
   .story-card {
     box-shadow: none;
-    padding: 0 !important;
+    padding: 1em !important;
   }
 
   /* 調整故事內容的列印樣式 */
@@ -633,8 +675,9 @@ audio {
   }
 
   .story-image img {
-    max-width: 100%;
+    max-width: 50%;
     height: auto;
+    margin: 0 auto;
   }
 
   /* 調整標題樣式 */
