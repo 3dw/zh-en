@@ -1,5 +1,5 @@
 <template>
-  <q-layout view="lHh Lpr lFf" class="op-layout">
+  <q-layout view="lHh Lpr lFf" class="op-layout print-hide">
     <q-dialog v-model="showLoginDialog">
       <q-card>
         <q-card-section>
@@ -19,7 +19,7 @@
     </q-dialog>
 
     <!-- 頂部導覽列 (Header) -->
-    <q-header elevated class="op-header-bg text-white">
+    <q-header elevated class="op-header-bg text-white print-hide">
       <q-toolbar class="op-toolbar">
         <!-- Drawer 切換按鈕 -->
         <q-btn
@@ -78,7 +78,7 @@
       show-if-above
       bordered
       content-class="op-drawer-bg"
-      class="text-dark"
+      class="text-dark print-hide"
     >
       <q-list padding>
         <q-item-label header class="op-drawer-header">常用字卡</q-item-label>
@@ -215,7 +215,7 @@
           </q-item>
           <q-item clickable to="/story_backend" class="op-drawer-item">
             <q-item-section avatar>
-              <q-icon name="music_note" />
+              <q-icon name="image" />
             </q-item-section>
             <q-item-section>英文睡前故事</q-item-section>
           </q-item>

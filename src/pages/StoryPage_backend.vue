@@ -8,7 +8,7 @@
         <div class="subtitle">為您的孩子創造獨特的睡前故事</div>
       </h2>
 
-      <q-card class="form-card q-pa-xl">
+      <q-card class="form-card q-pa-xl print-hide">
         <q-form @submit.prevent="generateStory" class="q-gutter-md">
           <!-- 孩子名字輸入 -->
           <div class="input-group">
@@ -86,7 +86,6 @@
               label="開始創建故事"
               :loading="loading"
               class="submit-btn"
-              icon="magic_button"
             />
           </div>
         </q-form>
@@ -121,7 +120,7 @@
         </div>
 
         <!-- 音頻播放器 -->
-        <div v-if="generatedStory.audioUrl" class="audio-player">
+        <div v-if="generatedStory.audioUrl" class="audio-player print-hide">
           <audio
             ref="audioPlayer"
             :src="generatedStory.audioUrl"
@@ -131,8 +130,16 @@
           />
         </div>
 
-        <!-- 重新生成按鈕 -->
-        <div class="row justify-end q-mt-md">
+        <!-- 按鈕 -->
+        <div class="row justify-end q-mt-md print-hide">
+          <q-btn
+            flat
+            color="primary"
+            label="列印故事"
+            :disable="loading"
+            @click="printStory"
+            icon="print"
+          />
           <q-btn
             flat
             color="primary"
@@ -183,6 +190,18 @@ export default defineComponent({
     const translatedParagraphs = ref<string[]>([])
     const audioPlayer = ref<HTMLAudioElement | null>(null)
     const storySection = ref<HTMLElement | null>(null)
+
+    const printStory = () => {
+      if (generatedStory.value) {
+        window.print()
+      } else {
+        $q.notify({
+          type: 'negative',
+          message: '請先生成故事',
+          position: 'top',
+        })
+      }
+    }
 
     // 修改 generateStory 函數
     const generateStory = async () => {
@@ -403,6 +422,7 @@ export default defineComponent({
       audioEnded,
       ageOptions,
       storyTypeOptions,
+      printStory,
     }
   },
 })
@@ -565,5 +585,73 @@ export default defineComponent({
 audio {
   width: 100%;
   height: 40px;
+}
+
+/* 列印相關樣式 */
+@media print {
+  /* 隱藏不需要列印的元素 */
+  .print-hide {
+    display: none !important;
+  }
+
+  /* 調整頁面邊距和背景 */
+  .story-page {
+    background: none;
+    padding: 0;
+    margin: 0;
+    min-height: auto;
+  }
+
+  .story-section {
+    margin: 0;
+    padding: 0;
+  }
+
+  .story-card {
+    box-shadow: none;
+    padding: 20px !important;
+    margin: 0 !important;
+    background-color: white !important;
+  }
+
+  /* 確保內容可見 */
+  .paragraph-section {
+    display: flex !important;
+    flex-direction: column !important;
+    page-break-inside: avoid;
+    break-inside: avoid;
+    margin: 0 0 30px 0 !important;
+    padding: 0 !important;
+  }
+
+  /* 調整段落內容和圖片的布局 */
+  .story-content {
+    width: 100% !important;
+    max-width: 100% !important;
+    flex: 1 !important;
+    background-color: white !important;
+    padding: 0 !important;
+    margin-bottom: 15px !important;
+  }
+
+  .story-image {
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 0 !important;
+  }
+
+  /* 確保文字顏色可見 */
+  .story-title,
+  .story-content p {
+    color: black !important;
+    print-color-adjust: exact;
+    -webkit-print-color-adjust: exact;
+  }
+
+  /* 調整圖片大小 */
+  .q-img {
+    max-height: 300px !important;
+    object-fit: contain !important;
+  }
 }
 </style>
