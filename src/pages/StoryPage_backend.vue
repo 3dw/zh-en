@@ -106,6 +106,7 @@
         >
           <!-- 段落文字 -->
           <div class="story-content col-12 col-md-7">
+            <p class="text-body1">{{ translatedParagraphs[index] }}</p>
             <p class="text-body1">{{ paragraph }}</p>
           </div>
 
@@ -179,6 +180,7 @@ export default defineComponent({
     const generatedStory = ref<{ content: string; audioUrl: string } | null>(null)
     const storyParagraphs = ref<string[]>([])
     const paragraphImages = ref<string[]>([])
+    const translatedParagraphs = ref<string[]>([])
     const audioPlayer = ref<HTMLAudioElement | null>(null)
     const storySection = ref<HTMLElement | null>(null)
 
@@ -187,6 +189,12 @@ export default defineComponent({
       try {
         loading.value = true
         showProgress.value = true
+
+        // 清空之前的內容
+        storyParagraphs.value = []
+        paragraphImages.value = []
+        translatedParagraphs.value = []
+        generatedStory.value = null
 
         // 步驟 1: 生成故事內容
         progressMessage.value = '正在創作故事...'
@@ -218,7 +226,25 @@ export default defineComponent({
         // 將故事分段
         storyParagraphs.value = storyData.content.split('\n\n').filter((p: string) => p.trim())
 
-        // 步驟 2: 生成圖片
+        // 步驟 2: 翻譯成英文
+        for (let i = 0; i < storyParagraphs.value.length; i++) {
+          progressMessage.value = `正在翻譯...${i + 1}/${storyParagraphs.value.length}`
+          const paragraph = storyParagraphs.value[i]
+          const translatedParagraph = await fetch(
+            'https://zh-en-backend.alearn13994229.workers.dev/translate-zh-to-en',
+            {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({ content: paragraph }),
+            },
+          )
+          const translatedText = await translatedParagraph.text()
+          translatedParagraphs.value.push(translatedText)
+        }
+
+        // 步驟 3: 生成圖片
         for (let i = 0; i < storyParagraphs.value.length; i++) {
           const paragraph = storyParagraphs.value[i]
 
@@ -244,7 +270,7 @@ export default defineComponent({
           paragraphImages.value.push(imagesData.image)
         }
 
-        // 步驟 3: 生成語音
+        // 步驟 4: 生成語音
         progressMessage.value = '正在生成語音...'
         const voiceResponse = await fetch(
           'https://zh-en-backend.alearn13994229.workers.dev/StoryGeneration',
@@ -255,7 +281,7 @@ export default defineComponent({
             },
             body: JSON.stringify({
               step: 3,
-              content: storyData.content,
+              content: translatedParagraphs.value.join(),
             }),
           },
         )
@@ -324,7 +350,12 @@ export default defineComponent({
       {
         label: '8-10歲 (小學)',
         value: '8-10',
-        description: '較長的故事，包含更豐富的詞彙和情節',
+        description: '較長的故事，豐富的詞彙和情節',
+      },
+      {
+        label: '10+歲 (小學高年級以上)',
+        value: '10+',
+        description: '更長的故事，更豐富的詞彙和情節',
       },
     ]
 
@@ -365,6 +396,7 @@ export default defineComponent({
       generatedStory,
       storyParagraphs,
       paragraphImages,
+      translatedParagraphs,
       audioPlayer,
       storySection,
       generateStory,

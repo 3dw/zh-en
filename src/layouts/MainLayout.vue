@@ -211,13 +211,13 @@
             <q-item-section avatar>
               <q-icon name="music_note" />
             </q-item-section>
-            <q-item-section>英文睡前故事</q-item-section>
+            <q-item-section>英文睡前故事(old_version)</q-item-section>
           </q-item>
-          <q-item clickable to="/story_backend" class="op-drawer-item" v-if="devMode">
+          <q-item clickable to="/story_backend" class="op-drawer-item">
             <q-item-section avatar>
               <q-icon name="music_note" />
             </q-item-section>
-            <q-item-section>英文睡前故事_後端</q-item-section>
+            <q-item-section>英文睡前故事</q-item-section>
           </q-item>
         </q-expansion-item>
 
@@ -523,7 +523,7 @@ export default defineComponent({
       showLoginDialog.value = !showLoginDialog.value
     }
 
-    const devMode = ref(true)
+    const devMode = ref(false)
     const showLoginDialog = ref(false)
 
     const logout = () => {
