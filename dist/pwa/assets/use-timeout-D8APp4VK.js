@@ -1,0 +1,1 @@
+import{am as r,f as s,as as i,j as m}from"./index-RHGYJRSl.js";function l(){let e=null;const n=m();function t(){e!==null&&(clearTimeout(e),e=null)}return r(t),s(t),{removeTimeout:t,registerTimeout(o,u){t(),i(n)===!1&&(e=setTimeout(()=>{e=null,o()},u))}}}export{l as u};
