@@ -81,7 +81,7 @@
             @click="uploadCard"
           />
 
-          <div class="q-mt-sm">
+          <div class="q-mt-sm" v-if="uid">
             <!-- check box -->
             <q-checkbox v-model="isChecked" label="我已閱讀並同意"></q-checkbox>
 
