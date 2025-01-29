@@ -178,7 +178,8 @@ import { useQuasar } from 'quasar'
 
 export default defineComponent({
   name: 'StoryPageBackend',
-  setup() {
+  emits: ['closeLeftDrawer'],
+  setup(props, { emit }) {
     const $q = useQuasar()
     const loading = ref(false)
 
@@ -199,12 +200,14 @@ export default defineComponent({
     const audioPlayer = ref<HTMLAudioElement | null>(null)
     const storySection = ref<HTMLElement | null>(null)
 
-    // 列印故事
+    // 修改 printStory 函數
     const printStory = () => {
       console.log('列印故事')
-      // 列印故事
       if (generatedStory.value) {
-        window.print()
+        emit('closeLeftDrawer')
+        setTimeout(() => {
+          window.print()
+        }, 1000)
       } else {
         $q.notify({
           type: 'negative',
@@ -212,6 +215,7 @@ export default defineComponent({
         })
       }
     }
+
     // 修改 generateStory 函數
     const generateStory = async () => {
       try {

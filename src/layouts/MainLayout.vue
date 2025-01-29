@@ -421,6 +421,7 @@
         :uid="uid"
         @earn-xp="earnXP"
         @toggle-drawer="toggleLeftDrawer"
+        @close-drawer="closeLeftDrawer"
       />
     </q-page-container>
   </q-layout>
@@ -518,6 +519,10 @@ export default defineComponent({
 
     const toggleLeftDrawer = () => {
       leftDrawerOpen.value = !leftDrawerOpen.value
+    }
+
+    const closeLeftDrawer = () => {
+      leftDrawerOpen.value = false
     }
 
     const toggleLogin = () => {
@@ -676,6 +681,7 @@ export default defineComponent({
       xpProgress,
       earnXP,
       toggleLeftDrawer,
+      closeLeftDrawer,
       devMode,
       setXPandLevel,
     }
