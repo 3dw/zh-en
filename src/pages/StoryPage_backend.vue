@@ -585,9 +585,10 @@ export default defineComponent({
 .story-card {
   margin-top: 2rem;
   border-radius: 24px;
-  background-color: rgba(255, 255, 255, 0.95) !important;
+  background-color: rgba(255, 255, 255, 0.92) !important;
   box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
   padding: 2rem;
+  backdrop-filter: blur(10px);
 }
 
 .story-title {
@@ -605,9 +606,10 @@ export default defineComponent({
   font-size: 1.15rem;
   color: #34495e;
   padding: 1.5rem;
-  background-color: #fff;
+  background-color: rgba(255, 255, 255, 0.95);
   border-radius: 8px;
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.03);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(5px);
   font-family: var(--font-primary);
 }
 
@@ -616,6 +618,7 @@ export default defineComponent({
   overflow: hidden;
   position: sticky;
   top: 2rem;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
 }
 
 .paragraph-section {
@@ -630,10 +633,11 @@ export default defineComponent({
 .audio-player {
   margin-top: 2rem;
   padding-top: 1rem;
-  background-color: #fff;
+  background-color: rgba(255, 255, 255, 0.95);
   border-radius: 8px;
   padding: 1rem;
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.03);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(5px);
 }
 
 audio {
@@ -826,5 +830,26 @@ audio {
     margin-left: auto;
     margin-right: auto;
   }
+}
+
+/* 故事區塊的背景 */
+.story-section {
+  position: relative;
+  z-index: 1;
+  padding: 2rem;
+  margin-top: 3rem;
+  background: linear-gradient(135deg, rgba(30, 27, 46, 0.7) 0%, rgba(45, 38, 64, 0.7) 100%);
+  border-radius: 32px;
+  backdrop-filter: blur(10px);
+}
+
+/* 調整列印樣式 */
+@media print {
+  .story-section {
+    background: none;
+    margin: 1em;
+    padding: 0;
+  }
+  /* ... 其他列印樣式保持不變 ... */
 }
 </style>
