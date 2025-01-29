@@ -1,95 +1,104 @@
 <template>
-  <q-page class="story-page">
+  <q-page class="story-page-backend">
     <div class="story-container">
       <h2 class="hero-title">
         <q-icon name="auto_stories" size="md" color="primary" class="q-mr-sm" />
-        Create your own
-        <span class="highlight">Bedtime Stories</span>
-        <div class="subtitle">為您的孩子創造獨特的睡前故事</div>
+        Create <span class="highlight">Bedtime Stories</span>
+        <div class="subtitle">創造獨特的英文睡前故事</div>
       </h2>
 
-      <q-card class="form-card q-pa-xl">
-        <q-form @submit.prevent="generateStory" class="q-gutter-md">
-          <!-- 孩子名字輸入 -->
-          <div class="input-group">
-            <q-input
-              v-model="formData.childName"
-              outlined
-              label="孩子的名字"
-              :rules="[
-                (val) => !!val || '請輸入名字',
-                (val) => val.length <= 20 || '名字不能超過20個字符',
-              ]"
-            >
-              <template v-slot:prepend>
-                <q-icon name="person" />
-              </template>
-              <template v-slot:hint> 可以輸入中文或英文名字 </template>
-            </q-input>
-          </div>
+      <div class="content-wrapper">
+        <!-- 表單卡片 -->
+        <div class="form-wrapper">
+          <q-card class="form-card q-pa-xl">
+            <q-form @submit.prevent="generateStory" class="q-gutter-md">
+              <!-- 孩子名字輸入 -->
+              <div class="input-group">
+                <q-input
+                  v-model="formData.childName"
+                  outlined
+                  label="孩子的名字"
+                  :rules="[
+                    (val) => !!val || '請輸入名字',
+                    (val) => val.length <= 20 || '名字不能超過20個字符',
+                  ]"
+                >
+                  <template v-slot:prepend>
+                    <q-icon name="person" />
+                  </template>
+                  <template v-slot:hint> 可以輸入中文或英文名字 </template>
+                </q-input>
+              </div>
 
-          <!-- 年齡段選擇 -->
-          <div class="input-group">
-            <q-select
-              v-model="formData.ageGroup"
-              :options="ageOptions"
-              outlined
-              label="年齡段"
-              emit-value
-              map-options
-              :rules="[(val) => !!val || '請選擇年齡段']"
-            >
-              <template v-slot:prepend>
-                <q-icon name="child_care" />
-              </template>
-              <template v-slot:option="scope">
-                <q-item v-bind="scope.itemProps">
-                  <q-item-section>
-                    <q-item-label>{{ scope.opt.label }}</q-item-label>
-                    <q-item-label caption>{{ scope.opt.description }}</q-item-label>
-                  </q-item-section>
-                </q-item>
-              </template>
-            </q-select>
-          </div>
+              <!-- 年齡段選擇 -->
+              <div class="input-group">
+                <q-select
+                  v-model="formData.ageGroup"
+                  :options="ageOptions"
+                  outlined
+                  label="年齡段"
+                  emit-value
+                  map-options
+                  :rules="[(val) => !!val || '請選擇年齡段']"
+                >
+                  <template v-slot:prepend>
+                    <q-icon name="child_care" />
+                  </template>
+                  <template v-slot:option="scope">
+                    <q-item v-bind="scope.itemProps">
+                      <q-item-section>
+                        <q-item-label>{{ scope.opt.label }}</q-item-label>
+                        <q-item-label caption>{{ scope.opt.description }}</q-item-label>
+                      </q-item-section>
+                    </q-item>
+                  </template>
+                </q-select>
+              </div>
 
-          <!-- 故事類型選擇 -->
-          <div class="input-group">
-            <q-select
-              v-model="formData.storyType"
-              :options="storyTypeOptions"
-              outlined
-              label="故事類型"
-              emit-value
-              map-options
-              :rules="[(val) => !!val || '請選擇故事類型']"
-            >
-              <template v-slot:prepend>
-                <q-icon name="auto_stories" />
-              </template>
-              <template v-slot:option="scope">
-                <q-item v-bind="scope.itemProps">
-                  <q-item-section>
-                    <q-item-label>{{ scope.opt.label }}</q-item-label>
-                    <q-item-label caption>{{ scope.opt.description }}</q-item-label>
-                  </q-item-section>
-                </q-item>
-              </template>
-            </q-select>
-          </div>
+              <!-- 故事類型選擇 -->
+              <div class="input-group">
+                <q-select
+                  v-model="formData.storyType"
+                  :options="storyTypeOptions"
+                  outlined
+                  label="故事類型"
+                  emit-value
+                  map-options
+                  :rules="[(val) => !!val || '請選擇故事類型']"
+                >
+                  <template v-slot:prepend>
+                    <q-icon name="auto_stories" />
+                  </template>
+                  <template v-slot:option="scope">
+                    <q-item v-bind="scope.itemProps">
+                      <q-item-section>
+                        <q-item-label>{{ scope.opt.label }}</q-item-label>
+                        <q-item-label caption>{{ scope.opt.description }}</q-item-label>
+                      </q-item-section>
+                    </q-item>
+                  </template>
+                </q-select>
+              </div>
 
-          <!-- 提交按鈕 -->
-          <div class="row justify-center q-mt-lg">
-            <q-btn
-              type="submit"
-              color="primary"
-              label="開始創建故事"
-              :loading="loading"
-              class="submit-btn"
-            />
-          </div>
-        </q-form>
-      </q-card>
+              <!-- 提交按鈕 -->
+              <div class="row justify-center q-mt-lg">
+                <q-btn
+                  type="submit"
+                  color="primary"
+                  label="開始創建故事"
+                  :loading="loading"
+                  class="submit-btn"
+                />
+              </div>
+            </q-form>
+          </q-card>
+        </div>
+
+        <!-- 老虎圖片 -->
+        <div class="tiger-image">
+          <img src="/images/tiger.png" alt="Storyteller Tiger" />
+        </div>
+      </div>
     </div>
 
     <!-- 故事展示部分 -->
@@ -475,121 +484,119 @@ export default defineComponent({
 })
 </script>
 
-<style scoped>
-/* 若需要引入外部字體，可視需求增加下列字體 (範例為 Google Fonts) */
-/* @import url('https://fonts.googleapis.com/css2?family=Libre+Caslon+Text:wght@400;700&family=Poppins:wght@400;700&display=swap'); */
+<style>
+/* 引入 Google Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Libre+Caslon+Text:wght@400;700&family=Poppins:wght@400;600;700&display=swap');
 
-/* 建議可在 :root 中定義全站色彩、字體或其他參數，方便全域控管 */
-:root {
-  --primary-color: #8f68ee; /* 主色調，可參考 OscarStories 的紫色系 */
-  --secondary-color: #f6f0ff; /* 輔助色/淡色系 */
-  --bg-gradient-start: #fffefc; /* 漸層背景起始色 */
-  --bg-gradient-end: #fdf1f2; /* 漸層背景結束色 */
-
-  /* 字體示例：可換成你想使用的字體 */
-  --font-primary: 'Poppins', sans-serif;
-  --font-hero: 'Libre Caslon Text', serif;
-}
-
-.story-page {
-  /* 使用柔和漸層背景 */
-  background: linear-gradient(120deg, var(--bg-gradient-start) 0%, var(--bg-gradient-end) 100%);
+/* 直接設置背景色，只針對 story-page-backend */
+.story-page-backend {
+  background: linear-gradient(135deg, #1e1b2e 0%, #2d2640 100%) !important;
   min-height: 100vh;
   font-family: var(--font-primary);
-  color: #2c3e50;
+  color: #ffffff !important;
+  position: relative;
+  z-index: 0;
 }
 
 .story-container {
-  max-width: 720px;
+  max-width: 1200px;
   margin: 0 auto;
-  padding: 5rem 1rem 3rem;
+  width: 90%;
+  position: relative;
+  z-index: 1;
+  padding: 4rem 1rem;
   text-align: center;
 }
 
 .hero-title {
-  font-family: var(--font-hero);
+  font-family: 'Libre Caslon Text', serif;
   font-weight: 700;
-  font-size: 3rem;
-  color: #2c3e50;
+  font-size: 4rem;
+  color: #ffffff !important;
   margin-bottom: 2rem;
   position: relative;
   line-height: 1.2;
   display: inline-block;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
 .hero-title .highlight {
-  color: var(--primary-color);
+  color: #ffa352 !important;
   display: inline-block;
   margin-left: 0.25rem;
+  text-shadow: 0 2px 4px rgba(255, 163, 82, 0.3);
 }
 
 .subtitle {
   font-size: 1.2rem;
-  color: #636e72;
+  color: rgba(255, 255, 255, 0.8);
   margin-top: 0.5rem;
   font-weight: 400;
 }
 
+.content-wrapper {
+  display: flex;
+  gap: 2rem;
+  align-items: flex-start;
+  justify-content: center;
+  position: relative;
+}
+
+.form-wrapper {
+  flex: 1;
+  max-width: 600px;
+  min-width: 300px;
+}
+
 .form-card {
-  border-radius: 16px;
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.06);
-  background-color: #fff;
+  border-radius: 24px;
+  background-color: rgba(255, 255, 255, 0.95) !important;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
   text-align: left;
+  padding: 2rem;
 }
 
-.input-group {
-  margin-bottom: 1.5rem;
+/* 美化輸入框 */
+:deep(.q-field__control) {
+  border-radius: 12px;
+  height: 56px;
+  background: rgba(255, 255, 255, 0.9);
 }
 
+/* 美化按鈕 */
 .submit-btn {
-  background-color: var(--primary-color);
+  background: linear-gradient(45deg, #ffa352, #ffb77d) !important;
   color: #fff;
-  border-radius: 8px;
+  border-radius: 28px;
   min-width: 200px;
-  padding: 10px 20px;
+  padding: 12px 36px;
   font-weight: 600;
+  letter-spacing: 0.5px;
   transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(255, 163, 82, 0.3);
 
   &:hover {
-    background-color: #7b52e5; /* hover 狀態再深一點 */
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(255, 163, 82, 0.4);
   }
 }
 
-/* 響應式設計 */
-@media (max-width: 600px) {
-  .story-container {
-    padding: 2rem 1rem;
-  }
-
-  .hero-title {
-    font-size: 2rem;
-  }
-
-  .submit-btn {
-    width: 100%;
-    margin-top: 1rem;
-  }
-}
-
-.story-section {
-  max-width: 1200px;
-  margin: 0 auto;
-  scroll-margin-top: 2rem;
-}
-
+/* 故事卡片樣式 */
 .story-card {
   margin-top: 2rem;
-  border-radius: 16px;
-  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.06);
-  background-color: #fafafa;
+  border-radius: 24px;
+  background-color: rgba(255, 255, 255, 0.95) !important;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+  padding: 2rem;
 }
 
 .story-title {
-  font-family: var(--font-hero);
+  font-family: 'Libre Caslon Text', serif;
   font-weight: 700;
-  color: #2c3e50;
+  color: #ffa352;
   text-align: center;
-  font-size: 2.2rem;
+  font-size: 2.5rem;
+  margin-bottom: 1.5rem;
 }
 
 .story-content {
@@ -646,7 +653,7 @@ audio {
   }
 
   /* 調整列印時的整體樣式 */
-  .story-page {
+  .story-page-backend {
     background: none;
     padding: 1em;
     margin: 0;
@@ -717,6 +724,107 @@ audio {
     page-break-inside: avoid !important;
     break-inside: avoid !important;
     display: block;
+  }
+}
+
+/* 老虎圖片樣式 */
+.tiger-image {
+  flex: 1;
+  max-width: 500px;
+  position: sticky;
+  top: 2rem;
+  width: 35%;
+  min-width: 300px;
+  height: auto;
+  transition: all 0.3s ease;
+}
+
+.tiger-image img {
+  width: 100%;
+  height: auto;
+  object-fit: contain;
+  filter: drop-shadow(0 0 20px rgba(0, 0, 0, 0.2));
+}
+
+/* 響應式設計 */
+@media (min-width: 1441px) {
+  .tiger-image {
+    width: 30%;
+  }
+
+  .story-container {
+    max-width: 1400px;
+  }
+}
+
+@media (max-width: 1440px) {
+  .tiger-image {
+    width: 32%;
+  }
+}
+
+@media (max-width: 1200px) {
+  .tiger-image {
+    width: 28%;
+  }
+}
+
+@media (max-width: 992px) {
+  .content-wrapper {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .tiger-image {
+    margin: 2rem auto;
+    position: relative;
+    top: 0;
+  }
+
+  .form-wrapper {
+    width: 100%;
+  }
+
+  .story-container {
+    margin: 0 auto;
+    padding: 2rem 1rem;
+  }
+}
+
+@media (max-width: 600px) {
+  .tiger-image {
+    width: 200px;
+    margin: 1rem auto;
+  }
+
+  .story-container {
+    padding: 1rem;
+  }
+
+  .hero-title {
+    font-size: 2.5rem;
+  }
+}
+
+@media (max-width: 400px) {
+  .tiger-image {
+    width: 150px;
+  }
+
+  .story-container {
+    padding: 0.5rem;
+  }
+
+  .hero-title {
+    font-size: 2rem;
+  }
+}
+
+/* 處理側邊欄收合狀態 */
+@media (min-width: 992px) {
+  .q-drawer--mini-animate + .q-page-container .story-container {
+    margin-left: auto;
+    margin-right: auto;
   }
 }
 </style>
