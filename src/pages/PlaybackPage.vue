@@ -169,7 +169,7 @@ export default defineComponent({
     // 步驟 1: 翻譯內容為英文
     const translateToEnglish = async (story: string) => {
       progressMessage.value = '正在翻譯故事內容...'
-      const response = await fetch(
+      const translateToEnglishResponse = await fetch(
         'https://zh-en-backend.alearn13994229.workers.dev/translate-zh-to-en',
         {
           method: 'POST',
@@ -179,24 +179,29 @@ export default defineComponent({
           body: JSON.stringify({ content: story }),
         },
       )
-      console.log('111111response', response)
-      if (!response.ok) throw new Error('翻譯失敗')
-      const data = await response.json()
+      console.log('第一步驟翻譯內容為英文response', translateToEnglishResponse)
+      if (!translateToEnglishResponse.ok) throw new Error('翻譯失敗')
+      const data = await translateToEnglishResponse.json()
+      console.log('第一步驟翻譯內容為英文data', data)
       return data
     }
 
     // 步驟 2: 分析情緒
     const analyzeEmotions = async (englishText: string) => {
       progressMessage.value = '正在分析故事情緒...'
-      const response = await fetch('https://zh-en-backend.alearn13994229.workers.dev/emotions', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
+      const analyzeEmotionsResponse = await fetch(
+        'https://zh-en-backend.alearn13994229.workers.dev/emotions',
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ content: englishText }),
         },
-        body: JSON.stringify({ content: englishText }),
-      })
-      if (!response.ok) throw new Error('情緒分析失敗')
-      return (await response.json()) as EmotionAnalysis
+      )
+      if (!analyzeEmotionsResponse.ok) throw new Error('情緒分析失敗')
+      console.log('第二步驟情緒分析結果response', analyzeEmotionsResponse)
+      return (await analyzeEmotionsResponse.json()) as EmotionAnalysis
     }
 
     // 步驟 3: 生成情緒圖片
@@ -249,8 +254,13 @@ export default defineComponent({
 
         // 執行各個步驟
         const englishContent = await translateToEnglish(story)
-        const emotionsResult = await analyzeEmotions(englishContent.content)
+        console.log('在try執行地方翻譯內容為英文englishContent', englishContent)
+        //console.log('在try執行地方翻譯內容為英文englishContent.content', englishContent.content)
+        const emotionsResult = await analyzeEmotions(englishContent)
+        console.log('在try執行地方情緒分析結果emotionsResult', emotionsResult)
+        console.log('在try執行地方情緒分析結果emotionsResult.emotions', emotionsResult.emotions)
         const imagesResult = await generateEmotionImages(emotionsResult.emotions)
+        console.log('在try執行地方生成情緒圖片imagesResult', imagesResult)
         const result = await generateExpression(story, emotionsResult.emotions, imagesResult.images)
 
         expressionResult.value = result
