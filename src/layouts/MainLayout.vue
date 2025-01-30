@@ -529,7 +529,7 @@ export default defineComponent({
       showLoginDialog.value = !showLoginDialog.value
     }
 
-    const devMode = ref(true)
+    const devMode = ref(false)
     const showLoginDialog = ref(false)
 
     const logout = () => {

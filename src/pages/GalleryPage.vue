@@ -20,7 +20,7 @@
       </div>
 
       <!-- 顯示卡片畫廊 -->
-      <div class="gallery-grid q-mt-lg">
+      <div class="gallery-grid q-mt-lg flex flex-row-reverse flex-wrap-reverse">
         <q-card
           v-for="(card, index) in filteredCards"
           :key="index"
@@ -51,10 +51,13 @@
           </q-card-section>
           <q-card-section>
             <!-- 顯示圖片的createdAt 和 createdBy -->
-            <div class="text-body2">
+            <div class="text-body2" v-if="user && user.isAdmin">
               upload by
               <img :src="getPhotoById(card.createdBy || '未知')" class="avatar" />
               {{ (card.createdAt || '未知').split('T')[0] }}
+            </div>
+            <div class="text-body2" v-else>
+              upload at {{ (card.createdAt || '未知').split('T')[0] }}
             </div>
           </q-card-section>
         </q-card>
@@ -220,6 +223,7 @@ export default defineComponent({
 }
 
 .gallery-card {
+  max-width: 280px;
   transition: transform 0.2s;
 
   &:hover {

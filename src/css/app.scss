@@ -16,3 +16,15 @@ h2 {
 .search-bar input {
   font-size: 18px;
 }
+
+.flex {
+  display: flex !important;
+}
+
+.flex-row-reverse {
+  flex-direction: row-reverse;
+}
+
+.flex-wrap-reverse {
+  flex-wrap: wrap-reverse;
+}
