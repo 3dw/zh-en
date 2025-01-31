@@ -132,13 +132,13 @@ interface Emotion {
   description: string
 }
 
-interface EmotionAnalysis {
+/* interface EmotionAnalysis {
   emotions: {
     name: string
     intensity: number
     description: string
   }[]
-}
+} */
 
 interface EmotionImageResult {
   images: string[]
@@ -170,7 +170,7 @@ export default defineComponent({
     const translateToEnglish = async (story: string) => {
       progressMessage.value = '正在翻譯故事內容...'
       const translateToEnglishResponse = await fetch(
-        'https://zh-en-backend.alearn13994229.workers.dev/translate-zh-to-en',
+        'https://zh-en-backend.alearn13994229.workers.dev/translateToEnglish',
         {
           method: 'POST',
           headers: {
@@ -179,9 +179,10 @@ export default defineComponent({
           body: JSON.stringify({ content: story }),
         },
       )
-      console.log('第一步驟翻譯內容為英文response', translateToEnglishResponse)
+      //console.log('第一步驟翻譯內容為英文response', translateToEnglishResponse)
       if (!translateToEnglishResponse.ok) throw new Error('翻譯失敗')
-      const data = await translateToEnglishResponse.json()
+
+      const data = await translateToEnglishResponse.text()
       console.log('第一步驟翻譯內容為英文data', data)
       return data
     }
@@ -201,12 +202,20 @@ export default defineComponent({
       )
       if (!analyzeEmotionsResponse.ok) throw new Error('情緒分析失敗')
       console.log('第二步驟情緒分析結果response', analyzeEmotionsResponse)
-      return (await analyzeEmotionsResponse.json()) as EmotionAnalysis
+      const data = await analyzeEmotionsResponse.json()
+      // 將字符串轉換為情緒對象數組
+      const emotionsList = data.emotions[0].split(', ').map((name: string) => ({
+        name,
+        intensity: 100 / 3, // 平均分配強度
+        description: `Feeling of ${name.toLowerCase()}`,
+      }))
+      return { emotions: emotionsList }
     }
 
     // 步驟 3: 生成情緒圖片
     const generateEmotionImages = async (emotions: Emotion[]) => {
       progressMessage.value = '正在生成情緒圖片...'
+      console.log('生成圖片的情緒數據:', emotions)
       const response = await fetch(`https://zh-en-backend.alearn13994229.workers.dev/images`, {
         method: 'POST',
         headers: {
@@ -215,7 +224,9 @@ export default defineComponent({
         body: JSON.stringify({ emotions }),
       })
       if (!response.ok) throw new Error('圖片生成失敗')
-      return (await response.json()) as EmotionImageResult
+      const result = await response.json()
+      console.log('生成的圖片結果:', result)
+      return result as EmotionImageResult
     }
 
     // 步驟 4: 生成表達內容
@@ -252,21 +263,40 @@ export default defineComponent({
       try {
         const story = userStory.value.trim()
 
-        // 執行各個步驟
         const englishContent = await translateToEnglish(story)
         console.log('在try執行地方翻譯內容為英文englishContent', englishContent)
-        //console.log('在try執行地方翻譯內容為英文englishContent.content', englishContent.content)
+
         const emotionsResult = await analyzeEmotions(englishContent)
         console.log('在try執行地方情緒分析結果emotionsResult', emotionsResult)
         console.log('在try執行地方情緒分析結果emotionsResult.emotions', emotionsResult.emotions)
+
         const imagesResult = await generateEmotionImages(emotionsResult.emotions)
         console.log('在try執行地方生成情緒圖片imagesResult', imagesResult)
+
+        // 確保 imagesResult.images 存在且為數組
+        if (!imagesResult.images || !Array.isArray(imagesResult.images)) {
+          throw new Error('圖片生成結果格式不正確')
+        }
+        console.log('表達分析前確認story數值', story)
+        console.log('表達分析前確認emotions數值', emotionsResult.emotions)
+        console.log('表達分析前確認images數值', imagesResult.images)
         const result = await generateExpression(story, emotionsResult.emotions, imagesResult.images)
+        console.log('最終表達分析結果:', result)
 
         expressionResult.value = result
+        // 確保所有必要的數據都存在
+        if (
+          !result.emotions ||
+          !result.images ||
+          !Array.isArray(result.emotions) ||
+          !Array.isArray(result.images)
+        ) {
+          throw new Error('最終分析結果格式不正確')
+        }
+
         emotions.value = result.emotions.map((emotion: Emotion, index: number) => ({
           name: emotion.name,
-          imageUrl: result.images[index] || '',
+          imageUrl: result.images[index] || result.images[0] || '', // 使用第一張圖片作為後備
         }))
       } catch (err) {
         console.error('分析錯誤:', err)
