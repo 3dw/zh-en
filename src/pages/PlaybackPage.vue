@@ -71,14 +71,8 @@
                   style="height: 200px; max-width: 200px"
                   class="rounded-borders"
                 />
-                <div class="text-subtitle1 q-mt-sm">{{ emotion.name }}</div>
-                <q-btn
-                  flat
-                  round
-                  color="primary"
-                  icon="volume_up"
-                  @click="speakEmotion(emotion.name)"
-                />
+                <div class="text-subtitle1 q-mt-sm">{{ emotion.name }} ({{ emotion.enName }})</div>
+                <q-btn flat round color="primary" icon="volume_up" @click="speakEmotion(emotion)" />
               </div>
             </div>
           </q-card-section>
@@ -101,7 +95,7 @@ export default defineComponent({
   setup() {
     const userStory = ref('')
     const translatedStory = ref('')
-    const emotions = ref<{ name: string; imageUrl: string }[]>([])
+    const emotions = ref<{ name: string; enName: string; imageUrl: string }[]>([])
     const loading = ref(false)
     const error = ref('')
     const showProgress = ref(false)
@@ -170,11 +164,49 @@ export default defineComponent({
       return result as EmotionImageResult
     }
 
-    const speakEmotion = (text: string) => {
-      const utterance = new SpeechSynthesisUtterance(text)
+    // 步驟 4: 將情緒分析內容翻譯成英文
+    const translateEmotionToEn = async (zhEmotion: string) => {
+      progressMessage.value = `正在翻譯 ${zhEmotion} 的英文說明...`
+      const response = await fetch(
+        'https://zh-en-backend.alearn13994229.workers.dev/translate-zh-to-en',
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ content: `這個情緒是${zhEmotion}` }),
+        },
+      )
+      if (!response.ok) throw new Error('情緒翻譯失敗')
+      const enText = await response.text()
+      console.log(`${zhEmotion} 的英文翻譯:`, enText)
+      return enText
+    }
+
+    const speakEmotion = (emotion: { name: string; enName: string }) => {
+      // 取消所有正在進行的朗讀
+      speechSynthesis.cancel()
+      // 朗讀英文
+      const utterance = new SpeechSynthesisUtterance(emotion.enName)
       utterance.lang = 'en-US'
       utterance.rate = 0.8
       speechSynthesis.speak(utterance)
+    }
+
+    // 自動朗讀所有情緒的英文
+    const speakAllEmotions = (emotions: { name: string; enName: string; imageUrl: string }[]) => {
+      // 取消所有正在進行的朗讀
+      speechSynthesis.cancel()
+
+      // 建立朗讀隊列
+      emotions.forEach((emotion, index) => {
+        setTimeout(() => {
+          const utterance = new SpeechSynthesisUtterance(emotion.enName)
+          utterance.lang = 'en-US'
+          utterance.rate = 0.8
+          speechSynthesis.speak(utterance)
+        }, index * 2000) // 每個情緒間隔 2 秒
+      })
     }
 
     const analyzeEmotion = async () => {
@@ -210,15 +242,22 @@ export default defineComponent({
             throw new Error(`${emotion.name} 的圖片生成結果格式不正確`)
           }
 
+          // 翻譯情緒說明為英文
+          const enEmotionText = await translateEmotionToEn(emotion.name)
+
           // 保存情緒和對應的圖片
           emotionResults.push({
             name: emotion.name,
+            enName: enEmotionText,
             imageUrl: imageResult.images[0] || '',
           })
         }
 
         // 更新情緒結果
         emotions.value = emotionResults
+
+        // 自動朗讀所有情緒的英文
+        speakAllEmotions(emotionResults)
       } catch (err) {
         console.error('分析錯誤:', err)
         if (err instanceof TypeError && err.message.includes('Failed to fetch')) {
