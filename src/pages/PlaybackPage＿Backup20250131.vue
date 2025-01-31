@@ -26,6 +26,41 @@
       <div class="text-subtitle1 text-center">{{ progressMessage }}</div>
     </div>
 
+    <!-- 分析結果展示 -->
+    <div v-if="expressionResult" class="result-section">
+      <h2 class="text-h4 q-mb-lg">故事情緒分析</h2>
+
+      <!-- 情緒分析卡片 -->
+      <div class="emotion-cards row q-col-gutter-md">
+        <div
+          v-for="(emotion, index) in expressionResult.emotions"
+          :key="index"
+          class="col-12 col-sm-6 col-md-4"
+        >
+          <q-card class="emotion-card">
+            <!-- 情緒圖片 -->
+            <q-img :src="expressionResult.images[index]" :ratio="1" class="emotion-image" />
+
+            <q-card-section>
+              <div class="text-h6">{{ emotion.name }}</div>
+              <div class="text-subtitle2">強度: {{ emotion.intensity }}%</div>
+              <p class="text-body2">{{ emotion.description }}</p>
+            </q-card-section>
+          </q-card>
+        </div>
+      </div>
+
+      <!-- 表達內容 -->
+      <div class="expression-section q-mt-xl">
+        <q-card class="expression-card">
+          <q-card-section>
+            <div class="text-h5 q-mb-md">故事表達分析</div>
+            <div class="text-body1" v-html="expressionResult.expression"></div>
+          </q-card-section>
+        </q-card>
+      </div>
+    </div>
+
     <!-- 卡片容器 -->
     <div class="row q-col-gutter-md">
       <!-- RPG 風格輸入卡片 -->
@@ -109,15 +144,25 @@ interface EmotionImageResult {
   images: string[]
 }
 
+interface ExpressionResult {
+  emotions: Emotion[]
+  images: string[]
+  expression: string
+}
+
 export default defineComponent({
   name: 'PlaybackPage',
 
   setup() {
     const userStory = ref('')
-    const translatedStory = ref('')
     const emotions = ref<{ name: string; imageUrl: string }[]>([])
     const loading = ref(false)
     const error = ref('')
+    const expressionResult = ref<ExpressionResult>({
+      emotions: [],
+      images: [],
+      expression: '',
+    })
     const showProgress = ref(false)
     const progressMessage = ref('')
 
@@ -139,7 +184,6 @@ export default defineComponent({
 
       const data = await translateToEnglishResponse.text()
       console.log('第一步驟翻譯內容為英文data', data)
-      translatedStory.value = data
       return data
     }
 
@@ -185,6 +229,52 @@ export default defineComponent({
       return result as EmotionImageResult
     }
 
+    // 步驟 4: 生成表達內容
+    // 先將要生成表達的內容分段，一次一個，再將分段後的內容傳入
+    const generateExpression = async (story: string, emotions: Emotion[], images: string[]) => {
+      progressMessage.value = '正在生成表達分析...'
+
+      // 將故事按句子分段
+      const sentences = story
+        .replace(/([.!?。！？])\s*/g, '$1|')
+        .split('|')
+        .filter((sentence) => sentence.trim().length > 0)
+
+      const allExpressions: string[] = []
+
+      // 逐句處理
+      for (let i = 0; i < sentences.length; i++) {
+        progressMessage.value = `正在分析第 ${i + 1}/${sentences.length} 句...`
+
+        const response = await fetch(
+          `https://zh-en-backend.alearn13994229.workers.dev/expression`,
+          {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              story: sentences[i],
+              emotions,
+              images,
+            }),
+          },
+        )
+
+        if (!response.ok) throw new Error(`第 ${i + 1} 句表達分析生成失敗`)
+
+        const result = await response.json()
+        allExpressions.push(result.expression)
+      }
+
+      // 合併所有表達結果
+      return {
+        emotions,
+        images,
+        expression: allExpressions.join('\n\n'),
+      } as ExpressionResult
+    }
+
     const speakEmotion = (text: string) => {
       const utterance = new SpeechSynthesisUtterance(text)
       utterance.lang = 'en-US'
@@ -206,14 +296,12 @@ export default defineComponent({
         const story = userStory.value.trim()
 
         const englishContent = await translateToEnglish(story)
-        translatedStory.value = englishContent
         console.log('在try執行地方翻譯內容為英文englishContent', englishContent)
 
         const emotionsResult = await analyzeEmotions(englishContent)
         console.log('在try執行地方情緒分析結果emotionsResult', emotionsResult)
         console.log('在try執行地方情緒分析結果emotionsResult.emotions', emotionsResult.emotions)
 
-        // 生成情緒圖片
         const imagesResult = await generateEmotionImages(emotionsResult.emotions)
         console.log('在try執行地方生成情緒圖片imagesResult', imagesResult)
 
@@ -221,11 +309,30 @@ export default defineComponent({
         if (!imagesResult.images || !Array.isArray(imagesResult.images)) {
           throw new Error('圖片生成結果格式不正確')
         }
+        console.log('表達分析前確認story數值', englishContent)
+        console.log('表達分析前確認emotions數值', emotionsResult.emotions)
+        console.log('表達分析前確認images數值', imagesResult.images)
+        const result = await generateExpression(
+          englishContent,
+          emotionsResult.emotions,
+          imagesResult.images,
+        )
+        console.log('最終表達分析結果:', result)
 
-        // 設置情緒和對應的圖片
-        emotions.value = emotionsResult.emotions.map((emotion: Emotion, index: number) => ({
+        expressionResult.value = result
+        // 確保所有必要的數據都存在
+        if (
+          !result.emotions ||
+          !result.images ||
+          !Array.isArray(result.emotions) ||
+          !Array.isArray(result.images)
+        ) {
+          throw new Error('最終分析結果格式不正確')
+        }
+
+        emotions.value = result.emotions.map((emotion: Emotion, index: number) => ({
           name: emotion.name,
-          imageUrl: imagesResult.images[index] || imagesResult.images[0] || '',
+          imageUrl: result.images[index] || result.images[0] || '', // 使用第一張圖片作為後備
         }))
       } catch (err) {
         console.error('分析錯誤:', err)
@@ -243,10 +350,10 @@ export default defineComponent({
 
     return {
       userStory,
-      translatedStory,
       emotions,
       loading,
       error,
+      expressionResult,
       showProgress,
       progressMessage,
       analyzeEmotion,
@@ -320,6 +427,21 @@ export default defineComponent({
 .error-section {
   text-align: center;
   padding: 3rem;
+}
+
+.emotion-card {
+  height: 100%;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  transition: transform 0.3s ease;
+
+  &:hover {
+    transform: translateY(-5px);
+  }
+}
+
+.emotion-image {
+  border-radius: 8px 8px 0 0;
 }
 
 .expression-card {
