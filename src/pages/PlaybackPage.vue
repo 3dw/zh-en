@@ -256,6 +256,22 @@ export default defineComponent({
       for (const emotion of emotionResults) {
         await animateAndSpeakEmotion(emotion)
       }
+
+      // 所有情緒動畫結束後，播放結束語
+      await new Promise((resolve) => setTimeout(resolve, 1000)) // 稍等一下再播放
+      const finalMessage = new SpeechSynthesisUtterance('Above is for you')
+      finalMessage.lang = 'en-US'
+      finalMessage.rate = 0.8
+
+      await new Promise<void>((resolve) => {
+        finalMessage.onend = () => resolve()
+        speechSynthesis.speak(finalMessage)
+      })
+
+      const chineseMessage = new SpeechSynthesisUtterance('送給你')
+      chineseMessage.lang = 'zh-TW'
+      chineseMessage.rate = 0.8
+      speechSynthesis.speak(chineseMessage)
     }
 
     const analyzeEmotion = async () => {
