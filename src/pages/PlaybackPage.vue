@@ -64,15 +64,34 @@
           <q-card-section>
             <div class="text-h6 q-mb-md">情緒分析結果</div>
             <div class="emotion-grid">
-              <div v-for="(emotion, index) in emotions" :key="index" class="emotion-item">
+              <div
+                v-for="(emotion, index) in emotions"
+                :key="index"
+                class="emotion-item"
+                :class="{
+                  'move-step-1': emotion.moveStep === 1,
+                  'move-step-2': emotion.moveStep === 2,
+                  'show-content': emotion.showContent,
+                }"
+              >
                 <q-img
                   :src="emotion.imageUrl"
                   spinner-color="primary"
                   style="height: 200px; max-width: 200px"
                   class="rounded-borders"
                 />
-                <div class="text-subtitle1 q-mt-sm">{{ emotion.name }} ({{ emotion.enName }})</div>
-                <q-btn flat round color="primary" icon="volume_up" @click="speakEmotion(emotion)" />
+                <div v-if="emotion.showContent" class="emotion-content">
+                  <div class="text-subtitle1 q-mt-sm">
+                    {{ emotion.name }} ({{ emotion.enName }})
+                  </div>
+                  <q-btn
+                    flat
+                    round
+                    color="primary"
+                    icon="volume_up"
+                    @click="speakEmotion(emotion)"
+                  />
+                </div>
               </div>
             </div>
           </q-card-section>
@@ -89,13 +108,22 @@ interface EmotionImageResult {
   images: string[]
 }
 
+interface EmotionWithAnimation {
+  name: string
+  enName: string
+  imageUrl: string
+  isAnimating: boolean
+  showContent: boolean
+  moveStep: number
+}
+
 export default defineComponent({
   name: 'PlaybackPage',
 
   setup() {
     const userStory = ref('')
     const translatedStory = ref('')
-    const emotions = ref<{ name: string; enName: string; imageUrl: string }[]>([])
+    const emotions = ref<EmotionWithAnimation[]>([])
     const loading = ref(false)
     const error = ref('')
     const showProgress = ref(false)
@@ -183,7 +211,7 @@ export default defineComponent({
       return enText
     }
 
-    const speakEmotion = (emotion: { name: string; enName: string }) => {
+    const speakEmotion = (emotion: EmotionWithAnimation) => {
       // 取消所有正在進行的朗讀
       speechSynthesis.cancel()
       // 朗讀英文
@@ -193,20 +221,41 @@ export default defineComponent({
       speechSynthesis.speak(utterance)
     }
 
-    // 自動朗讀所有情緒的英文
-    const speakAllEmotions = (emotions: { name: string; enName: string; imageUrl: string }[]) => {
-      // 取消所有正在進行的朗讀
-      speechSynthesis.cancel()
+    // 執行單個情緒的動畫和朗讀
+    const animateAndSpeakEmotion = async (emotion: EmotionWithAnimation) => {
+      emotion.isAnimating = true
+      emotion.showContent = false
 
-      // 建立朗讀隊列
-      emotions.forEach((emotion, index) => {
-        setTimeout(() => {
-          const utterance = new SpeechSynthesisUtterance(emotion.enName)
-          utterance.lang = 'en-US'
-          utterance.rate = 0.8
+      for (let i = 0; i < 3; i++) {
+        // 向右移動 1/3
+        emotion.moveStep = 1
+        await new Promise((resolve) => setTimeout(resolve, 500))
+
+        // 停住並朗讀
+        const utterance = new SpeechSynthesisUtterance(emotion.enName)
+        utterance.lang = 'en-US'
+        utterance.rate = 0.8
+
+        await new Promise<void>((resolve) => {
+          utterance.onend = () => resolve()
           speechSynthesis.speak(utterance)
-        }, index * 2000) // 每個情緒間隔 2 秒
-      })
+        })
+
+        // 回到原位
+        emotion.moveStep = 0
+        await new Promise((resolve) => setTimeout(resolve, 500))
+      }
+
+      // 動畫結束，顯示內容
+      emotion.isAnimating = false
+      emotion.showContent = true
+    }
+
+    // 依序執行所有情緒的動畫
+    const animateAllEmotions = async (emotionResults: EmotionWithAnimation[]) => {
+      for (const emotion of emotionResults) {
+        await animateAndSpeakEmotion(emotion)
+      }
     }
 
     const analyzeEmotion = async () => {
@@ -224,18 +273,14 @@ export default defineComponent({
 
         const zhContent = await translateToZh(story)
         translatedStory.value = zhContent
-        console.log('在try執行地方翻譯內容為中文zhContent', zhContent)
 
         const emotionsResult = await analyzeEmotions(zhContent)
-        console.log('在try執行地方情緒分析結果emotionsResult', emotionsResult)
-        console.log('在try執行地方情緒分析結果emotionsResult.emotions', emotionsResult.emotions)
 
         // 為每個情緒單獨生成圖片
         const emotionResults = []
         for (const emotion of emotionsResult.emotions) {
           // 生成當前情緒的圖片
           const imageResult = await generateEmotionImages(zhContent, emotion.name)
-          console.log(`${emotion.name} 的圖片生成結果:`, imageResult)
 
           // 確保圖片結果格式正確
           if (!imageResult.images || !Array.isArray(imageResult.images)) {
@@ -250,21 +295,18 @@ export default defineComponent({
             name: emotion.name,
             enName: enEmotionText,
             imageUrl: imageResult.images[0] || '',
+            isAnimating: false,
+            showContent: false,
+            moveStep: 0,
           })
         }
 
-        // 更新情緒結果
+        // 更新情緒結果並開始動畫
         emotions.value = emotionResults
-
-        // 自動朗讀所有情緒的英文
-        speakAllEmotions(emotionResults)
+        await animateAllEmotions(emotions.value)
       } catch (err) {
         console.error('分析錯誤:', err)
-        if (err instanceof TypeError && err.message.includes('Failed to fetch')) {
-          error.value = '無法連接到伺服器，請檢查網絡連接或稍後再試'
-        } else {
-          error.value = err instanceof Error ? err.message : '分析過程發生錯誤，請稍後再試'
-        }
+        error.value = err instanceof Error ? err.message : '分析過程發生錯誤，請稍後再試'
       } finally {
         loading.value = false
         showProgress.value = false
@@ -288,94 +330,26 @@ export default defineComponent({
 </script>
 
 <style scoped>
-.rpg-card {
-  background-color: #fff;
-  border: 2px solid #6b8cce;
-  border-radius: 12px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  position: relative;
-  overflow: hidden;
+.move-step-1 {
+  transform: translateX(33%);
+  transition: transform 0.3s ease-out;
 }
 
-.rpg-card::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 4px;
-  background: linear-gradient(90deg, #6b8cce, #a5b9e5, #6b8cce);
+.emotion-content {
+  opacity: 0;
+  animation: fadeIn 0.5s ease-in-out forwards;
 }
 
-.rpg-button {
-  background: linear-gradient(45deg, #6b8cce, #8ba3d7);
-  border: none;
-  padding: 12px 24px;
-  border-radius: 24px;
-  font-weight: bold;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  transition: transform 0.2s;
-}
-
-.rpg-button:hover {
-  transform: translateY(-2px);
-}
-
-.emotion-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 1rem;
-  justify-items: center;
-}
-
-.emotion-item {
-  text-align: center;
-  padding: 1rem;
-  background: rgba(107, 140, 206, 0.1);
-  border-radius: 8px;
-  transition: transform 0.2s;
-}
-
-.emotion-item:hover {
-  transform: translateY(-4px);
-}
-
-@media (max-width: 600px) {
-  .emotion-grid {
-    grid-template-columns: 1fr;
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
   }
 }
 
-.loading-section,
-.error-section {
-  text-align: center;
-  padding: 3rem;
-}
-
-.expression-card {
-  background: rgba(255, 255, 255, 0.95);
-  backdrop-filter: blur(10px);
-  margin-top: 2rem;
-}
-
-.result-section {
-  color: white;
-}
-
-@media (max-width: 600px) {
-  .playback-page {
-    padding: 1rem;
-  }
-
-  .emotion-cards {
-    margin: 0;
-  }
-}
-
-.progress-section {
-  max-width: 600px;
-  margin: 2rem auto;
-  padding: 1rem;
+.show-content .emotion-content {
+  display: block;
 }
 </style>
