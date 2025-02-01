@@ -359,6 +359,38 @@
           <q-item-section>本站原始碼</q-item-section>
         </q-item>
 
+
+        <q-item
+          clickable
+          tag="a"
+          href="https://github.com/3dw/zh-en/wiki/%E5%BF%97%E5%B7%A5%E6%8B%9B%E5%8B%9F"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          <q-item-section avatar>
+            <q-icon name="people" />
+          </q-item-section>
+          <q-item-section>志工招募</q-item-section>
+
+        </q-item>
+
+
+        <q-item
+          clickable
+          tag="a"
+          href="https://github.com/3dw/zh-en/wiki/%E5%B0%8F%E9%A1%8D%E6%8D%90%E6%AC%BE%E9%82%80%E7%B4%84"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          <q-item-section avatar>
+            <q-icon name="thumb_up" />
+          </q-item-section>
+          <q-item-section>捐款支持</q-item-section>
+
+        </q-item>
+
+
+
         <!--
         <q-expansion-item
           icon="image"
