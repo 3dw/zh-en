@@ -179,13 +179,14 @@ export default defineComponent({
     const generateEmotionImages = async (zhText: string, emotion: string) => {
       progressMessage.value = `正在生成 ${emotion} 的情緒圖片...`
       console.log('生成圖片的情緒數據:', emotion)
-      const response = await fetch(`https://zh-en-backend.alearn13994229.workers.dev/images`, {
+      const response = await fetch(`https://zh-en-backend.alearn13994229.workers.dev/playback/image`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({ story: zhText, emotion: emotion }),
       })
+
       if (!response.ok) throw new Error('圖片生成失敗')
       const result = await response.json()
       console.log('生成的圖片結果:', result)
