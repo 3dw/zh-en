@@ -90,6 +90,13 @@
           <q-item-section>首頁</q-item-section>
         </q-item>
 
+        <q-item clickable to="/about" class="op-drawer-item">
+          <q-item-section avatar>
+            <q-icon name="info" />
+          </q-item-section>
+          <q-item-section>關於本站</q-item-section>
+        </q-item>
+
         <q-expansion-item
           icon="text_fields"
           label="字母學習"
@@ -529,7 +536,7 @@ export default defineComponent({
       showLoginDialog.value = !showLoginDialog.value
     }
 
-    const devMode = ref(true)
+    const devMode = ref(false)
     const showLoginDialog = ref(false)
 
     const logout = () => {
