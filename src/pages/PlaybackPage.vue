@@ -169,8 +169,8 @@ export default defineComponent({
       const data = await analyzeEmotionsResponse.json()
       console.log('第二步驟情緒分析結果data', data)
       // 將字符串轉換為情緒對象數組
-      const emotionsList = data.emotions.map((name: string) => ({
-        name,
+      const emotionsList = (data.emotions || []).map((emotion: string) => ({
+        name: ((emotion as string).split(':')[0] as string).trim().replace(/^\d+\./, ''),
       }))
       return { emotions: emotionsList }
     }
@@ -222,57 +222,14 @@ export default defineComponent({
       speechSynthesis.speak(utterance)
     }
 
-    // 執行單個情緒的動畫和朗讀
-    const animateAndSpeakEmotion = async (emotion: EmotionWithAnimation) => {
-      emotion.isAnimating = true
-      emotion.showContent = false
-
-      for (let i = 0; i < 3; i++) {
-        // 向右移動 1/3
-        emotion.moveStep = 1
-        await new Promise((resolve) => setTimeout(resolve, 500))
-
-        // 停住並朗讀
-        const utterance = new SpeechSynthesisUtterance(emotion.enName)
-        utterance.lang = 'en-US'
-        utterance.rate = 0.8
-
-        await new Promise<void>((resolve) => {
-          utterance.onend = () => resolve()
-          speechSynthesis.speak(utterance)
-        })
-
-        // 回到原位
-        emotion.moveStep = 0
-        await new Promise((resolve) => setTimeout(resolve, 500))
-      }
-
-      // 動畫結束，顯示內容
-      emotion.isAnimating = false
-      emotion.showContent = true
-    }
-
-    // 依序執行所有情緒的動畫
-    const animateAllEmotions = async (emotionResults: EmotionWithAnimation[]) => {
-      for (const emotion of emotionResults) {
-        await animateAndSpeakEmotion(emotion)
-      }
-
-      // 所有情緒動畫結束後，播放結束語
-      await new Promise((resolve) => setTimeout(resolve, 1000)) // 稍等一下再播放
-      const finalMessage = new SpeechSynthesisUtterance('Above is for you')
-      finalMessage.lang = 'en-US'
-      finalMessage.rate = 0.8
-
-      await new Promise<void>((resolve) => {
-        finalMessage.onend = () => resolve()
-        speechSynthesis.speak(finalMessage)
-      })
-
-      const chineseMessage = new SpeechSynthesisUtterance('送給你')
-      chineseMessage.lang = 'zh-TW'
-      chineseMessage.rate = 0.8
-      speechSynthesis.speak(chineseMessage)
+    // 移除 animateAndSpeakEmotion 和 animateAllEmotions 函數
+    // 替換為新的簡單動畫函數
+    const animateEmotions = async (emotionResults: EmotionWithAnimation[]) => {
+      emotions.value = emotionResults.map(emotion => ({
+        ...emotion,
+        showContent: true,
+        moveStep: 0
+      }))
     }
 
     const analyzeEmotion = async () => {
@@ -318,9 +275,8 @@ export default defineComponent({
           })
         }
 
-        // 更新情緒結果並開始動畫
-        emotions.value = emotionResults
-        await animateAllEmotions(emotions.value)
+        // 直接顯示結果，不進行自動播放
+        await animateEmotions(emotionResults)
       } catch (err) {
         console.error('分析錯誤:', err)
         error.value = err instanceof Error ? err.message : '分析過程發生錯誤，請稍後再試'
