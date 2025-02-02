@@ -359,7 +359,6 @@
           <q-item-section>本站原始碼</q-item-section>
         </q-item>
 
-
         <q-item
           clickable
           tag="a"
@@ -371,9 +370,7 @@
             <q-icon name="people" />
           </q-item-section>
           <q-item-section>志工招募</q-item-section>
-
         </q-item>
-
 
         <q-item
           clickable
@@ -386,10 +383,7 @@
             <q-icon name="thumb_up" />
           </q-item-section>
           <q-item-section>捐款支持</q-item-section>
-
         </q-item>
-
-
 
         <!--
         <q-expansion-item
@@ -568,7 +562,7 @@ export default defineComponent({
       showLoginDialog.value = !showLoginDialog.value
     }
 
-    const devMode = ref(false)
+    const devMode = ref(true)
     const showLoginDialog = ref(false)
 
     const logout = () => {
