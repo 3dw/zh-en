@@ -278,12 +278,14 @@ export default defineComponent({
         const translatedStory = Array.isArray(output) ? output[0].translation_text : output.translation_text;
         
         // 將中文和英文故事分段
-        storyParagraphs.value = storyData.content.split('\n\n').filter((p: string) => p.trim())
-        translatedParagraphs.value = translatedStory.split('\n\n').filter((p: string) => p.trim())
-
+        storyParagraphs.value = storyData.content.split('。').filter((p: string) => p.trim())
+        console.log(storyParagraphs.value)
+        translatedParagraphs.value = translatedStory.split('.').filter((p: string) => p.trim())
+        console.log(translatedParagraphs.value)
         // 步驟 3: 生成圖片
         for (let i = 0; i < translatedParagraphs.value.length; i++) {
           const paragraph = translatedParagraphs.value[i]
+          console.log(paragraph)
 
           progressMessage.value = `正在生成配圖...${i + 1}/${translatedParagraphs.value.length}`
           const imagesResponse = await fetch(
