@@ -11,14 +11,14 @@
           </q-card-section>
         </q-card>
    
-        <q-card class="card" @click="goto('/what-is-this')">
+        <q-card class="card" @click="goto('/what_is_this')">
           <q-card-section>
             <q-img src="~/assets/index/image-cards.jpeg" style="width: 250px; object-fit: cover;" />
             <div class="text-h6">拍照分析</div>
           </q-card-section>
         </q-card>
 
-        <q-card class="card" @click="goto('/story')">
+        <q-card class="card" @click="goto('/story_backend')">
           <q-card-section>
             <q-img src="~/assets/index/story.jpeg" style="width: 250px; object-fit: cover;" />
             <div class="text-h6">英語故事</div>
