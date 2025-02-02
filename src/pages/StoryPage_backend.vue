@@ -184,6 +184,8 @@
 <script lang="ts">
 import { ref, reactive, defineComponent } from 'vue'
 import { useQuasar } from 'quasar'
+import { pipeline } from '@huggingface/transformers';
+
 
 export default defineComponent({
   name: 'StoryPageBackend',
@@ -264,26 +266,20 @@ export default defineComponent({
           throw new Error(storyData.error || '故事生成失敗')
         }
 
-        // 將故事分段
+        // 步驟 2: 先翻譯整個故事
+        progressMessage.value = '正在翻譯故事...'
+        const translator = await pipeline('translation', 'Xenova/m2m100_418M');
+        
+        // @ts-expect-error Hugging Face pipeline 類型定義不完整
+        const output = await translator(storyData.content, {src_lang: 'zh', tgt_lang: 'en'
+        });
+        
+        // @ts-expect-error Hugging Face pipeline 輸出類型不確定
+        const translatedStory = Array.isArray(output) ? output[0].translation_text : output.translation_text;
+        
+        // 將中文和英文故事分段
         storyParagraphs.value = storyData.content.split('\n\n').filter((p: string) => p.trim())
-
-        // 步驟 2: 翻譯成英文
-        for (let i = 0; i < storyParagraphs.value.length; i++) {
-          progressMessage.value = `正在翻譯...${i + 1}/${storyParagraphs.value.length}`
-          const paragraph = storyParagraphs.value[i]
-          const translatedParagraph = await fetch(
-            'https://zh-en-backend.alearn13994229.workers.dev/translate-zh-to-en',
-            {
-              method: 'POST',
-              headers: {
-                'Content-Type': 'application/json',
-              },
-              body: JSON.stringify({ content: paragraph }),
-            },
-          )
-          const translatedText = await translatedParagraph.text()
-          translatedParagraphs.value.push(translatedText)
-        }
+        translatedParagraphs.value = translatedStory.split('\n\n').filter((p: string) => p.trim())
 
         // 步驟 3: 生成圖片
         for (let i = 0; i < translatedParagraphs.value.length; i++) {
