@@ -14,6 +14,28 @@ const routes: RouteRecordRaw[] = [
     children: [{ path: '', component: () => import('pages/AboutPage.vue') }],
   },
   {
+    path: '/env1_at_home',
+    component: () => import('layouts/MainLayout.vue'),
+    children: [{ path: '', component: () => import('pages/Flashcards/Env1AtHomePage.vue') }],
+  },
+  {
+    path: '/env2_playing_basketball',
+    component: () => import('layouts/MainLayout.vue'),
+    children: [
+      { path: '', component: () => import('pages/Flashcards/Env2PlayingBasketballPage.vue') },
+    ],
+  },
+  {
+    path: '/env3_at_restaurant',
+    component: () => import('layouts/MainLayout.vue'),
+    children: [{ path: '', component: () => import('pages/Flashcards/Env3AtRestaurantPage.vue') }],
+  },
+  {
+    path: '/env4_traveling',
+    component: () => import('layouts/MainLayout.vue'),
+    children: [{ path: '', component: () => import('pages/Flashcards/Env4TravelingPage.vue') }],
+  },
+  {
     path: '/alphabet',
     component: () => import('layouts/MainLayout.vue'),
     children: [
@@ -24,14 +46,22 @@ const routes: RouteRecordRaw[] = [
     path: '/number',
     component: () => import('layouts/MainLayout.vue'),
     children: [
-      { path: '', component: () => import('pages/NumberPage.vue'), meta: { title: '數字' } },
+      {
+        path: '',
+        component: () => import('pages/Flashcards/NumberPage.vue'),
+        meta: { title: '數字' },
+      },
     ],
   },
   {
     path: '/body',
     component: () => import('layouts/MainLayout.vue'),
     children: [
-      { path: '', component: () => import('pages/BodyPage.vue'), meta: { title: '身體部位' } },
+      {
+        path: '',
+        component: () => import('pages/Flashcards/BodyPage.vue'),
+        meta: { title: '身體部位' },
+      },
     ],
   },
   /* {
@@ -58,14 +88,22 @@ const routes: RouteRecordRaw[] = [
     path: '/beginner',
     component: () => import('layouts/MainLayout.vue'),
     children: [
-      { path: '', component: () => import('pages/BeginnerPage.vue'), meta: { title: '初學者' } },
+      {
+        path: '',
+        component: () => import('pages/Flashcards/BeginnerPage.vue'),
+        meta: { title: '初學者' },
+      },
     ],
   },
   {
     path: '/emotion',
     component: () => import('layouts/MainLayout.vue'),
     children: [
-      { path: '', component: () => import('pages/EmotionCardsPage.vue'), meta: { title: '情緒' } },
+      {
+        path: '',
+        component: () => import('pages/Flashcards/EmotionCardsPage.vue'),
+        meta: { title: '情緒' },
+      },
     ],
   },
   {

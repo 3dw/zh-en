@@ -120,7 +120,7 @@
 
         <q-expansion-item
           icon="library_books"
-          label="讀寫學習"
+          label="字卡學習"
           class="op-expansion-item"
           dense-toggle
         >
@@ -142,7 +142,7 @@
             <q-item-section avatar>
               <q-icon name="person" />
             </q-item-section>
-            <q-item-section>身體雙語字卡</q-item-section>
+            <q-item-section>健康雙語字卡</q-item-section>
           </q-item>
 
           <q-item clickable to="/number" class="op-drawer-item">
@@ -150,6 +150,34 @@
               <q-icon name="school" />
             </q-item-section>
             <q-item-section>數字雙語字卡</q-item-section>
+          </q-item>
+
+          <q-item clickable to="/env1_at_home" class="op-drawer-item">
+            <q-item-section avatar>
+              <q-icon name="home" />
+            </q-item-section>
+            <q-item-section>情境1：在家裡</q-item-section>
+          </q-item>
+
+          <q-item clickable to="/env2_playing_basketball" class="op-drawer-item">
+            <q-item-section avatar>
+              <q-icon name="sports_basketball" />
+            </q-item-section>
+            <q-item-section>情境2：打籃球</q-item-section>
+          </q-item>
+
+          <q-item clickable to="/env3_at_restaurant" class="op-drawer-item">
+            <q-item-section avatar>
+              <q-icon name="restaurant" />
+            </q-item-section>
+            <q-item-section>情境3：在餐廳</q-item-section>
+          </q-item>
+
+          <q-item clickable to="/env4_traveling" class="op-drawer-item">
+            <q-item-section avatar>
+              <q-icon name="travel_explore" />
+            </q-item-section>
+            <q-item-section>情境4：旅行中</q-item-section>
           </q-item>
 
           <q-item clickable to="/favorites" class="op-drawer-item">
