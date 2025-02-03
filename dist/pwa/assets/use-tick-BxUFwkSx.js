@@ -1,1 +1,0 @@
-import{ax as i,o as s,n as a,av as r,j as c}from"./index-DgLdTMC7.js";function v(){let e;const o=c();function t(){e=void 0}return i(t),s(t),{removeTick:t,registerTick(n){e=n,a(()=>{e===n&&(r(o)===!1&&e(),e=void 0)})}}}export{v as u};

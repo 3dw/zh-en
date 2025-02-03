@@ -1,0 +1,1 @@
+import{as as r,o as s,aq as i,j as a}from"./index-DjPobmbs.js";function l(){let e=null;const o=a();function t(){e!==null&&(clearTimeout(e),e=null)}return r(t),s(t),{removeTimeout:t,registerTimeout(n,u){t(),i(o)===!1&&(e=setTimeout(()=>{e=null,n()},u))}}}export{l as u};
