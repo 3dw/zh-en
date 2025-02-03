@@ -90,7 +90,7 @@ export default defineComponent({
       sentence.flipped = !sentence.flipped
 
       if (sentence.flipped) {
-        emit('earn-xp', 50)
+        emit('earn-xp', 5)
       }
     }
 
@@ -98,7 +98,7 @@ export default defineComponent({
       const utterance = new SpeechSynthesisUtterance(text)
       utterance.lang = lang
       window.speechSynthesis.speak(utterance)
-      emit('earn-xp', 50)
+      emit('earn-xp', 5)
     }
 
     const getFavorites = () => {
@@ -121,7 +121,7 @@ export default defineComponent({
 
       if (index === -1) {
         favorites.value.push({ english: sentence.english, chinese: sentence.chinese })
-        emit('earn-xp', 100)
+        emit('earn-xp', 10)
       } else {
         favorites.value.splice(index, 1)
       }

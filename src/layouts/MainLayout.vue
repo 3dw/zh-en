@@ -245,7 +245,7 @@
             <q-item-section avatar>
               <q-icon name="collections" />
             </q-item-section>
-            <q-item-section>AI 圖片描述畫廊</q-item-section>
+            <q-item-section>小測驗與畫廊</q-item-section>
           </q-item>
         </q-expansion-item>
 
@@ -537,11 +537,17 @@ export default defineComponent({
     const earnXP = (amount: number) => {
       currentXP.value += amount
       if (currentXP.value >= 1000) {
+        // 先增加等級
+        level.value += 1
+        // 計算剩餘 XP
+        currentXP.value = currentXP.value - 1000
+
+        // 顯示升級動畫和對話框
         showLevelUpAnimation.value = true
         showLevelUpDialog.value = true
 
-        level.value++
-        currentXP.value = currentXP.value - 1000
+        // 儲存新的等級和 XP 到資料庫
+        setXPandLevel()
 
         // 3 秒後關閉動畫
         setTimeout(() => {
@@ -577,8 +583,12 @@ export default defineComponent({
 
     const setXPandLevel = () => {
       if (uid.value) {
-        set(dbRef(database, `users/${uid.value}/xp`), currentXP.value)
-        set(dbRef(database, `users/${uid.value}/level`), level.value)
+        const userRef = dbRef(database, `users/${uid.value}`)
+        set(userRef, {
+          ...user.value,
+          xp: currentXP.value,
+          level: level.value,
+        })
       }
     }
 
@@ -864,5 +874,9 @@ export default defineComponent({
 .op-level-up-card {
   border-radius: 8px;
   min-width: 260px;
+}
+
+.op-level-up-dialog {
+  background-color: #faf7f2;
 }
 </style>

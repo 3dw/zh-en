@@ -1,68 +1,132 @@
 <template>
   <q-page class="q-pa-md">
-    <div class="word-card-list">
-      <h1>AI 圖片描述畫廊</h1>
+    <!-- 加上 tabs 可以切換功能為"AI 圖片描述畫廊" 和 "4選1小測驗"-->
+    <q-tabs v-model="tab" class="text-grey">
+      <q-tab name="gallery" label="AI 圖片描述畫廊" />
+      <q-tab name="quiz" label="4選1小測驗" />
+    </q-tabs>
 
-      <!-- 添加搜尋框 -->
-      <div class="search-bar q-mb-md">
-        <q-input
-          v-model="searchQuery"
-          outlined
-          dense
-          placeholder="搜尋圖片描述..."
-          class="search-input"
-          clearable
-        >
-          <template v-slot:append>
-            <q-icon name="search" />
-          </template>
-        </q-input>
-      </div>
+    <q-tab-panels v-model="tab" animated>
+      <q-tab-panel name="gallery">
+        <div class="word-card-list">
+          <h1>AI 圖片描述畫廊</h1>
 
-      <!-- 顯示卡片畫廊 -->
-      <div class="gallery-grid q-mt-lg flex flex-row-reverse flex-wrap-reverse">
-        <q-card
-          v-for="(card, index) in filteredCards"
-          :key="index"
-          class="gallery-card q-ma-sm"
-          flat
-          bordered
-        >
-          <q-img :src="card.image" :ratio="1" class="gallery-image" />
-          <q-card-section>
-            <div class="text-body1">{{ card.description }}</div>
-            <div class="row q-mt-sm justify-between">
+          <!-- 添加搜尋框 -->
+          <div class="search-bar q-mb-md">
+            <q-input
+              v-model="searchQuery"
+              outlined
+              dense
+              placeholder="搜尋圖片描述..."
+              class="search-input"
+              clearable
+            >
+              <template v-slot:append>
+                <q-icon name="search" />
+              </template>
+            </q-input>
+          </div>
+
+          <!-- 顯示卡片畫廊 -->
+          <div class="gallery-grid q-mt-lg flex flex-row-reverse flex-wrap-reverse">
+            <q-card
+              v-for="(card, index) in filteredCards"
+              :key="index"
+              class="gallery-card q-ma-sm"
+              flat
+              bordered
+            >
+              <q-img :src="card.image" :ratio="1" class="gallery-image" />
+              <q-card-section>
+                <div class="text-body1">{{ card.description }}</div>
+                <div class="row q-mt-sm justify-between">
+                  <q-btn
+                    color="primary"
+                    icon="volume_up"
+                    label="播放發音"
+                    @click="playCardAudio(card.description)"
+                    flat
+                  />
+                  <q-btn
+                    v-if="user && user.isAdmin"
+                    color="negative"
+                    icon="delete"
+                    label="刪除"
+                    @click="deleteCard(index)"
+                    flat
+                  />
+                </div>
+              </q-card-section>
+              <q-card-section>
+                <!-- 顯示圖片的createdAt 和 createdBy -->
+                <div class="text-body2" v-if="user && user.isAdmin">
+                  upload by
+                  <img :src="getPhotoById(card.createdBy || '未知')" class="avatar" />
+                  {{ (card.createdAt || '未知').split('T')[0] }}
+                </div>
+                <div class="text-body2" v-else>
+                  upload at {{ (card.createdAt || '未知').split('T')[0] }}
+                </div>
+              </q-card-section>
+            </q-card>
+          </div>
+        </div>
+      </q-tab-panel>
+      <q-tab-panel name="quiz">
+        <div class="word-card-list">
+          <div class="quiz-container">
+            <div class="quiz-question" v-if="quiz.image !== 'https://via.placeholder.com/150'">
+              <h2>
+                這是什麼？<span v-if="wins > 0"> - 您已連續答對 {{ wins }} 題</span>
+              </h2>
+              <q-img :src="quiz.image" :ratio="1" class="quiz-image" />
+              <!-- 發音按鈕 -->
               <q-btn
                 color="primary"
                 icon="volume_up"
                 label="播放發音"
-                @click="playCardAudio(card.description)"
-                flat
-              />
-              <q-btn
-                v-if="user && user.isAdmin"
-                color="negative"
-                icon="delete"
-                label="刪除"
-                @click="deleteCard(index)"
+                @click="playCardAudio(quiz.answer)"
                 flat
               />
             </div>
-          </q-card-section>
-          <q-card-section>
-            <!-- 顯示圖片的createdAt 和 createdBy -->
-            <div class="text-body2" v-if="user && user.isAdmin">
-              upload by
-              <img :src="getPhotoById(card.createdBy || '未知')" class="avatar" />
-              {{ (card.createdAt || '未知').split('T')[0] }}
+
+            <q-separator v-if="quiz.image !== 'https://via.placeholder.com/150'" />
+
+            <div class="quiz-options" v-if="quiz.image !== 'https://via.placeholder.com/150'">
+              <div v-for="(option, index) in quiz.options" :key="index" class="quiz-option">
+                <q-radio v-model="selectedOption" :val="option" :label="option" />
+                <q-btn
+                  color="primary"
+                  icon="volume_up"
+                  label="播放發音"
+                  @click="playCardAudio(option)"
+                  flat
+                />
+              </div>
+              <!-- 檢查答案按鈕 -->
+              <q-btn color="primary" icon="check" label="檢查答案" @click="checkAnswer" />
             </div>
-            <div class="text-body2" v-else>
-              upload at {{ (card.createdAt || '未知').split('T')[0] }}
-            </div>
-          </q-card-section>
-        </q-card>
-      </div>
-    </div>
+
+            <q-btn
+              v-if="quiz.image == 'https://via.placeholder.com/150'"
+              color="primary"
+              size="xl"
+              icon="refresh"
+              label="開始出題！"
+              @click="makeQuiz"
+            />
+            <q-btn
+              v-else
+              color="primary"
+              icon="refresh"
+              label="重新出題！"
+              @click="makeQuiz"
+              flat
+            />
+          </div>
+        </div>
+      </q-tab-panel>
+    </q-tab-panels>
   </q-page>
 </template>
 
@@ -70,6 +134,7 @@
 import { defineComponent, ref, computed } from 'vue'
 import type { PropType } from 'vue'
 import { set, ref as dbRef, getDatabase } from 'firebase/database'
+import { useQuasar } from 'quasar'
 
 const database = getDatabase()
 
@@ -104,15 +169,24 @@ export default defineComponent({
     },
   },
 
-  emits: ['delete-card'],
+  emits: ['earn-xp'],
 
-  setup(props) {
+  setup(props, { emit }) {
+    const $q = useQuasar()
     const searchQuery = ref('')
+
+    const tab = ref('quiz')
 
     const getPhotoById = (id: string) => {
       const user = props.users.find((user) => user.uid === id)
       return user?.photoURL || 'https://cdn.quasar.dev/img/boy-avatar.png'
     }
+
+    const quiz = ref({
+      image: 'https://via.placeholder.com/150',
+      options: ['選項1', '選項2', '選項3', '選項4'],
+      answer: '選項1',
+    })
 
     // 添加過濾邏輯
     const filteredCards = computed(() => {
@@ -137,12 +211,63 @@ export default defineComponent({
       }
     }
 
+    const selectedOption = ref('')
+
+    const wins = ref(0)
+
+    const checkAnswer = () => {
+      if (selectedOption.value === quiz.value.answer) {
+        wins.value++
+        emit('earn-xp', wins.value * 100)
+        $q.notify({
+          type: 'positive',
+          message: '答對了！您已連續答對 ' + wins.value + ' 題，得到 ' + wins.value * 100 + 'XP',
+          position: 'top',
+          timeout: 1500,
+        })
+        makeQuiz()
+      } else {
+        wins.value = 0
+        $q.notify({
+          type: 'negative',
+          message: '答錯了！再試一次',
+          position: 'top',
+          timeout: 1500,
+        })
+      }
+    }
+
+    const makeQuiz = () => {
+      if (!props.cards.length) return
+      const randomIndex = Math.floor(Math.random() * props.cards.length)
+      const randomCard = props.cards[randomIndex]
+      quiz.value.image = (randomCard as Card).image
+      quiz.value.answer = (randomCard as Card).description
+      selectedOption.value = ''
+
+      // 隨機選擇3個選項
+      const options = props.cards.filter(
+        (card) => card.description !== (randomCard as Card).description,
+      )
+      const randomOptions = options.sort(() => Math.random() - 0.5).slice(0, 3)
+      quiz.value.options = [
+        (randomCard as Card).description,
+        ...randomOptions.map((card) => card.description),
+      ].sort(() => Math.random() - 0.5)
+    }
+
     return {
       getPhotoById,
       playCardAudio,
       deleteCard,
       searchQuery,
       filteredCards,
+      quiz,
+      selectedOption,
+      checkAnswer,
+      wins,
+      tab,
+      makeQuiz,
     }
   },
 })
@@ -234,6 +359,12 @@ export default defineComponent({
 .gallery-image {
   object-fit: cover;
   border-radius: 8px 8px 0 0;
+}
+
+.quiz-image {
+  object-fit: cover;
+  border-radius: 8px;
+  max-width: 300px;
 }
 
 .search-input {

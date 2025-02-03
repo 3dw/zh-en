@@ -25,6 +25,7 @@
     "pinia": "^2.0.11",
     "quasar": "^2.16.0",
     "register-service-worker": "^1.7.2",
+    "string-width": "4",
     "vue": "^3.4.18",
     "vue-gtag": "^2.0.1",
     "vue-router": "^4.0.12"
