@@ -421,8 +421,25 @@ export default defineComponent({
 
     // 聽力練習功能
     const speakStory = () => {
-      const utterance = new SpeechSynthesisUtterance(currentStory.value.en)
+      if (!currentStory.value || !currentStory.value.en) {
+        console.error('No story available.')
+        return
+      }
+
+      // 替換數字，增加停頓
+      const processedText = currentStory.value.en.replace(/(\d+)/g, '$1,')
+
+      const utterance = new SpeechSynthesisUtterance(processedText)
       utterance.lang = 'en-GB'
+
+      // 選擇適合的語音
+      const voices = speechSynthesis.getVoices()
+      utterance.voice =
+        voices.find((voice) => voice.lang === 'en-GB') ||
+        voices.find((voice) => voice.lang === 'en-US') ||
+        voices.find((voice) => voice.lang.startsWith('en')) ||
+        null
+
       speechSynthesis.speak(utterance)
     }
 
