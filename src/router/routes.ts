@@ -14,6 +14,17 @@ const routes: RouteRecordRaw[] = [
     children: [{ path: '', component: () => import('pages/AboutPage.vue') }],
   },
   {
+    path: '/structures',
+    component: () => import('layouts/MainLayout.vue'),
+    children: [
+      {
+        path: '',
+        component: () => import('pages/Structures/SimpleSentencesPage.vue'),
+        meta: { title: '簡單句型' },
+      },
+    ],
+  },
+  {
     path: '/env1_at_home',
     component: () => import('layouts/MainLayout.vue'),
     children: [{ path: '', component: () => import('pages/Flashcards/Env1AtHomePage.vue') }],

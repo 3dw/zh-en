@@ -186,14 +186,21 @@
             </q-item-section>
             <q-item-section>我的最愛</q-item-section>
           </q-item>
-
-          <q-item clickable to="/playback" class="op-drawer-item" v-if="devMode">
-            <q-item-section avatar>
-              <q-icon name="music_note" />
-            </q-item-section>
-            <q-item-section>今日回顧</q-item-section>
-          </q-item>
         </q-expansion-item>
+
+        <q-item clickable to="/structures" class="op-drawer-item">
+          <q-item-section avatar>
+            <q-icon name="build" />
+          </q-item-section>
+          <q-item-section>句型學習</q-item-section>
+        </q-item>
+
+        <q-item clickable to="/playback" class="op-drawer-item" v-if="devMode">
+          <q-item-section avatar>
+            <q-icon name="music_note" />
+          </q-item-section>
+          <q-item-section>今日回顧</q-item-section>
+        </q-item>
 
         <q-expansion-item icon="handshake" label="操作學習" class="op-expansion-item" dense-toggle>
           <q-item clickable to="/main-game" class="op-drawer-item">
