@@ -316,9 +316,9 @@ export default defineComponent({
   display: block;
 }
 
-/* --- 整體佈局: 黑底、白字、綠色系 --- */
+/* --- 整體佈局: 改為深藍灰色系 --- */
 .q-page {
-  background-color: #000 !important;
+  background: linear-gradient(135deg, #2c3e50 0%, #3a4a5c 100%) !important;
   color: #fff !important;
 }
 .text-subtitle1,
@@ -334,18 +334,20 @@ export default defineComponent({
   color: #fff !important;
 }
 
-/* --- 卡片 & 按鈕 --- */
+/* --- 卡片樣式 --- */
 .rpg-card {
-  background-color: #111 !important;
+  background-color: rgba(255, 255, 255, 0.1) !important;
   color: #fff !important;
-  border: 1px solid #444;
+  border: 1px solid rgba(255, 255, 255, 0.2);
   border-radius: 20px;
   padding: 20px;
+  backdrop-filter: blur(10px);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
 }
 .rpg-button,
 .q-btn--standard.q-btn--rectangle.q-btn--action,
 .q-spinner-dots {
-  background-color: #00c979 !important;
+  background-color: #3498db !important;
   color: #fff !important;
   font-weight: bold;
   border-radius: 25px;
@@ -354,27 +356,26 @@ export default defineComponent({
   transition: background 0.3s;
 }
 .rpg-button:hover {
-  background-color: #04d381 !important;
+  background-color: #2980b9 !important;
 }
 .q-linear-progress__determinate {
-  background-color: #00c979 !important;
+  background-color: #3498db !important;
 }
 
-/* --- 圖片外觀 --- */
+/* --- 圖片陰影效果 --- */
 .rounded-borders {
   border-radius: 8px;
   box-shadow: 0 0 4px rgba(255, 255, 255, 0.2);
 }
 
-/* --- 不規則綠色blob容器: 範圍更大 --- */
+/* --- 不規則綠色blob容器 --- */
 .input-blob-container {
   position: relative;
-  /* 不規則圓角，製造 "blob" 感 */
   border-radius: 60% 40% 45% 55% / 35% 35% 65% 65%;
-  background: linear-gradient(180deg, #00c979, #05e28f);
-  padding: 50px; /* 加大padding, 擴大綠色區域 */
+  background: linear-gradient(180deg, #3498db, #2ecc71);
+  padding: 50px;
   margin-bottom: 16px;
-  box-shadow: 0 0 10px rgba(0, 255, 150, 0.3);
+  box-shadow: 0 0 20px rgba(52, 152, 219, 0.3);
 }
 
 /* 讓 QInput 背景透明、文字白 */
@@ -403,7 +404,7 @@ export default defineComponent({
 }
 .emotion-item img {
   border-radius: 20px;
-  box-shadow: 0 4px 10px rgba(0, 255, 150, 0.3);
+  box-shadow: 0 4px 10px rgba(52, 152, 219, 0.3);
 }
 .emotion-content {
   text-align: center;
@@ -416,6 +417,6 @@ export default defineComponent({
 .q-btn.flat.round {
   background: none;
   border: none;
-  color: #61ffa0 !important;
+  color: #3498db !important;
 }
 </style>
