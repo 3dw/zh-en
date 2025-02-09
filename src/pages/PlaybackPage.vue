@@ -33,14 +33,18 @@
         <q-card class="rpg-card">
           <q-card-section>
             <div class="text-h6 q-mb-md">分享今天最深刻的經歷</div>
-            <q-input
-              v-model="userStory"
-              type="textarea"
-              rows="6"
-              outlined
-              :placeholder="'請用英文或中文描述...\nPlease describe in English or Chinese...'"
-              class="q-mb-md"
-            />
+
+            <!-- 綠色漸層 + 不規則邊緣: 範圍加大 -->
+            <div class="input-blob-container">
+              <q-input
+                v-model="userStory"
+                type="textarea"
+                rows="6"
+                :placeholder="'請用英文或中文描述...\nPlease describe in English or Chinese...'"
+                class="custom-input"
+              />
+            </div>
+
             <div class="text-center">
               <q-btn
                 color="primary"
@@ -129,7 +133,7 @@ export default defineComponent({
     const showProgress = ref(false)
     const progressMessage = ref('')
 
-    // 步驟 1: 不論使用者輸入中文或英文都翻譯內容為中文
+    // 步驟 1: 翻譯內容為中文
     const translateToZh = async (story: string) => {
       progressMessage.value = '正在翻譯故事內容...'
       const translateToZhResponse = await fetch(
@@ -142,11 +146,9 @@ export default defineComponent({
           body: JSON.stringify({ content: story }),
         },
       )
-      //console.log('第一步驟翻譯內容為英文response', translateToEnglishResponse)
       if (!translateToZhResponse.ok) throw new Error('翻譯失敗')
 
       const data = await translateToZhResponse.text()
-      console.log('第一步驟翻譯內容為中文data', data)
       translatedStory.value = data
       return data
     }
@@ -165,35 +167,41 @@ export default defineComponent({
         },
       )
       if (!analyzeEmotionsResponse.ok) throw new Error('情緒分析失敗')
-      console.log('第二步驟情緒分析結果response', analyzeEmotionsResponse)
       const data = await analyzeEmotionsResponse.json()
-      console.log('第二步驟情緒分析結果data', data)
-      // 將字符串轉換為情緒對象數組
-      const emotionsList = (data.emotions || []).map((emotion: string) => ({
-        name: ((emotion as string).split(':')[0] as string).trim().replace(/^\d+\./, ''),
-      }))
+
+      // 添加类型检查和空值处理
+      const emotionsList = (data.emotions || []).map((emo: string) => {
+        if (!emo) return { name: '' }
+        const parts = emo.split(':')
+        const emotionName = parts[0] || ''
+        return {
+          name: emotionName.trim().replace(/^\d+\./, ''),
+        }
+      })
+
       return { emotions: emotionsList }
     }
 
     // 步驟 3: 生成情緒圖片
     const generateEmotionImages = async (zhText: string, emotion: string) => {
       progressMessage.value = `正在生成 ${emotion} 的情緒圖片...`
-      console.log('生成圖片的情緒數據:', emotion)
-      const response = await fetch(`https://zh-en-backend.alearn13994229.workers.dev/playback/image`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
+      const response = await fetch(
+        'https://zh-en-backend.alearn13994229.workers.dev/playback/image',
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ story: zhText, emotion: emotion }),
         },
-        body: JSON.stringify({ story: zhText, emotion: emotion }),
-      })
+      )
 
       if (!response.ok) throw new Error('圖片生成失敗')
       const result = await response.json()
-      console.log('生成的圖片結果:', result)
       return result as EmotionImageResult
     }
 
-    // 步驟 4: 將情緒分析內容翻譯成英文
+    // 步驟 4: 將情緒翻譯成英文
     const translateEmotionToEn = async (zhEmotion: string) => {
       progressMessage.value = `正在翻譯 ${zhEmotion} 的英文說明...`
       const response = await fetch(
@@ -208,27 +216,23 @@ export default defineComponent({
       )
       if (!response.ok) throw new Error('情緒翻譯失敗')
       const enText = await response.text()
-      console.log(`${zhEmotion} 的英文翻譯:`, enText)
       return enText
     }
 
     const speakEmotion = (emotion: EmotionWithAnimation) => {
-      // 取消所有正在進行的朗讀
       speechSynthesis.cancel()
-      // 朗讀英文
       const utterance = new SpeechSynthesisUtterance(emotion.enName)
       utterance.lang = 'en-US'
       utterance.rate = 0.8
       speechSynthesis.speak(utterance)
     }
 
-    // 移除 animateAndSpeakEmotion 和 animateAllEmotions 函數
-    // 替換為新的簡單動畫函數
+    // 顯示分析結果(無額外動畫)
     const animateEmotions = async (emotionResults: EmotionWithAnimation[]) => {
-      emotions.value = emotionResults.map(emotion => ({
-        ...emotion,
+      emotions.value = emotionResults.map((e) => ({
+        ...e,
         showContent: true,
-        moveStep: 0
+        moveStep: 0,
       }))
     }
 
@@ -244,29 +248,19 @@ export default defineComponent({
 
       try {
         const story = userStory.value.trim()
-
         const zhContent = await translateToZh(story)
-        translatedStory.value = zhContent
-
         const emotionsResult = await analyzeEmotions(zhContent)
-
-        // 為每個情緒單獨生成圖片
         const emotionResults = []
-        for (const emotion of emotionsResult.emotions) {
-          // 生成當前情緒的圖片
-          const imageResult = await generateEmotionImages(zhContent, emotion.name)
 
-          // 確保圖片結果格式正確
+        for (const emo of emotionsResult.emotions) {
+          const imageResult = await generateEmotionImages(zhContent, emo.name)
           if (!imageResult.images || !Array.isArray(imageResult.images)) {
-            throw new Error(`${emotion.name} 的圖片生成結果格式不正確`)
+            throw new Error(`${emo.name} 的圖片生成結果格式不正確`)
           }
+          const enEmotionText = await translateEmotionToEn(emo.name)
 
-          // 翻譯情緒說明為英文
-          const enEmotionText = await translateEmotionToEn(emotion.name)
-
-          // 保存情緒和對應的圖片
           emotionResults.push({
-            name: emotion.name,
+            name: emo.name,
             enName: enEmotionText,
             imageUrl: imageResult.images[0] || '',
             isAnimating: false,
@@ -275,10 +269,8 @@ export default defineComponent({
           })
         }
 
-        // 直接顯示結果，不進行自動播放
         await animateEmotions(emotionResults)
       } catch (err) {
-        console.error('分析錯誤:', err)
         error.value = err instanceof Error ? err.message : '分析過程發生錯誤，請稍後再試'
       } finally {
         loading.value = false
@@ -303,16 +295,15 @@ export default defineComponent({
 </script>
 
 <style scoped>
+/* --- 動畫 & 多螢幕 --- */
 .move-step-1 {
   transform: translateX(33%);
   transition: transform 0.3s ease-out;
 }
-
 .emotion-content {
   opacity: 0;
   animation: fadeIn 0.5s ease-in-out forwards;
 }
-
 @keyframes fadeIn {
   from {
     opacity: 0;
@@ -321,8 +312,110 @@ export default defineComponent({
     opacity: 1;
   }
 }
-
 .show-content .emotion-content {
   display: block;
+}
+
+/* --- 整體佈局: 黑底、白字、綠色系 --- */
+.q-page {
+  background-color: #000 !important;
+  color: #fff !important;
+}
+.text-subtitle1,
+.text-h6,
+.error-section,
+.loading-section,
+.progress-section,
+.q-banner.text-white {
+  color: #fff !important;
+}
+.q-banner.bg-negative {
+  background-color: #ff4c4c !important;
+  color: #fff !important;
+}
+
+/* --- 卡片 & 按鈕 --- */
+.rpg-card {
+  background-color: #111 !important;
+  color: #fff !important;
+  border: 1px solid #444;
+  border-radius: 20px;
+  padding: 20px;
+}
+.rpg-button,
+.q-btn--standard.q-btn--rectangle.q-btn--action,
+.q-spinner-dots {
+  background-color: #00c979 !important;
+  color: #fff !important;
+  font-weight: bold;
+  border-radius: 25px;
+  padding: 12px 24px;
+  text-transform: uppercase;
+  transition: background 0.3s;
+}
+.rpg-button:hover {
+  background-color: #04d381 !important;
+}
+.q-linear-progress__determinate {
+  background-color: #00c979 !important;
+}
+
+/* --- 圖片外觀 --- */
+.rounded-borders {
+  border-radius: 8px;
+  box-shadow: 0 0 4px rgba(255, 255, 255, 0.2);
+}
+
+/* --- 不規則綠色blob容器: 範圍更大 --- */
+.input-blob-container {
+  position: relative;
+  /* 不規則圓角，製造 "blob" 感 */
+  border-radius: 60% 40% 45% 55% / 35% 35% 65% 65%;
+  background: linear-gradient(180deg, #00c979, #05e28f);
+  padding: 50px; /* 加大padding, 擴大綠色區域 */
+  margin-bottom: 16px;
+  box-shadow: 0 0 10px rgba(0, 255, 150, 0.3);
+}
+
+/* 讓 QInput 背景透明、文字白 */
+.custom-input >>> .q-field__control {
+  background: transparent !important;
+  color: #fff !important;
+}
+.custom-input >>> .q-field__native {
+  background: transparent !important;
+  color: #fff !important;
+}
+
+/* --- 情緒項目排版 --- */
+.emotion-grid {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 20px;
+  padding-top: 20px;
+}
+.emotion-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  transition: transform 0.3s ease-out;
+}
+.emotion-item img {
+  border-radius: 20px;
+  box-shadow: 0 4px 10px rgba(0, 255, 150, 0.3);
+}
+.emotion-content {
+  text-align: center;
+  font-size: 1.2rem;
+  margin-top: 10px;
+  color: white;
+}
+
+/* 小喇叭按鈕 */
+.q-btn.flat.round {
+  background: none;
+  border: none;
+  color: #61ffa0 !important;
 }
 </style>
