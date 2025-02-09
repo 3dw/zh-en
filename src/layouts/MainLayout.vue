@@ -188,21 +188,14 @@
           </q-item>
         </q-expansion-item>
 
-        <q-item clickable to="/structures" class="op-drawer-item">
-          <q-item-section avatar>
-            <q-icon name="build" />
-          </q-item-section>
-          <q-item-section>句型學習</q-item-section>
-        </q-item>
-
-        <q-item clickable to="/playback" class="op-drawer-item" v-if="devMode">
-          <q-item-section avatar>
-            <q-icon name="music_note" />
-          </q-item-section>
-          <q-item-section>今日回顧</q-item-section>
-        </q-item>
-
         <q-expansion-item icon="handshake" label="操作學習" class="op-expansion-item" dense-toggle>
+          <q-item clickable to="/structures" class="op-drawer-item">
+            <q-item-section avatar>
+              <q-icon name="build" />
+            </q-item-section>
+            <q-item-section>句型學習</q-item-section>
+          </q-item>
+
           <q-item clickable to="/main-game" class="op-drawer-item">
             <q-item-section avatar>
               <q-icon name="gamepad" />
@@ -240,6 +233,12 @@
             </q-item-section>
             <q-item-section>相反詞拉鋸戰</q-item-section>
           </q-item>
+          <q-item clickable to="/playback" class="op-drawer-item">
+            <q-item-section avatar>
+              <q-icon name="edit" />
+            </q-item-section>
+            <q-item-section>今日回顧</q-item-section>
+          </q-item>
         </q-expansion-item>
 
         <q-expansion-item icon="audiotrack" label="聽覺學習" class="op-expansion-item" dense-toggle>
@@ -249,12 +248,12 @@
             </q-item-section>
             <q-item-section>英文兒歌</q-item-section>
           </q-item>
-          <q-item clickable to="/story" class="op-drawer-item" v-if="devMode">
+          <!-- <q-item clickable to="/story" class="op-drawer-item" v-if="devMode">
             <q-item-section avatar>
               <q-icon name="music_note" />
             </q-item-section>
             <q-item-section>英文睡前故事(old_version)</q-item-section>
-          </q-item>
+          </q-item> -->
           <q-item clickable to="/story_backend" class="op-drawer-item">
             <q-item-section avatar>
               <q-icon name="image" />

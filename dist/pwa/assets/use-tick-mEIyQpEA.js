@@ -1,1 +1,0 @@
-import{as as s,o as i,n as a,aq as r,j as c}from"./index-DjPobmbs.js";function m(){let e;const o=c();function t(){e=void 0}return s(t),i(t),{removeTick:t,registerTick(n){e=n,a(()=>{e===n&&(r(o)===!1&&e(),e=void 0)})}}}export{m as u};
