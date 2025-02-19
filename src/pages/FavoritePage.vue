@@ -30,10 +30,13 @@
           </div>
           <div v-else class="q-pa-md">
             <div v-if="currentClozeCard">
-              <h3>中文提示：</h3>
-              <p>{{ currentClozeCard.chinese }}</p>
+              <h2>
+                中文：{{ currentClozeCard.chinese }}
+                <!-- 將發音按鈕改為較大的發音圖示 -->
+                <q-btn icon="volume_up" size="lg" color="primary" @click="playAudio" flat />
+              </h2>
 
-              <h3>英文句子：</h3>
+              <h2>英文：</h2>
               <p>
                 <span v-for="(word, index) in splitEnglishSentence" :key="index">
                   <template v-if="index === blankIndex">
@@ -53,6 +56,7 @@
                   label="請填入缺少的單字"
                   :disable="answered"
                   @keydown.enter="!answered && userAnswer && checkAnswer()"
+                  class="large-input"
                 />
               </div>
               <div class="q-mt-md">
@@ -62,17 +66,6 @@
                   @click="checkAnswer"
                   :disable="answered || !userAnswer"
                 />
-              </div>
-              <div class="q-mt-md">
-                <p
-                  v-if="feedback"
-                  :class="{
-                    'text-positive': feedback === '答對了！',
-                    'text-negative': feedback !== '答對了！',
-                  }"
-                >
-                  {{ feedback }}
-                </p>
               </div>
               <div class="q-mt-md">
                 <q-btn color="secondary" label="下一題" @click="nextQuestion" />
@@ -86,7 +79,8 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, onMounted, computed, watch } from 'vue'
+import { defineComponent, ref, onMounted, computed, watch, nextTick } from 'vue'
+import { useQuasar } from 'quasar'
 import FlashCard from 'src/components/FlashCard.vue'
 
 interface Card {
@@ -106,13 +100,15 @@ export default defineComponent({
   components: {
     FlashCard,
   },
-  setup() {
+  setup(props, { emit }) {
+    const $q = useQuasar()
     const favoriteCards = ref<Sentence[]>([])
 
     // 讀取 localStorage 中收藏的字卡資料
     onMounted(() => {
       const savedFavorites = localStorage.getItem('en_love_arr')
       console.log(savedFavorites)
+
       function toSentence(arr: Card[]) {
         return arr.map((item: Card) => ({
           chinese: item.chinese,
@@ -122,6 +118,7 @@ export default defineComponent({
       }
       if (savedFavorites) {
         favoriteCards.value = toSentence(JSON.parse(savedFavorites))
+        loadNewClozeCard()
       }
     })
 
@@ -133,7 +130,7 @@ export default defineComponent({
     }
 
     // 用於切換檢視與克漏字分頁的變數
-    const activeTab = ref('view')
+    const activeTab = ref('cloze')
 
     // 克漏字練習相關狀態
     const currentClozeCard = ref<Sentence | null>(null)
@@ -141,7 +138,7 @@ export default defineComponent({
     const userAnswer = ref('')
     const feedback = ref('')
     const answered = ref(false)
-
+    const correctCount = ref(0)
     // 計算英文句子分割後的字陣列
     const splitEnglishSentence = computed(() => {
       if (currentClozeCard.value) {
@@ -167,6 +164,12 @@ export default defineComponent({
       userAnswer.value = ''
       feedback.value = ''
       answered.value = false
+
+      // 使用 nextTick 確保 DOM 更新後再設置焦點
+      nextTick(() => {
+        const inputEl = document.querySelector('input')
+        if (inputEl) inputEl.focus()
+      })
     }
 
     // 檢查使用者填入的答案是否正確
@@ -177,7 +180,6 @@ export default defineComponent({
       const words = currentClozeCard.value.english.split(' ')
       const correctWord = (blankIndex.value !== null && words[blankIndex.value]) || ''
 
-      // 移除標點符號後進行比較
       const cleanUserAnswer = userAnswer.value
         .trim()
         .toLowerCase()
@@ -188,16 +190,49 @@ export default defineComponent({
         .replace(/[.,!?;:]/g, '')
 
       if (cleanUserAnswer === cleanCorrectWord) {
-        feedback.value = '答對了！'
+        correctCount.value++
+        feedback.value = '答對了！您已連續答對' + correctCount.value + '題！'
+        $q.notify({
+          type: 'positive',
+          message: feedback.value,
+          position: 'top',
+          timeout: 2500,
+          actions: [{ icon: 'close', color: 'white' }],
+        })
+        emit('earn-xp', 50)
       } else {
         feedback.value = `答錯了，正確答案是：${correctWord}`
+        correctCount.value = 0
+        $q.notify({
+          type: 'negative',
+          message: feedback.value,
+          position: 'top',
+          timeout: 2500,
+          actions: [{ icon: 'close', color: 'white' }],
+        })
       }
       answered.value = true
+
+      // 新增：在答案檢查後添加 enter 鍵監聽
+      const handleEnter = (e: KeyboardEvent) => {
+        if (e.key === 'Enter') {
+          nextQuestion()
+          document.removeEventListener('keydown', handleEnter)
+        }
+      }
+      document.addEventListener('keydown', handleEnter)
     }
 
     // 進入下一題
     function nextQuestion() {
       loadNewClozeCard()
+    }
+
+    // 發音
+    function playAudio() {
+      // 用speechSynthesis發音
+      const utterance = new SpeechSynthesisUtterance(currentClozeCard.value?.english)
+      window.speechSynthesis.speak(utterance)
     }
 
     // 當切換到「克漏字」分頁時，自動載入新的題目
@@ -216,9 +251,11 @@ export default defineComponent({
       userAnswer,
       feedback,
       answered,
+      correctCount,
       splitEnglishSentence,
       checkAnswer,
       nextQuestion,
+      playAudio,
     }
   },
 })
@@ -250,5 +287,15 @@ export default defineComponent({
 .search-bar {
   display: flex;
   justify-content: center;
+}
+
+// 新增大型輸入框樣式
+.large-input {
+  :deep(.q-field__native) {
+    font-size: 1.5rem;
+  }
+  :deep(.q-field__label) {
+    font-size: 1.2rem;
+  }
 }
 </style>
