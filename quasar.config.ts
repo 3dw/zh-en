@@ -120,8 +120,7 @@ export default defineConfig((/* ctx */) => {
 
     // https://v2.quasar.dev/quasar-cli-vite/developing-ssr/configuring-ssr
     ssr: {
-      prodPort: 3000, // The default port that the production server should use
-      // (gets superseded if process.env.PORT is specified at runtime)
+      prodPort: 3000,
 
       middlewares: [
         'render', // keep this as last one
@@ -136,40 +135,6 @@ export default defineConfig((/* ctx */) => {
       // manualPostHydrationTrigger: true,
 
       pwa: false,
-      // pwaOfflineHtmlFilename: 'offline.html', // do NOT use index.html as name!
-
-      // pwaExtendGenerateSWOptions (cfg) {},
-      // pwaExtendInjectManifestOptions (cfg) {}
-    },
-
-    // https://v2.quasar.dev/quasar-cli-vite/developing-pwa/configuring-pwa
-    pwa: {
-      workboxMode: 'GenerateSW', // 'GenerateSW' or 'InjectManifest'
-      // swFilename: 'sw.js',
-      // manifestFilename: 'manifest.json'
-      extendGenerateSWOptions(cfg) {
-        Object.assign(cfg, {
-          skipWaiting: true, // 確保新的 Service Worker 立即接管
-          clientsClaim: true, // 立即控制所有開啟的頁面
-          cleanupOutdatedCaches: true, // 清理過期的緩存
-          runtimeCaching: [
-            {
-              urlPattern: /^https:\/\/.*/,
-              handler: 'StaleWhileRevalidate', // 改用 StaleWhileRevalidate 策略
-              options: {
-                cacheName: 'api-cache',
-                expiration: {
-                  maxEntries: 100,
-                  maxAgeSeconds: 60 * 60, // 縮短到1小時
-                },
-                cacheableResponse: {
-                  statuses: [0, 200], // 只緩存成功的響應
-                },
-              },
-            },
-          ],
-        })
-      },
     },
 
     // Full list of options: https://v2.quasar.dev/quasar-cli-vite/developing-cordova-apps/configuring-cordova
