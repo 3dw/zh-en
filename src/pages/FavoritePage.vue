@@ -439,14 +439,21 @@ export default defineComponent({
 
         mediaRecorder.ondataavailable = (event) => {
           console.log('錄音中')
+          console.log(event.data)
           audioChunks.value.push(event.data)
+          // console.log(audioChunks.value)
+          uploadAudio()
         }
+
+        mediaRecorder.onstop = () => {
+          isRecording.value = false
+          console.log('錄音結束')
+          // console.log(audioChunks.value)
+        }
+
         // 自動在5秒後停止錄音
         setTimeout(() => {
           mediaRecorder.stop()
-          isRecording.value = false
-          console.log('錄音結束')
-          uploadAudio()
         }, 5000)
       } catch (error) {
         console.error('錄音失敗:', error)
@@ -459,6 +466,14 @@ export default defineComponent({
       const formData = new FormData()
       formData.append('file', audioBlob, 'recording.wav')
 
+      // 下載錄音檔案
+      const audioUrl = URL.createObjectURL(audioBlob)
+      const a = document.createElement('a')
+      a.href = audioUrl
+      a.download = 'recording.wav'
+      a.click()
+
+      // 上傳錄音檔案
       const response = await axios.post(
         'https://zh-en-backend.alearn13994229.workers.dev/convert-speech-to-text',
         formData,
