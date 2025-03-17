@@ -49,9 +49,22 @@
                 flat
               />
               <span v-else class="text-red-7">錄音中...</span>
-              <p v-if="recordedText">錄音結果：{{ recordedText }}</p>
-              <p v-if="recordedText && recordedText === currentCard.english">答對了！</p>
+              <!--  <p v-if="recordedText">錄音結果：{{ recordedText }}</p>
+              <p v-if="recordedText && recordedText === currentCard.english">答對了！</p>   -->
               <audio v-show="!isRecording && hasRecorded" ref="audioPlayer" controls></audio>
+
+              <div class="q-mt-md" v-if="!isRecording && hasRecorded">
+                <q-btn
+                  color="primary"
+                  label="很棒！下一題"
+                  @click="checkAnswerSpeakoutAnswer(true)"
+                />
+                <q-btn
+                  color="secondary"
+                  label="再試一次"
+                  @click="checkAnswerSpeakoutAnswer(false)"
+                />
+              </div>
             </div>
           </div>
         </q-tab-panel>
@@ -228,6 +241,32 @@ export default defineComponent({
       }
       return []
     })
+
+    function checkAnswerSpeakoutAnswer(isCorrect: boolean) {
+      if (isCorrect) {
+        correctCount.value++
+        $q.notify({
+          type: 'positive',
+          message: `答對了！您已連續答對${correctCount.value}題！獲得100xp！`,
+          position: 'top',
+          timeout: 2500,
+        })
+        // 重置錄音
+        isRecording.value = false
+        hasRecorded.value = false
+        audioPlayer.value = null
+        // 下一題
+        loadNewSpeakoutCard()
+      } else {
+        correctCount.value = 0
+        $q.notify({
+          type: 'negative',
+          message: `不太像，再試一次！`,
+          position: 'top',
+          timeout: 2500,
+        })
+      }
+    }
 
     // 載入一個新的克漏字題目
     function loadNewClozeCard() {
@@ -522,6 +561,7 @@ export default defineComponent({
       uploadAudio,
       recordedText,
       audioPlayer,
+      checkAnswerSpeakoutAnswer,
     }
   },
 })
