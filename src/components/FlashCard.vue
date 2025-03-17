@@ -1,5 +1,12 @@
 <template>
   <div class="cards-container">
+    <router-link
+      to="/fav/view"
+      v-if="!$route.path.startsWith('/fav') && $route.path !== '/favorite'"
+      class="fixed-bottom-right z-top"
+    >
+      <q-btn icon="favorite" size="lg" color="pink" label="前往最愛" />
+    </router-link>
     <div
       class="card"
       v-for="(sentence, index) in filteredSentences"

@@ -226,6 +226,11 @@ const routes: RouteRecordRaw[] = [
     ],
   },
   {
+    path: '/fav/:activeTab',
+    component: () => import('layouts/MainLayout.vue'),
+    children: [{ path: '', component: () => import('pages/FavoritePage.vue') }],
+  },
+  {
     path: '/story',
     component: () => import('layouts/MainLayout.vue'),
     children: [

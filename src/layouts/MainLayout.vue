@@ -242,6 +242,12 @@
         </q-expansion-item>
 
         <q-expansion-item icon="audiotrack" label="聽覺學習" class="op-expansion-item" dense-toggle>
+          <q-item clickable to="/fav/speakout" class="op-drawer-item">
+            <q-item-section avatar>
+              <q-icon name="volume_up" />
+            </q-item-section>
+            <q-item-section>開口說</q-item-section>
+          </q-item>
           <q-item clickable to="/main-song-word" class="op-drawer-item">
             <q-item-section avatar>
               <q-icon name="music_note" />

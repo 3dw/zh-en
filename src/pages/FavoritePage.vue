@@ -3,15 +3,31 @@
     <div class="q-pa-md full-width">
       <h2>我的最愛字卡</h2>
 
+      <div v-if="favoriteCards.length === 0">
+        <div class="text-center q-pa-lg">
+          <p class="text-grey-7">還沒有收藏的字卡</p>
+          <p class="text-grey-7">在學習時點擊愛心圖示來收藏字卡</p>
+          <router-link to="/beginner">
+            <q-btn size="lg" color="primary" label="收集字卡" />
+          </router-link>
+        </div>
+      </div>
+
       <!-- 使用 q-tabs 切換「檢視卡片」與「克漏字練習」 -->
-      <q-tabs v-model="activeTab" dense border-color="primary" class="q-mb-md">
+      <q-tabs
+        v-if="favoriteCards.length > 0"
+        v-model="activeTab"
+        dense
+        border-color="primary"
+        class="q-mb-md"
+      >
         <q-tab name="view" label="卡片"></q-tab>
         <q-tab name="cloze" label="克漏字"></q-tab>
         <q-tab name="multipleChoice" label="四選一"></q-tab>
         <q-tab name="speakout" label="開口說"></q-tab>
       </q-tabs>
 
-      <q-tab-panels v-model="activeTab" animated>
+      <q-tab-panels v-if="favoriteCards.length > 0" v-model="activeTab" animated>
         <!-- 檢視卡片頁面 -->
         <q-tab-panel name="view">
           <div v-if="favoriteCards.length === 0" class="text-center q-pa-lg">
@@ -174,6 +190,7 @@ import { defineComponent, ref, onMounted, computed, watch, nextTick } from 'vue'
 import { useQuasar } from 'quasar'
 import FlashCard from 'src/components/FlashCard.vue'
 import axios from 'axios'
+import { useRoute } from 'vue-router'
 
 interface Card {
   english: string
@@ -219,6 +236,12 @@ export default defineComponent({
       if (favoriteCards.value.length >= 4) {
         loadNewMultipleChoiceCard()
         activeTab.value = 'multipleChoice'
+      }
+
+      // 如果路由參數有activeTab，則設置activeTab
+      const route = useRoute()
+      if (route.params.activeTab) {
+        activeTab.value = route.params.activeTab as string
       }
     })
 
