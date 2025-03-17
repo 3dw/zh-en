@@ -254,7 +254,7 @@ export default defineComponent({
         // 重置錄音
         isRecording.value = false
         hasRecorded.value = false
-        audioPlayer.value = null
+        // audioPlayer.value = null
         // 下一題
         loadNewSpeakoutCard()
       } else {
