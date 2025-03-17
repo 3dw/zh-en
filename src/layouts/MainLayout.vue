@@ -135,7 +135,7 @@
             <q-item-section avatar>
               <q-icon name="sentiment_satisfied" />
             </q-item-section>
-            <q-item-section>情緒雙語字卡</q-item-section>
+            <q-item-section>狀態雙語字卡</q-item-section>
           </q-item>
 
           <q-item clickable to="/body" class="op-drawer-item">

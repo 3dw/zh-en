@@ -37,28 +37,6 @@ export default defineComponent({
       { chinese: '我很緊張。', english: 'I am nervous.', flipped: false },
       { chinese: '我很興奮！', english: 'I am excited!', flipped: false },
 
-      // 複雜情緒
-      { chinese: '我很擔心。', english: 'I am worried.', flipped: false },
-      { chinese: '我很害怕。', english: 'I am scared.', flipped: false },
-      { chinese: '我很煩惱。', english: 'I am troubled.', flipped: false },
-      { chinese: '我很驚訝！', english: 'I am surprised!', flipped: false },
-      { chinese: '我很失望。', english: 'I am disappointed.', flipped: false },
-      { chinese: '我很感動。', english: 'I am touched.', flipped: false },
-      { chinese: '我很滿意。', english: 'I am satisfied.', flipped: false },
-      { chinese: '我很困惑。', english: 'I am confused.', flipped: false },
-      { chinese: '我很羨慕。', english: 'I am envious.', flipped: false },
-      { chinese: '我很感激。', english: 'I am grateful.', flipped: false },
-      { chinese: '我很懊悔。', english: 'I am regretful.', flipped: false },
-      { chinese: '我很無聊。', english: 'I am bored.', flipped: false },
-      { chinese: '我很焦慮。', english: 'I am anxious.', flipped: false },
-      { chinese: '我很沮喪。', english: 'I am depressed.', flipped: false },
-      { chinese: '我很自豪。', english: 'I am proud.', flipped: false },
-      { chinese: '我很慚愧。', english: 'I am ashamed.', flipped: false },
-      { chinese: '我很嫉妒。', english: 'I am jealous.', flipped: false },
-      { chinese: '我很尷尬。', english: 'I am embarrassed.', flipped: false },
-      { chinese: '我很孤單。', english: 'I am lonely.', flipped: false },
-      { chinese: '我很放鬆。', english: 'I am relaxed.', flipped: false },
-
       // 生理狀態
       { chinese: '我很累。', english: 'I am tired.', flipped: false },
       { chinese: '我很睏。', english: 'I am sleepy.', flipped: false },
@@ -87,6 +65,28 @@ export default defineComponent({
       { chinese: '我很不耐煩。', english: 'I am impatient.', flipped: false },
       { chinese: '我很平靜。', english: 'I am calm.', flipped: false },
       { chinese: '我很煩躁。', english: 'I am irritated.', flipped: false },
+
+      // 複雜情緒
+      { chinese: '我很擔心。', english: 'I am worried.', flipped: false },
+      { chinese: '我很害怕。', english: 'I am scared.', flipped: false },
+      { chinese: '我很煩惱。', english: 'I am troubled.', flipped: false },
+      { chinese: '我很驚訝！', english: 'I am surprised!', flipped: false },
+      { chinese: '我很失望。', english: 'I am disappointed.', flipped: false },
+      { chinese: '我很感動。', english: 'I am touched.', flipped: false },
+      { chinese: '我很滿意。', english: 'I am satisfied.', flipped: false },
+      { chinese: '我很困惑。', english: 'I am confused.', flipped: false },
+      { chinese: '我很羨慕。', english: 'I am envious.', flipped: false },
+      { chinese: '我很感激。', english: 'I am grateful.', flipped: false },
+      { chinese: '我很懊悔。', english: 'I am regretful.', flipped: false },
+      { chinese: '我很無聊。', english: 'I am bored.', flipped: false },
+      { chinese: '我很焦慮。', english: 'I am anxious.', flipped: false },
+      { chinese: '我很沮喪。', english: 'I am depressed.', flipped: false },
+      { chinese: '我很自豪。', english: 'I am proud.', flipped: false },
+      { chinese: '我很慚愧。', english: 'I am ashamed.', flipped: false },
+      { chinese: '我很嫉妒。', english: 'I am jealous.', flipped: false },
+      { chinese: '我很尷尬。', english: 'I am embarrassed.', flipped: false },
+      { chinese: '我很孤單。', english: 'I am lonely.', flipped: false },
+      { chinese: '我很放鬆。', english: 'I am relaxed.', flipped: false },
     ])
 
     const toggleFlip = (sentence: { flipped: boolean }) => {
