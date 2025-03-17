@@ -48,8 +48,10 @@
                 @click="startRecording"
                 flat
               />
+              <span v-else class="text-red-7">錄音中...</span>
               <p v-if="recordedText">錄音結果：{{ recordedText }}</p>
               <p v-if="recordedText && recordedText === currentCard.english">答對了！</p>
+              <audio v-show="!isRecording && hasRecorded" ref="audioPlayer" controls></audio>
             </div>
           </div>
         </q-tab-panel>
@@ -153,7 +155,7 @@
 import { defineComponent, ref, onMounted, computed, watch, nextTick } from 'vue'
 import { useQuasar } from 'quasar'
 import FlashCard from 'src/components/FlashCard.vue'
-import axios from 'axios'
+// import axios from 'axios'
 
 interface Card {
   english: string
@@ -177,7 +179,8 @@ export default defineComponent({
     const favoriteCards = ref<Sentence[]>([])
     const isRecording = ref(false)
     const audioChunks = ref<Blob[]>([])
-
+    const audioPlayer = ref<HTMLAudioElement | null>(null)
+    const hasRecorded = ref(false)
     // 讀取 localStorage 中收藏的字卡資料
     onMounted(() => {
       const savedFavorites = localStorage.getItem('en_love_arr')
@@ -454,6 +457,7 @@ export default defineComponent({
         // 自動在5秒後停止錄音
         setTimeout(() => {
           mediaRecorder.stop()
+          hasRecorded.value = true
         }, 5000)
       } catch (error) {
         console.error('錄音失敗:', error)
@@ -461,19 +465,24 @@ export default defineComponent({
     }
 
     async function uploadAudio() {
-      // 確保 audioChunks 中的資料是 Blob 類型
       const audioBlob = new Blob(audioChunks.value, { type: 'audio/wav' })
       const formData = new FormData()
       formData.append('file', audioBlob, 'recording.wav')
 
-      // 下載錄音檔案
       const audioUrl = URL.createObjectURL(audioBlob)
+      /*
+      // 下載錄音檔案
       const a = document.createElement('a')
       a.href = audioUrl
       a.download = 'recording.wav'
-      a.click()
+      a.click() */
 
-      // 上傳錄音檔案
+      // 新增：將錄音的 URL 設定為 audio 元件的 src
+      if (audioPlayer.value) {
+        audioPlayer.value.src = audioUrl
+      }
+
+      /* // 上傳錄音檔案
       const response = await axios.post(
         'https://zh-en-backend.alearn13994229.workers.dev/convert-speech-to-text',
         formData,
@@ -481,7 +490,7 @@ export default defineComponent({
       )
       console.log(response.data)
       console.log(response.data.text)
-      recordedText.value = response.data.text
+      recordedText.value = response.data.text */
     }
 
     return {
@@ -501,6 +510,7 @@ export default defineComponent({
       playAudio,
       playSpeakoutAudio,
       isRecording,
+      hasRecorded,
       audioChunks,
       currentMultipleChoiceCard,
       multipleChoiceOptions,
@@ -511,6 +521,7 @@ export default defineComponent({
       startRecording,
       uploadAudio,
       recordedText,
+      audioPlayer,
     }
   },
 })
