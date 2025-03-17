@@ -504,9 +504,9 @@ export default defineComponent({
     }
 
     async function uploadAudio() {
-      const audioBlob = new Blob(audioChunks.value, { type: 'audio/wav' })
+      const audioBlob = new Blob(audioChunks.value, { type: 'audio/mp4' })
       const formData = new FormData()
-      formData.append('file', audioBlob, 'recording.wav')
+      formData.append('file', audioBlob, 'recording.mp4')
 
       const audioUrl = URL.createObjectURL(audioBlob)
       /*
