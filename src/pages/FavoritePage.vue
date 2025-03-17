@@ -50,13 +50,21 @@
               <span v-else class="text-red-7">錄音中...</span>
               <audio v-show="!isRecording && hasRecorded" ref="audioPlayer" controls></audio>
 
-              <div class="q-mt-md" v-if="!isRecording && hasRecorded">
+              <p v-if="recordedText">AI分析錄音結果：{{ recordedText }}</p>
+              <p v-if="recordedText && isSimilar(recordedText, currentCard.english)">答對了！</p>
+              <p v-if="recordedText && !isSimilar(recordedText, currentCard.english)">
+                有點不像...
+              </p>
+
+              <div class="q-mt-md" v-if="!isRecording && hasRecorded && recordedText">
                 <q-btn
+                  v-if="recordedText && isSimilar(recordedText, currentCard.english)"
                   color="primary"
                   label="很棒！下一題"
                   @click="checkAnswerSpeakoutAnswer(true)"
                 />
                 <q-btn
+                  v-if="recordedText && !isSimilar(recordedText, currentCard.english)"
                   color="secondary"
                   label="再試一次"
                   @click="checkAnswerSpeakoutAnswer(false)"
@@ -165,7 +173,7 @@
 import { defineComponent, ref, onMounted, computed, watch, nextTick } from 'vue'
 import { useQuasar } from 'quasar'
 import FlashCard from 'src/components/FlashCard.vue'
-// import axios from 'axios'
+import axios from 'axios'
 
 interface Card {
   english: string
@@ -214,6 +222,13 @@ export default defineComponent({
       }
     })
 
+    function isSimilar(text1: string, text2: string) {
+      // 標點符號不記, 空白不記
+      const cleanText1 = text1.replace(/[.,!?;:]/g, '').replace(/\s/g, '')
+      const cleanText2 = text2.replace(/[.,!?;:]/g, '').replace(/\s/g, '')
+      return cleanText1.toLowerCase() === cleanText2.toLowerCase()
+    }
+
     const removeFromFavorites = (card: Card) => {
       favoriteCards.value = favoriteCards.value.filter(
         (c) => !(c.english === card.english && c.chinese === card.chinese),
@@ -258,7 +273,7 @@ export default defineComponent({
         correctCount.value = 0
         $q.notify({
           type: 'negative',
-          message: `不太像，再試一次！`,
+          message: `不太像，再試一次！請再按一次錄音按鈕`,
           position: 'top',
           timeout: 2500,
         })
@@ -520,7 +535,7 @@ export default defineComponent({
         audioPlayer.value.src = audioUrl
       }
 
-      /* // 上傳錄音檔案
+      // 上傳錄音檔案
       const response = await axios.post(
         'https://zh-en-backend.alearn13994229.workers.dev/convert-speech-to-text',
         formData,
@@ -528,7 +543,7 @@ export default defineComponent({
       )
       console.log(response.data)
       console.log(response.data.text)
-      recordedText.value = response.data.text */
+      recordedText.value = response.data.text
     }
 
     function resetAudio() {
@@ -554,6 +569,7 @@ export default defineComponent({
       nextQuestion,
       playAudio,
       playSpeakoutAudio,
+      isSimilar,
       isRecording,
       hasRecorded,
       audioChunks,
