@@ -5,9 +5,10 @@
 
       <!-- 使用 q-tabs 切換「檢視卡片」與「克漏字練習」 -->
       <q-tabs v-model="activeTab" dense border-color="primary" class="q-mb-md">
-        <q-tab name="view" label="檢視卡片"></q-tab>
-        <q-tab name="cloze" label="克漏字練習"></q-tab>
-        <q-tab name="multipleChoice" label="四選一測驗"></q-tab>
+        <q-tab name="view" label="卡片"></q-tab>
+        <q-tab name="cloze" label="克漏字"></q-tab>
+        <q-tab name="multipleChoice" label="四選一"></q-tab>
+        <q-tab name="speakout" label="開口說"></q-tab>
       </q-tabs>
 
       <q-tab-panels v-model="activeTab" animated>
@@ -20,6 +21,36 @@
           </div>
           <div v-else>
             <FlashCard :sentences="favoriteCards" @earn-xp="(xp) => $emit('earn-xp', xp)" />
+          </div>
+        </q-tab-panel>
+
+        <!-- 開口說頁面 -->
+        <q-tab-panel name="speakout">
+          <div v-if="favoriteCards.length === 0" class="text-center q-pa-lg">
+            <q-icon name="favorite_border" size="50px" color="grey-5" />
+            <p class="text-grey-7">還沒有收藏的字卡</p>
+          </div>
+
+          <div v-else>
+            <div class="q-mt-md">
+              <h2>
+                中文：{{ currentCard.chinese }}
+                <br />
+                英文：{{ currentCard.english }}
+                <!-- 將發音按鈕改為較大的發音圖示 -->
+                <q-btn icon="volume_up" size="lg" color="primary" @click="playSpeakoutAudio" flat />
+              </h2>
+              <q-btn
+                v-if="!isRecording"
+                icon="mic"
+                size="lg"
+                color="primary"
+                @click="startRecording"
+                flat
+              />
+              <p v-if="recordedText">錄音結果：{{ recordedText }}</p>
+              <p v-if="recordedText && recordedText === currentCard.english">答對了！</p>
+            </div>
           </div>
         </q-tab-panel>
 
@@ -122,6 +153,7 @@
 import { defineComponent, ref, onMounted, computed, watch, nextTick } from 'vue'
 import { useQuasar } from 'quasar'
 import FlashCard from 'src/components/FlashCard.vue'
+import axios from 'axios'
 
 interface Card {
   english: string
@@ -143,6 +175,8 @@ export default defineComponent({
   setup(props, { emit }) {
     const $q = useQuasar()
     const favoriteCards = ref<Sentence[]>([])
+    const isRecording = ref(false)
+    const audioChunks = ref<Blob[]>([])
 
     // 讀取 localStorage 中收藏的字卡資料
     onMounted(() => {
@@ -280,6 +314,12 @@ export default defineComponent({
       window.speechSynthesis.speak(utterance)
     }
 
+    function playSpeakoutAudio() {
+      // 用speechSynthesis發音
+      const utterance = new SpeechSynthesisUtterance(currentCard.value?.english)
+      window.speechSynthesis.speak(utterance)
+    }
+
     // 當切換到「克漏字」分頁時，自動載入新的題目
     watch(activeTab, (newVal) => {
       if (newVal === 'cloze') {
@@ -350,8 +390,26 @@ export default defineComponent({
     watch(activeTab, (newVal) => {
       if (newVal === 'multipleChoice') {
         loadNewMultipleChoiceCard()
+      } else if (newVal === 'speakout') {
+        loadNewSpeakoutCard()
       }
     })
+
+    const currentCard = ref<Sentence>({
+      chinese: '',
+      english: '',
+      flipped: false,
+    } as Sentence)
+
+    function loadNewSpeakoutCard() {
+      if (favoriteCards.value.length === 0) {
+        currentCard.value = favoriteCards.value[0] as Sentence
+        return
+      }
+      const randomIndex = Math.floor(Math.random() * favoriteCards.value.length)
+      currentCard.value = favoriteCards.value[randomIndex] as Sentence
+      recordedText.value = ''
+    }
 
     // 新增發音功能
     function playMultipleChoiceAudio() {
@@ -368,10 +426,53 @@ export default defineComponent({
       }
     })
 
+    const recordedText = ref('')
+
+    async function startRecording() {
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({ audio: true })
+        const mediaRecorder = new MediaRecorder(stream)
+        audioChunks.value = [] // 清空之前的錄音片段
+        mediaRecorder.start()
+        isRecording.value = true
+        console.log('錄音開始')
+
+        mediaRecorder.ondataavailable = (event) => {
+          console.log('錄音中')
+          audioChunks.value.push(event.data)
+        }
+        // 自動在5秒後停止錄音
+        setTimeout(() => {
+          mediaRecorder.stop()
+          isRecording.value = false
+          console.log('錄音結束')
+          uploadAudio()
+        }, 5000)
+      } catch (error) {
+        console.error('錄音失敗:', error)
+      }
+    }
+
+    async function uploadAudio() {
+      // 上傳錄音檔案
+      const formData = new FormData()
+      formData.append('file', audioChunks.value[0] as Blob, 'recording.wav')
+
+      const response = await axios.post(
+        'https://zh-en-backend.alearn13994229.workers.dev/convert-speech-to-text',
+        formData,
+        { headers: { 'Content-Type': 'multipart/form-data' } },
+      )
+      console.log(response.data)
+      console.log(response.data.text)
+      recordedText.value = response.data.text
+    }
+
     return {
       favoriteCards,
       removeFromFavorites,
       activeTab,
+      currentCard,
       currentClozeCard,
       blankIndex,
       userAnswer,
@@ -382,12 +483,18 @@ export default defineComponent({
       checkAnswer,
       nextQuestion,
       playAudio,
+      playSpeakoutAudio,
+      isRecording,
+      audioChunks,
       currentMultipleChoiceCard,
       multipleChoiceOptions,
       selectedOption,
       checkMultipleChoiceAnswer,
       nextMultipleChoiceQuestion,
       playMultipleChoiceAudio,
+      startRecording,
+      uploadAudio,
+      recordedText,
     }
   },
 })
