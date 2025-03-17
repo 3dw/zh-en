@@ -61,12 +61,6 @@
                   label="再試一次"
                   @click="checkAnswerSpeakoutAnswer(false)"
                 />
-                <q-btn
-                  v-if="!isRecording && hasRecorded"
-                  color="primary"
-                  label="清空音檔"
-                  @click="resetAudio"
-                />
               </div>
             </div>
           </div>
@@ -493,6 +487,8 @@ export default defineComponent({
         mediaRecorder.onstop = () => {
           isRecording.value = false
           console.log('錄音結束')
+          // 釋放音頻流
+          stream.getTracks().forEach((track) => track.stop())
           // console.log(audioChunks.value)
         }
 
