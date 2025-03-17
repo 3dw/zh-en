@@ -77,7 +77,7 @@
           <div class="quiz-container">
             <div class="quiz-question" v-if="quiz.image !== 'https://via.placeholder.com/150'">
               <h2>
-                這是什麼？<span v-if="wins > 0"> - 您已連續答對 {{ wins }} 題</span>
+                這是什麼？<span v-if="wins > 0"> - 連續答對 {{ wins }} 題</span>
               </h2>
               <q-img :src="quiz.image" :ratio="1" class="quiz-image" />
               <!-- 發音按鈕 -->
