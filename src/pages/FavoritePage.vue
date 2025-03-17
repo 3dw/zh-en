@@ -37,7 +37,6 @@
                 中文：{{ currentCard.chinese }}
                 <br />
                 英文：{{ currentCard.english }}
-                <!-- 將發音按鈕改為較大的發音圖示 -->
                 <q-btn icon="volume_up" size="lg" color="primary" @click="playSpeakoutAudio" flat />
               </h2>
               <q-btn
@@ -49,8 +48,6 @@
                 flat
               />
               <span v-else class="text-red-7">錄音中...</span>
-              <!--  <p v-if="recordedText">錄音結果：{{ recordedText }}</p>
-              <p v-if="recordedText && recordedText === currentCard.english">答對了！</p>   -->
               <audio v-show="!isRecording && hasRecorded" ref="audioPlayer" controls></audio>
 
               <div class="q-mt-md" v-if="!isRecording && hasRecorded">
@@ -63,6 +60,12 @@
                   color="secondary"
                   label="再試一次"
                   @click="checkAnswerSpeakoutAnswer(false)"
+                />
+                <q-btn
+                  v-if="!isRecording && hasRecorded"
+                  color="primary"
+                  label="清空音檔"
+                  @click="resetAudio"
                 />
               </div>
             </div>
@@ -532,6 +535,13 @@ export default defineComponent({
       recordedText.value = response.data.text */
     }
 
+    function resetAudio() {
+      if (audioPlayer.value) {
+        audioPlayer.value.src = ''
+        hasRecorded.value = false
+      }
+    }
+
     return {
       favoriteCards,
       removeFromFavorites,
@@ -562,6 +572,7 @@ export default defineComponent({
       recordedText,
       audioPlayer,
       checkAnswerSpeakoutAnswer,
+      resetAudio,
     }
   },
 })
