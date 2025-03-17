@@ -454,9 +454,10 @@ export default defineComponent({
     }
 
     async function uploadAudio() {
-      // 上傳錄音檔案
+      // 確保 audioChunks 中的資料是 Blob 類型
+      const audioBlob = new Blob(audioChunks.value, { type: 'audio/wav' })
       const formData = new FormData()
-      formData.append('file', audioChunks.value[0] as Blob, 'recording.wav')
+      formData.append('file', audioBlob, 'recording.wav')
 
       const response = await axios.post(
         'https://zh-en-backend.alearn13994229.workers.dev/convert-speech-to-text',
