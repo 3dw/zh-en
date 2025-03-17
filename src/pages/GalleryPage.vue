@@ -95,13 +95,13 @@
             <div class="quiz-options" v-if="quiz.image !== 'https://via.placeholder.com/150'">
               <div v-for="(option, index) in quiz.options" :key="index" class="quiz-option">
                 <q-radio v-model="selectedOption" :val="option" :label="option" />
-                <q-btn
+                <!-- <q-btn
                   color="primary"
                   icon="volume_up"
                   label="播放發音"
                   @click="playCardAudio(option)"
                   flat
-                />
+                /> -->
               </div>
               <!-- 檢查答案按鈕 -->
               <q-btn color="primary" icon="check" label="檢查答案" @click="checkAnswer" />
@@ -215,9 +215,12 @@ export default defineComponent({
 
     const wins = ref(0)
 
+    const incorrectAttempts = ref(0)
+
     const checkAnswer = () => {
       if (selectedOption.value === quiz.value.answer) {
         wins.value++
+        incorrectAttempts.value = 0
         emit('earn-xp', wins.value * 100)
         $q.notify({
           type: 'positive',
@@ -227,6 +230,7 @@ export default defineComponent({
         })
         makeQuiz()
       } else {
+        incorrectAttempts.value++
         wins.value = 0
         $q.notify({
           type: 'negative',
@@ -234,6 +238,10 @@ export default defineComponent({
           position: 'top',
           timeout: 1500,
         })
+        if (incorrectAttempts.value >= 2) {
+          incorrectAttempts.value = 0
+          makeQuiz()
+        }
       }
     }
 

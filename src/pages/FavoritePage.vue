@@ -7,6 +7,7 @@
       <q-tabs v-model="activeTab" dense border-color="primary" class="q-mb-md">
         <q-tab name="view" label="檢視卡片"></q-tab>
         <q-tab name="cloze" label="克漏字練習"></q-tab>
+        <q-tab name="multipleChoice" label="四選一測驗"></q-tab>
       </q-tabs>
 
       <q-tab-panels v-model="activeTab" animated>
@@ -73,6 +74,45 @@
             </div>
           </div>
         </q-tab-panel>
+
+        <!-- 四選一測驗頁面 -->
+        <q-tab-panel name="multipleChoice">
+          <div v-if="favoriteCards.length < 4" class="text-center q-pa-lg">
+            <q-icon name="favorite_border" size="50px" color="grey-5" />
+            <p class="text-grey-7">收藏的字卡不足以進行四選一測驗，請收藏更多字卡</p>
+          </div>
+          <div v-else class="q-pa-md">
+            <div v-if="currentMultipleChoiceCard">
+              <h2>
+                中文：{{ currentMultipleChoiceCard.chinese }}
+                <!-- 新增發音按鈕 -->
+                <!-- <q-btn
+                  icon="volume_up"
+                  size="lg"
+                  color="primary"
+                  @click="playMultipleChoiceAudio"
+                  flat
+                />   -->
+              </h2>
+              <q-option-group
+                v-model="selectedOption"
+                :options="multipleChoiceOptions"
+                type="radio"
+              />
+              <div class="q-mt-md">
+                <q-btn
+                  color="primary"
+                  label="檢查答案"
+                  @click="checkMultipleChoiceAnswer"
+                  :disable="!selectedOption"
+                />
+              </div>
+              <div class="q-mt-md">
+                <q-btn color="secondary" label="下一題" @click="nextMultipleChoiceQuestion" />
+              </div>
+            </div>
+          </div>
+        </q-tab-panel>
       </q-tab-panels>
     </div>
   </q-page>
@@ -120,6 +160,11 @@ export default defineComponent({
         favoriteCards.value = toSentence(JSON.parse(savedFavorites))
         loadNewClozeCard()
       }
+
+      if (favoriteCards.value.length >= 4) {
+        loadNewMultipleChoiceCard()
+        activeTab.value = 'multipleChoice'
+      }
     })
 
     const removeFromFavorites = (card: Card) => {
@@ -130,7 +175,7 @@ export default defineComponent({
     }
 
     // 用於切換檢視與克漏字分頁的變數
-    const activeTab = ref('cloze')
+    const activeTab = ref('view')
 
     // 克漏字練習相關狀態
     const currentClozeCard = ref<Sentence | null>(null)
@@ -242,6 +287,87 @@ export default defineComponent({
       }
     })
 
+    // 四選一測驗相關狀態
+    const currentMultipleChoiceCard = ref<Sentence | null>(null)
+    const multipleChoiceOptions = ref<Array<{ label: string; value: string }>>([])
+    const selectedOption = ref<string | null>(null)
+
+    function loadNewMultipleChoiceCard() {
+      if (favoriteCards.value.length < 4) {
+        currentMultipleChoiceCard.value = null
+        return
+      }
+      const randomIndex = Math.floor(Math.random() * favoriteCards.value.length)
+      currentMultipleChoiceCard.value = favoriteCards.value[randomIndex] as Sentence
+      generateMultipleChoiceOptions()
+    }
+
+    function generateMultipleChoiceOptions() {
+      if (!currentMultipleChoiceCard.value) return
+      const correctEnglish = currentMultipleChoiceCard.value.english
+      const incorrectOptions = favoriteCards.value
+        .filter((card) => card.english !== correctEnglish)
+        .map((card) => card.english)
+        .sort(() => Math.random() - 0.5)
+        .slice(0, 3)
+
+      // 將選項轉換為包含 label 和 value 的物件
+      multipleChoiceOptions.value = [
+        { label: correctEnglish, value: correctEnglish },
+        ...incorrectOptions.map((option) => ({ label: option, value: option })),
+      ].sort(() => Math.random() - 0.5)
+    }
+
+    function checkMultipleChoiceAnswer() {
+      if (selectedOption.value === currentMultipleChoiceCard.value?.english) {
+        correctCount.value++
+        $q.notify({
+          type: 'positive',
+          message: `答對了！您已連續答對${correctCount.value}題！獲得100xp！`,
+          position: 'top',
+          timeout: 2500,
+          actions: [{ icon: 'close', color: 'white' }],
+        })
+        emit('earn-xp', 100)
+      } else {
+        correctCount.value = 0
+        $q.notify({
+          type: 'negative',
+          message: `答錯了，正確答案是：${currentMultipleChoiceCard.value?.english}`,
+          position: 'top',
+          timeout: 2500,
+          actions: [{ icon: 'close', color: 'white' }],
+        })
+      }
+      loadNewMultipleChoiceCard()
+    }
+
+    function nextMultipleChoiceQuestion() {
+      loadNewMultipleChoiceCard()
+    }
+
+    // 當切換到「四選一測驗」分頁時，自動載入新的題目
+    watch(activeTab, (newVal) => {
+      if (newVal === 'multipleChoice') {
+        loadNewMultipleChoiceCard()
+      }
+    })
+
+    // 新增發音功能
+    function playMultipleChoiceAudio() {
+      // 用speechSynthesis發音
+      const utterance = new SpeechSynthesisUtterance(currentMultipleChoiceCard.value?.english)
+      window.speechSynthesis.speak(utterance)
+    }
+
+    // 監聽 selectedOption 的變化，並播放選項的英文聲音
+    watch(selectedOption, (newVal) => {
+      if (newVal) {
+        const utterance = new SpeechSynthesisUtterance(newVal)
+        window.speechSynthesis.speak(utterance)
+      }
+    })
+
     return {
       favoriteCards,
       removeFromFavorites,
@@ -256,6 +382,12 @@ export default defineComponent({
       checkAnswer,
       nextQuestion,
       playAudio,
+      currentMultipleChoiceCard,
+      multipleChoiceOptions,
+      selectedOption,
+      checkMultipleChoiceAnswer,
+      nextMultipleChoiceQuestion,
+      playMultipleChoiceAudio,
     }
   },
 })
