@@ -291,9 +291,11 @@
 
         <q-expansion-item icon="share" label="好站連結" class="op-expansion-item" dense-toggle>
           <q-item
+            v-for="(link, index) in links"
+            :key="index"
             clickable
             tag="a"
-            href="https://www.readingbear.org/"
+            :href="link.href"
             class="op-drawer-item"
             target="_blank"
             rel="noopener noreferrer"
@@ -301,88 +303,12 @@
             <q-item-section avatar>
               <q-icon>
                 <img
-                  :src="`https://www.google.com/s2/favicons?domain=readingbear.org&sz=24`"
+                  :src="`https://www.google.com/s2/favicons?domain=${link.domain}&sz=32`"
                   style="width: 24px; height: 24px"
                 />
               </q-icon>
             </q-item-section>
-            <q-item-section>Reading Bear<br />(從字母到閱讀)</q-item-section>
-          </q-item>
-
-          <q-item
-            clickable
-            tag="a"
-            href="https://www.starfall.com/h/index.php"
-            class="op-drawer-item"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <q-item-section avatar>
-              <q-icon>
-                <img
-                  :src="`https://www.google.com/s2/favicons?domain=starfall.com&sz=32`"
-                  style="width: 24px; height: 24px"
-                />
-              </q-icon>
-            </q-item-section>
-            <q-item-section>Starfall<br />(綜合學習)</q-item-section>
-          </q-item>
-
-          <q-item
-            clickable
-            tag="a"
-            href="https://www.littlefox.com/"
-            class="op-drawer-item"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <q-item-section avatar>
-              <q-icon>
-                <img
-                  :src="`https://www.google.com/s2/favicons?domain=littlefox.com&sz=32`"
-                  style="width: 24px; height: 24px"
-                />
-              </q-icon>
-            </q-item-section>
-            <q-item-section>Little Fox<br />(線上英文繪本)</q-item-section>
-          </q-item>
-
-          <q-item
-            clickable
-            tag="a"
-            href="https://en.wikipedia.org/wiki/Main_Page"
-            class="op-drawer-item"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <q-item-section avatar>
-              <q-icon>
-                <img
-                  :src="`https://www.google.com/s2/favicons?domain=wikipedia.org&sz=32`"
-                  style="width: 24px; height: 24px"
-                />
-              </q-icon>
-            </q-item-section>
-            <q-item-section>Wikipedia<br />(英文百科全書)</q-item-section>
-          </q-item>
-
-          <q-item
-            clickable
-            tag="a"
-            href="https://translate.google.com/?sl=en&tl=zh-TW&op=translate"
-            class="op-drawer-item"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <q-item-section avatar>
-              <q-icon>
-                <img
-                  :src="`https://www.google.com/s2/favicons?domain=translate.google.com&sz=32`"
-                  style="width: 24px; height: 24px"
-                />
-              </q-icon>
-            </q-item-section>
-            <q-item-section>Google Translate<br />(英文翻譯)</q-item-section>
+            <q-item-section class="op-drawer-item-label">{{ link.label }}</q-item-section>
           </q-item>
         </q-expansion-item>
 
@@ -532,6 +458,39 @@ export default defineComponent({
     const users = ref([])
 
     const cards = ref([])
+
+    const links = ref([
+      {
+        href: 'https://www.readingbear.org/',
+        domain: 'readingbear.org',
+        label: 'Reading Bear\n(從字母到閱讀)',
+      },
+      {
+        href: 'https://www.starfall.com/h/index.php',
+        domain: 'starfall.com',
+        label: 'Starfall\n(綜合學習)',
+      },
+      {
+        href: 'https://www.littlefox.com/',
+        domain: 'littlefox.com',
+        label: 'Little Fox\n(線上英文繪本)',
+      },
+      {
+        href: 'https://en.wikipedia.org/wiki/Main_Page',
+        domain: 'wikipedia.org',
+        label: 'Wikipedia\n(英文百科全書)',
+      },
+      {
+        href: 'https://translate.google.com/?sl=en&tl=zh-TW&op=translate',
+        domain: 'translate.google.com',
+        label: 'Google Translate\n(英文翻譯)',
+      },
+      {
+        href: 'https://speakandimprove.com/',
+        domain: 'speakandimprove.com',
+        label: 'Speak and Improve\n(英文聽說練習)',
+      },
+    ])
 
     // 讀取 localStorage
     onMounted(() => {
@@ -767,6 +726,7 @@ export default defineComponent({
       closeLeftDrawer,
       devMode,
       setXPandLevel,
+      links,
     }
   },
 })
@@ -918,5 +878,9 @@ export default defineComponent({
 
 .op-level-up-dialog {
   background-color: #faf7f2;
+}
+
+.op-drawer-item-label {
+  white-space: pre-line;
 }
 </style>
