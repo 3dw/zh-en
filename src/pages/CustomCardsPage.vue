@@ -6,6 +6,7 @@
       <q-tabs v-model="activeTab" class="text-primary q-mb-lg">
         <q-tab name="create" label="新增字卡" icon="add_circle" />
         <q-tab name="view" label="我的字卡" icon="list" />
+        <q-tab name="manage" label="管理字卡" icon="settings" />
       </q-tabs>
 
       <q-tab-panels v-model="activeTab" animated>
@@ -94,6 +95,22 @@
             <!-- 使用 FlashCard 組件 -->
             <FlashCard :sentences="customCards" />
           </div>
+        </q-tab-panel>
+
+        <!-- 管理字卡頁面 -->
+        <q-tab-panel name="manage">
+          <div class="text-h6 q-mb-md">管理自訂字卡</div>
+          <q-list bordered>
+            <q-item v-for="(card, index) in customCards" :key="index" clickable>
+              <q-item-section>
+                <q-item-label>{{ card.english }}</q-item-label>
+                <q-item-label caption>{{ card.chinese }}</q-item-label>
+              </q-item-section>
+              <q-item-section side>
+                <q-btn flat icon="delete" color="negative" @click="confirmDelete(index)" />
+              </q-item-section>
+            </q-item>
+          </q-list>
         </q-tab-panel>
       </q-tab-panels>
     </div>
@@ -276,10 +293,7 @@ export default defineComponent({
 
     // 刪除卡片
     const deleteCard = () => {
-      if (
-        cardToDeleteIndex.value !== -1 &&
-        window.confirm('確定要刪除這張字卡嗎？此操作無法復原。')
-      ) {
+      if (cardToDeleteIndex.value !== -1) {
         customCards.value.splice(cardToDeleteIndex.value, 1)
         flippedCards.value.splice(cardToDeleteIndex.value, 1)
         saveCards()
@@ -389,5 +403,11 @@ export default defineComponent({
 
 .little-margin {
   margin: 1em;
+}
+
+.q-tab-centered {
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 </style>
