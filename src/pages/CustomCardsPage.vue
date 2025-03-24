@@ -85,8 +85,10 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, onMounted } from 'vue'
+import { defineComponent, ref, onMounted, watch } from 'vue'
 import FlashCard from '../components/FlashCard.vue'
+import { getAuth, onAuthStateChanged } from 'firebase/auth'
+import { getDatabase, ref as dbRef, get, set, onValue } from 'firebase/database'
 
 interface Card {
   english: string
@@ -106,19 +108,112 @@ export default defineComponent({
     const newCard = ref<Card>({ english: '', chinese: '', flipped: false })
     const showDeleteDialog = ref(false)
     const cardToDeleteIndex = ref(-1)
+    const auth = getAuth()
+    const db = getDatabase()
+    const currentUser = ref(auth.currentUser)
+    const isLoading = ref(false)
+    const synced = ref(false)
+    // 監聽用戶登入狀態
+    onMounted(() => {
+      isLoading.value = true
+      onValue(dbRef(db, 'users'), (snapshot) => {
+        const userData = snapshot.val()
+        if (userData && synced.value === false) {
+          console.log(userData)
+          syncUserData(userData.uid)
+          synced.value = true
+        }
+      })
+      onAuthStateChanged(auth, (user) => {
+        currentUser.value = user
+        if (user) {
+          // 用戶已登入，進行資料同步
+          syncUserData(user.uid)
+        } else {
+          // 用戶未登入，從localStorage讀取資料
+          loadLocalData()
+        }
+        isLoading.value = false
+      })
+    })
+
+    watch(currentUser, (newUser) => {
+      if (newUser) {
+        syncUserData(newUser.uid)
+      } else {
+        loadLocalData()
+      }
+    })
 
     // 從 localStorage 加載卡片
-    onMounted(() => {
+    const loadLocalData = () => {
       const savedCards = localStorage.getItem('customCards')
       if (savedCards) {
         customCards.value = JSON.parse(savedCards)
         flippedCards.value = Array(customCards.value.length).fill(false)
       }
-    })
+    }
 
-    // 保存卡片到 localStorage
-    const saveCards = () => {
+    // 同步用戶資料
+    const syncUserData = async (uid: string) => {
+      try {
+        // 從 localStorage 讀取資料
+        const localData = localStorage.getItem('customCards')
+        const localCards: Card[] = localData ? JSON.parse(localData) : []
+
+        // 從 Firebase 讀取資料
+        const userRef = dbRef(db, `users/${uid}/customCards`)
+        const snapshot = await get(userRef)
+        const firebaseCards: Card[] = snapshot.exists() ? snapshot.val() : []
+
+        // 同步策略：合併兩邊的資料，使用較新的資料
+        if (localCards.length > 0 && firebaseCards.length === 0) {
+          // localStorage 有資料，Firebase 無資料
+          await set(userRef, localCards)
+          customCards.value = localCards
+        } else if (localCards.length === 0 && firebaseCards.length > 0) {
+          // Firebase 有資料，localStorage 無資料
+          localStorage.setItem('customCards', JSON.stringify(firebaseCards))
+          customCards.value = firebaseCards
+        } else if (localCards.length > 0 && firebaseCards.length > 0) {
+          // 兩邊都有資料，進行合併（這裡採用簡單的合併策略，可以根據需求調整）
+          const mergedCards = [...firebaseCards]
+
+          // 尋找 localStorage 中 Firebase 沒有的卡片
+          for (const localCard of localCards) {
+            const exists = mergedCards.some(
+              (card) => card.english === localCard.english && card.chinese === localCard.chinese,
+            )
+            if (!exists) {
+              mergedCards.push(localCard)
+            }
+          }
+
+          // 更新到兩邊
+          await set(userRef, mergedCards)
+          localStorage.setItem('customCards', JSON.stringify(mergedCards))
+          customCards.value = mergedCards
+        }
+
+        flippedCards.value = Array(customCards.value.length).fill(false)
+      } catch (error) {
+        console.error('同步用戶資料失敗:', error)
+      }
+    }
+
+    // 保存卡片到 localStorage 和 Firebase（如果用戶已登入）
+    const saveCards = async () => {
       localStorage.setItem('customCards', JSON.stringify(customCards.value))
+
+      // 如果用戶已登入，同時保存到 Firebase
+      if (currentUser.value) {
+        try {
+          const userRef = dbRef(db, `users/${currentUser.value.uid}/customCards`)
+          await set(userRef, customCards.value)
+        } catch (error) {
+          console.error('保存到 Firebase 失敗:', error)
+        }
+      }
     }
 
     // 創建新卡片
@@ -154,7 +249,10 @@ export default defineComponent({
 
     // 刪除卡片
     const deleteCard = () => {
-      if (cardToDeleteIndex.value !== -1) {
+      if (
+        cardToDeleteIndex.value !== -1 &&
+        window.confirm('確定要刪除這張字卡嗎？此操作無法復原。')
+      ) {
         customCards.value.splice(cardToDeleteIndex.value, 1)
         flippedCards.value.splice(cardToDeleteIndex.value, 1)
         saveCards()
@@ -177,6 +275,9 @@ export default defineComponent({
       flippedCards,
       newCard,
       showDeleteDialog,
+      currentUser,
+      isLoading,
+      synced,
       createCard,
       flipCard,
       confirmDelete,
