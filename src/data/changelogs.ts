@@ -1,5 +1,10 @@
 export const changelogs = [
   {
+    version: '1.0.2',
+    date: '2025-03-24',
+    changes: [{ text: '新增自訂字卡管理功能', route: '/custom_cards', type: 'improvement' }],
+  },
+  {
     version: '1.0.1',
     date: '2025-03-24',
     changes: [

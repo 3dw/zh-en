@@ -78,7 +78,12 @@ export default defineComponent({
   name: 'IndexPage',
   data() {
     return {
-      new_changelogs: changelogs.find((changelog) => changelog.version === '1.0.1'),
+      new_changelogs:
+        changelogs.length > 0
+          ? changelogs.reduce((latest, current) => {
+              return current.version > latest!.version ? current : latest
+            }, changelogs[0])
+          : { version: '0.0.0', changes: [] },
     }
   },
   methods: {
