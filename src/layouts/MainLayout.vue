@@ -186,6 +186,13 @@
             </q-item-section>
             <q-item-section>我的最愛</q-item-section>
           </q-item>
+
+          <q-item clickable to="/custom_cards" class="op-drawer-item">
+            <q-item-section avatar>
+              <q-icon name="edit_note" />
+            </q-item-section>
+            <q-item-section>自訂字卡</q-item-section>
+          </q-item>
         </q-expansion-item>
 
         <q-expansion-item icon="handshake" label="操作學習" class="op-expansion-item" dense-toggle>

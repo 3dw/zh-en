@@ -274,6 +274,17 @@ const routes: RouteRecordRaw[] = [
     component: () => import('layouts/MainLayout.vue'),
     children: [{ path: '', component: () => import('pages/PlaybackPage.vue') }],
   },
+  {
+    path: '/custom_cards',
+    component: () => import('layouts/MainLayout.vue'),
+    children: [
+      {
+        path: '',
+        component: () => import('pages/CustomCardsPage.vue'),
+        meta: { title: '自訂字卡' },
+      },
+    ],
+  },
   // Always leave this as last one,
   // but you can also remove it
   {
