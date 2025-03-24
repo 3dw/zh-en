@@ -3,6 +3,34 @@
     <div class="word-card-list">
       <h1 class="text-dark">自主學英文</h1>
 
+      <div class="text-dark">
+        <h2>
+          版本更新記錄 {{ new_changelogs?.version }}
+          <q-btn
+            flat
+            round
+            color="primary"
+            icon="chevron_right"
+            size="sm"
+            to="/changelogs"
+            class="q-ml-sm"
+          />
+        </h2>
+        <ul>
+          <li v-for="changelog in new_changelogs?.changes" :key="changelog.text">
+            <router-link :to="changelog.route">
+              {{ changelog.text }}
+              <q-icon
+                :name="getIconForChangeType(changelog.type)"
+                :color="getColorForChangeType(changelog.type)"
+                size="sm"
+                class="q-mr-sm"
+              />
+            </router-link>
+          </li>
+        </ul>
+      </div>
+
       <div class="cards-container">
         <q-card class="feature-card breathing-card" @click="goto('/beginner')">
           <q-card-section>
@@ -43,16 +71,50 @@
 </template>
 
 <script lang="ts">
+import { changelogs } from '../data/changelogs'
 import { defineComponent } from 'vue'
 
 export default defineComponent({
   name: 'IndexPage',
+  data() {
+    return {
+      new_changelogs: changelogs.find((changelog) => changelog.version === '1.0.1'),
+    }
+  },
   methods: {
     toggleDrawer() {
       this.$emit('toggleDrawer')
     },
     goto(path: string) {
       this.$router.push(path)
+    },
+    // 根據更新類型返回對應的圖標
+    getIconForChangeType(type?: string) {
+      switch (type) {
+        case 'new':
+          return 'add_circle'
+        case 'fix':
+          return 'build'
+        case 'improvement':
+          return 'upgrade'
+        case 'remove':
+          return 'remove_circle'
+        default:
+          return 'circle'
+      }
+    },
+    // 根據更新類型返回對應的顏色
+    getColorForChangeType(type?: string) {
+      switch (type) {
+        case 'new':
+          return 'positive'
+        case 'fix':
+          return 'warning'
+        case 'improvement':
+          return 'info'
+        case 'remove':
+          return 'negative'
+      }
     },
   },
 })
@@ -112,6 +174,10 @@ export default defineComponent({
   justify-content: center;
   margin-top: 2rem;
   padding: 1rem;
+}
+
+a {
+  text-decoration: none;
 }
 
 @media (max-width: 768px) {

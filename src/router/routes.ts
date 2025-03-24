@@ -285,6 +285,17 @@ const routes: RouteRecordRaw[] = [
       },
     ],
   },
+  {
+    path: '/changelogs',
+    component: () => import('layouts/MainLayout.vue'),
+    children: [
+      {
+        path: '',
+        component: () => import('pages/ChangeLogsPage.vue'),
+        meta: { title: '版本更新記錄' },
+      },
+    ],
+  },
   // Always leave this as last one,
   // but you can also remove it
   {

@@ -97,6 +97,13 @@
           <q-item-section>關於本站</q-item-section>
         </q-item>
 
+        <q-item clickable to="/changelogs">
+          <q-item-section avatar>
+            <q-icon name="update" />
+          </q-item-section>
+          <q-item-section> 版本更新記錄 </q-item-section>
+        </q-item>
+
         <q-expansion-item
           icon="text_fields"
           label="字母學習"
