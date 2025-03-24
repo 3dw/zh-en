@@ -20,6 +20,7 @@
               :rules="[(val) => !!val || '請輸入英文內容']"
               outlined
               class="large-input"
+              type="textarea"
             />
 
             <q-input
@@ -28,6 +29,25 @@
               :rules="[(val) => !!val || '請輸入中文翻譯']"
               outlined
               class="large-input"
+              type="textarea"
+            />
+
+            <!-- 自動英翻中補完按鈕 -->
+            <q-btn
+              v-show="newCard.english && !newCard.chinese"
+              icon="language"
+              label="自動英翻中"
+              color="primary"
+              @click="autoTranslateEnToZh"
+            />
+
+            <!-- 自動中翻英補完按鈕 -->
+            <q-btn
+              v-show="newCard.chinese && !newCard.english"
+              icon="language"
+              label="自動中翻英"
+              color="primary"
+              @click="autoTranslateZhToEn"
             />
 
             <div class="row justify-between q-mt-lg">
@@ -88,7 +108,7 @@
 import { defineComponent, ref, onMounted, watch } from 'vue'
 import FlashCard from '../components/FlashCard.vue'
 import { getAuth, onAuthStateChanged } from 'firebase/auth'
-import { getDatabase, ref as dbRef, get, set, onValue } from 'firebase/database'
+import { getDatabase, ref as dbRef, get, set } from 'firebase/database'
 
 interface Card {
   english: string
@@ -116,19 +136,13 @@ export default defineComponent({
     // 監聽用戶登入狀態
     onMounted(() => {
       isLoading.value = true
-      onValue(dbRef(db, 'users'), (snapshot) => {
-        const userData = snapshot.val()
-        if (userData && synced.value === false) {
-          console.log(userData)
-          syncUserData(userData.uid)
-          synced.value = true
-        }
-      })
-      onAuthStateChanged(auth, (user) => {
+      onAuthStateChanged(auth, async (user) => {
         currentUser.value = user
         if (user) {
+          console.log('user', user)
+          console.log('user.uid', user.uid)
           // 用戶已登入，進行資料同步
-          syncUserData(user.uid)
+          await syncUserData(user.uid)
         } else {
           // 用戶未登入，從localStorage讀取資料
           loadLocalData()
@@ -137,9 +151,11 @@ export default defineComponent({
       })
     })
 
-    watch(currentUser, (newUser) => {
+    watch(currentUser, async (newUser) => {
       if (newUser) {
-        syncUserData(newUser.uid)
+        console.log('newUser', newUser)
+        console.log('newUser.uid', newUser.uid)
+        await syncUserData(newUser.uid)
       } else {
         loadLocalData()
       }
@@ -156,6 +172,7 @@ export default defineComponent({
 
     // 同步用戶資料
     const syncUserData = async (uid: string) => {
+      console.log('syncUserData', uid)
       try {
         // 從 localStorage 讀取資料
         const localData = localStorage.getItem('customCards')
@@ -269,6 +286,49 @@ export default defineComponent({
       }
     }
 
+    // 自動英翻中
+    const autoTranslateEnToZh = async () => {
+      try {
+        const response = await fetch(
+          'https://zh-en-backend.alearn13994229.workers.dev/translate-en-to-zh',
+          {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ content: newCard.value.english }),
+          },
+        )
+        const data = await response.json()
+        console.log(data)
+        newCard.value.chinese = data || ''
+        console.log('newCard.value.chinese', newCard.value.chinese)
+      } catch (error) {
+        console.error('翻譯失敗:', error)
+      }
+    }
+    // 自動中翻英
+    const autoTranslateZhToEn = async () => {
+      try {
+        const response = await fetch(
+          'https://zh-en-backend.alearn13994229.workers.dev/translate-zh-to-en',
+          {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ content: newCard.value.chinese }),
+          },
+        )
+        const data = await response.json()
+        console.log(data)
+        newCard.value.english = data || ''
+        console.log('newCard.value.english', newCard.value.english)
+      } catch (error) {
+        console.error('翻譯失敗:', error)
+      }
+    }
+
     return {
       activeTab,
       customCards,
@@ -283,6 +343,8 @@ export default defineComponent({
       confirmDelete,
       deleteCard,
       speakText,
+      autoTranslateZhToEn,
+      autoTranslateEnToZh,
     }
   },
 })

@@ -524,7 +524,7 @@ export default defineComponent({
 
       onValue(dbRef(database, 'users'), (snapshot) => {
         users.value = Object.values(snapshot.val())
-        console.log('users', users.value)
+        // console.log('users', users.value)
       })
     })
 
