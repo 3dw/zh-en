@@ -34,6 +34,7 @@
 
             <!-- 自動英翻中補完按鈕 -->
             <q-btn
+              class="little-margin"
               v-show="newCard.english && !newCard.chinese"
               icon="language"
               label="自動英翻中"
@@ -43,6 +44,7 @@
 
             <!-- 自動中翻英補完按鈕 -->
             <q-btn
+              class="little-margin"
               v-show="newCard.chinese && !newCard.english"
               icon="language"
               label="自動中翻英"
@@ -52,6 +54,7 @@
 
             <div class="row justify-between q-mt-lg">
               <q-btn
+                class="little-margin"
                 icon="volume_up"
                 color="secondary"
                 label="英文發音測試"
@@ -59,13 +62,20 @@
                 :disable="!newCard.english"
               />
               <q-btn
+                class="little-margin"
                 icon="volume_up"
                 color="green-8"
                 label="中文發音測試"
                 @click="speakText(newCard.chinese, 'zh-TW')"
                 :disable="!newCard.chinese"
               />
-              <q-btn type="submit" color="primary" label="新增字卡" icon="save" />
+              <q-btn
+                class="little-margin"
+                type="submit"
+                color="primary"
+                label="新增字卡"
+                icon="save"
+              />
             </div>
           </q-form>
         </q-tab-panel>
@@ -377,37 +387,7 @@ export default defineComponent({
   }
 }
 
-/* 卡片翻轉效果 */
-.word-card {
-  cursor: pointer;
-  perspective: 1000px;
-  height: 160px;
-  margin-bottom: 16px;
-}
-
-.word-card .q-card__section {
-  transition: transform 0.6s;
-  transform-style: preserve-3d;
-  position: relative;
-  height: 100%;
-}
-
-.front,
-.back {
-  position: absolute;
-  width: 100%;
-  height: 100%;
-  backface-visibility: hidden;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-}
-
-.back {
-  transform: rotateY(180deg);
-}
-
-.flipped {
-  transform: rotateY(180deg);
+.little-margin {
+  margin: 1em;
 }
 </style>
