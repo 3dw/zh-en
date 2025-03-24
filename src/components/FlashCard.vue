@@ -160,12 +160,13 @@ export default defineComponent({
   position: relative;
   padding: 10px;
   width: 200px;
-  height: 200px;
+  height: 250px;
   perspective: 1000px;
   cursor: pointer;
   border: 1px solid #ccc;
   border-radius: 10px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  overflow-y: auto;
 }
 
 .card-inner {
