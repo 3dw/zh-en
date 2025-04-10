@@ -6,7 +6,7 @@ module.exports = {
     ecmaVersion: 2021,
     sourceType: 'module',
     extraFileExtensions: ['.vue'],
-    project: null,
+    project: './tsconfig.json',
   },
 
   env: {

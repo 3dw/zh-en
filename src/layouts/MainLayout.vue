@@ -253,11 +253,17 @@
             </q-item-section>
             <q-item-section>今日回顧</q-item-section>
           </q-item>
-          <q-item clickable to="/rules" class="op-drawer-item">
+          <q-item clickable to="/rules" class="op-drawer-item" v-if="devMode">
             <q-item-section avatar>
               <q-icon name="rule" />
             </q-item-section>
             <q-item-section>遊戲規則</q-item-section>
+          </q-item>
+          <q-item clickable to="/drawguess" class="op-drawer-item" v-if="devMode">
+            <q-item-section avatar>
+              <q-icon name="brush" />
+            </q-item-section>
+            <q-item-section>畫圖猜單字</q-item-section>
           </q-item>
         </q-expansion-item>
 
