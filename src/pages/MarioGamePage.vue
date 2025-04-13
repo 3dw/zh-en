@@ -150,6 +150,18 @@ export default defineComponent({
       { x: 440, y: 250, width: 40, height: 40 },
     ])
 
+    // 音效系統
+    const sounds = {
+      jump: new Audio('/sounds/jump_11.wav'),
+      coin: new Audio('/sounds/coin.aif'),
+      gameover: new Audio('/sounds/mario-die.mp3'),
+      background: new Audio('/sounds/mario-theme.mp3'),
+    }
+
+    // 設置背景音樂循環播放
+    sounds.background.loop = true
+    sounds.background.volume = 0.5
+
     const initCanvas = () => {
       if (!gameCanvas.value) return
       gameCanvas.value.width = 800
@@ -329,9 +341,14 @@ export default defineComponent({
         ) {
           if (mushroom.isCorrect) {
             score.value += 100
+            // 播放收集音效
+            sounds.coin.currentTime = 0
+            sounds.coin.play()
             generateMushrooms()
           } else {
             showGameOver.value = true
+            // 播放遊戲結束音效
+            sounds.gameover.play()
             stopGame()
           }
         }
@@ -353,6 +370,8 @@ export default defineComponent({
       if (gameCanvas.value) {
         gameCanvas.value.focus()
       }
+      // 開始播放背景音樂
+      sounds.background.play()
     }
 
     const stopGame = () => {
@@ -360,6 +379,9 @@ export default defineComponent({
       if (gameLoop.value) {
         cancelAnimationFrame(gameLoop.value)
       }
+      // 停止背景音樂
+      sounds.background.pause()
+      sounds.background.currentTime = 0
     }
 
     const resetGame = () => {
@@ -381,6 +403,9 @@ export default defineComponent({
           if (!marioState.value.isJumping) {
             marioState.value.velocityY = physics.jumpForce
             marioState.value.isJumping = true
+            // 播放跳躍音效
+            sounds.jump.currentTime = 0
+            sounds.jump.play()
           }
           break
         case 'ArrowLeft':
