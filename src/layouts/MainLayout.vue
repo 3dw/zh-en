@@ -253,12 +253,6 @@
             </q-item-section>
             <q-item-section>今日回顧</q-item-section>
           </q-item>
-          <q-item clickable to="/rules" class="op-drawer-item">
-            <q-item-section avatar>
-              <q-icon name="rule" />
-            </q-item-section>
-            <q-item-section>遊戲規則</q-item-section>
-          </q-item>
         </q-expansion-item>
 
         <q-expansion-item icon="audiotrack" label="聽覺學習" class="op-expansion-item" dense-toggle>

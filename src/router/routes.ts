@@ -275,11 +275,6 @@ const routes: RouteRecordRaw[] = [
     children: [{ path: '', component: () => import('pages/PlaybackPage.vue') }],
   },
   {
-    path: '/rules',
-    component: () => import('layouts/MainLayout.vue'),
-    children: [{ path: '', component: () => import('pages/RulesPage.vue') }],
-  },
-  {
     path: '/custom_cards',
     component: () => import('layouts/MainLayout.vue'),
     children: [
