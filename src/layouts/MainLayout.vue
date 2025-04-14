@@ -265,6 +265,12 @@
             </q-item-section>
             <q-item-section>Mario遊戲</q-item-section>
           </q-item>
+          <q-item clickable to="/draw-guess" class="op-drawer-item" v-if="devMode">
+            <q-item-section avatar>
+              <q-icon name="draw" />
+            </q-item-section>
+            <q-item-section>畫出英文單字圖</q-item-section>
+          </q-item>
         </q-expansion-item>
 
         <q-expansion-item icon="audiotrack" label="聽覺學習" class="op-expansion-item" dense-toggle>

@@ -285,6 +285,11 @@ const routes: RouteRecordRaw[] = [
     children: [{ path: '', component: () => import('pages/MarioGamePage.vue') }],
   },
   {
+    path: '/draw-guess',
+    component: () => import('layouts/MainLayout.vue'),
+    children: [{ path: '', component: () => import('pages/DrawGuessPage.vue') }],
+  },
+  {
     path: '/custom_cards',
     component: () => import('layouts/MainLayout.vue'),
     children: [
