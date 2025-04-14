@@ -253,6 +253,18 @@
             </q-item-section>
             <q-item-section>今日回顧</q-item-section>
           </q-item>
+          <q-item clickable to="/rules" class="op-drawer-item" v-if="devMode">
+            <q-item-section avatar>
+              <q-icon name="rule" />
+            </q-item-section>
+            <q-item-section>運動規則</q-item-section>
+          </q-item>
+          <q-item clickable to="/mario-game" class="op-drawer-item" v-if="devMode">
+            <q-item-section avatar>
+              <q-icon name="gamepad" />
+            </q-item-section>
+            <q-item-section>Mario遊戲</q-item-section>
+          </q-item>
         </q-expansion-item>
 
         <q-expansion-item icon="audiotrack" label="聽覺學習" class="op-expansion-item" dense-toggle>
