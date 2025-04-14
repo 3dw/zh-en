@@ -130,26 +130,6 @@ export default defineComponent({
       isMovingRight: false,
     })
 
-    // 在 setup() 中添加新的遊戲元素
-    const clouds = ref([
-      { x: 100, y: 50, width: 80, height: 40 },
-      { x: 300, y: 70, width: 100, height: 50 },
-      { x: 600, y: 40, width: 90, height: 45 },
-    ])
-
-    const pipes = ref([
-      { x: 500, y: 370, width: 60, height: 80 },
-      { x: 700, y: 350, width: 60, height: 100 },
-    ])
-
-    const bricks = ref([
-      { x: 200, y: 200, width: 40, height: 40 },
-      { x: 240, y: 200, width: 40, height: 40 },
-      { x: 280, y: 200, width: 40, height: 40 },
-      { x: 400, y: 250, width: 40, height: 40 },
-      { x: 440, y: 250, width: 40, height: 40 },
-    ])
-
     const initCanvas = () => {
       if (!gameCanvas.value) return
       gameCanvas.value.width = 800
@@ -191,6 +171,13 @@ export default defineComponent({
       gameState.value.mushrooms = mushrooms
     }
 
+    const drawMario = () => {
+      if (!ctx.value) return
+      const mario = gameState.value.mario
+      ctx.value.fillStyle = '#ff0000'
+      ctx.value.fillRect(mario.x, mario.y, mario.width, mario.height)
+    }
+
     const drawMushrooms = () => {
       if (!ctx.value) return
       gameState.value.mushrooms.forEach((mushroom) => {
@@ -205,11 +192,12 @@ export default defineComponent({
       })
     }
 
-    const drawMario = () => {
+    const drawPlatforms = () => {
       if (!ctx.value) return
-      const mario = gameState.value.mario
-      ctx.value.fillStyle = '#ff0000'
-      ctx.value.fillRect(mario.x, mario.y, mario.width, mario.height)
+      gameState.value.platforms.forEach((platform) => {
+        ctx.value!.fillStyle = '#795548'
+        ctx.value!.fillRect(platform.x, platform.y, platform.width, platform.height)
+      })
     }
 
     const drawCurrentWord = () => {
@@ -224,58 +212,10 @@ export default defineComponent({
       )
     }
 
-    const drawGame = () => {
-      if (!ctx.value) return
-
-      // 清空畫布
-      ctx.value.clearRect(0, 0, 800, 500)
-
-      // 繪製天空
-      ctx.value.fillStyle = '#87CEEB'
-      ctx.value.fillRect(0, 0, 800, 500)
-
-      // 繪製雲朵
-      ctx.value.fillStyle = '#FFFFFF'
-      clouds.value.forEach((cloud) => {
-        ctx.value!.beginPath()
-        ctx.value!.arc(cloud.x, cloud.y, 20, 0, Math.PI * 2)
-        ctx.value!.arc(cloud.x + 15, cloud.y - 10, 15, 0, Math.PI * 2)
-        ctx.value!.arc(cloud.x + 30, cloud.y, 20, 0, Math.PI * 2)
-        ctx.value!.fill()
-      })
-
-      // 繪製地面
-      ctx.value.fillStyle = '#8B4513'
-      ctx.value.fillRect(0, 450, 800, 50)
-
-      // 繪製磚塊
-      ctx.value.fillStyle = '#B87333'
-      bricks.value.forEach((brick) => {
-        ctx.value!.fillRect(brick.x, brick.y, brick.width, brick.height)
-        // 添加磚塊紋理
-        ctx.value!.strokeStyle = '#8B4513'
-        ctx.value!.strokeRect(brick.x, brick.y, brick.width, brick.height)
-      })
-
-      // 繪製管道
-      ctx.value.fillStyle = '#00FF00'
-      pipes.value.forEach((pipe) => {
-        ctx.value!.fillRect(pipe.x, pipe.y, pipe.width, pipe.height)
-        // 添加管道邊緣
-        ctx.value!.fillStyle = '#00CC00'
-        ctx.value!.fillRect(pipe.x - 5, pipe.y, 5, 10)
-        ctx.value!.fillRect(pipe.x + pipe.width, pipe.y, 5, 10)
-      })
-
-      // 繪製遊戲元素
-      drawMushrooms()
-      drawMario()
-      drawCurrentWord()
-    }
-
     const updateGame = () => {
       if (!isGameRunning.value) return
 
+      // 更新瑪莉歐位置
       const mario = gameState.value.mario
 
       // 水平移動
@@ -294,30 +234,18 @@ export default defineComponent({
       mario.y += marioState.value.velocityY
 
       // 檢查平台碰撞
-      const checkPlatformCollision = (platform: {
-        x: number
-        y: number
-        width: number
-        height: number
-      }) => {
+      gameState.value.platforms.forEach((platform) => {
         if (
           mario.y + mario.height > platform.y &&
           mario.y < platform.y + platform.height &&
           mario.x + mario.width > platform.x &&
           mario.x < platform.x + platform.width
         ) {
-          if (marioState.value.velocityY > 0) {
-            mario.y = platform.y - mario.height
-            marioState.value.velocityY = 0
-            marioState.value.isJumping = false
-          }
+          mario.y = platform.y - mario.height
+          marioState.value.velocityY = 0
+          marioState.value.isJumping = false
         }
-      }
-
-      // 檢查所有平台類型的碰撞
-      gameState.value.platforms.forEach(checkPlatformCollision)
-      bricks.value.forEach(checkPlatformCollision)
-      pipes.value.forEach(checkPlatformCollision)
+      })
 
       // 檢查香菇碰撞
       gameState.value.mushrooms.forEach((mushroom) => {
@@ -336,6 +264,22 @@ export default defineComponent({
           }
         }
       })
+    }
+
+    const drawGame = () => {
+      if (!ctx.value) return
+
+      // 清除畫布
+      ctx.value.clearRect(0, 0, 800, 500)
+
+      // 繪製背景
+      ctx.value.fillStyle = '#87CEEB'
+      ctx.value.fillRect(0, 0, 800, 500)
+
+      drawPlatforms()
+      drawMushrooms()
+      drawMario()
+      drawCurrentWord()
     }
 
     const gameUpdate = () => {
