@@ -1,0 +1,18 @@
+{
+    "verb": {
+      "run": {
+        "sentence": "I run every morning.",
+        "translation": "我每天早上跑步。"
+      },
+      "eat": {
+        "sentence": "I eat breakfast at 7 AM.",
+        "translation": "我早上7點吃早餐。"
+      }
+    },
+    "noun": {
+      "guitar": {
+        "sentence": "I play the guitar.",
+        "translation": "我彈吉他。"
+      }
+    }
+  }

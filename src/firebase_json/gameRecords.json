@@ -1,0 +1,28 @@
+{
+    "qvwMOKzKB4R16W6p9htqMS1RDRA3": {
+      "1710921600000": {
+        "results": [
+          {
+            "type": "verb",
+            "value": "run",
+            "emoji": "🏃",
+            "category": "運動"
+          },
+          {
+            "type": "verb",
+            "value": "eat",
+            "emoji": "🍽️",
+            "category": "飲食"
+          },
+          {
+            "type": "verb",
+            "value": "jump",
+            "emoji": "🦘",
+            "category": "運動"
+          }
+        ],
+        "points": 3,
+        "timestamp": "2024-03-20T10:00:00Z"
+      }
+    }
+  }

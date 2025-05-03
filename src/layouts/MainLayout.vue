@@ -271,6 +271,12 @@
             </q-item-section>
             <q-item-section>畫出英文單字圖</q-item-section>
           </q-item>
+          <q-item clickable to="/lucky-slot" class="op-drawer-item" v-if="devMode">
+            <q-item-section avatar>
+              <q-icon name="gamepad" />
+            </q-item-section>
+            <q-item-section>幸運轉盤</q-item-section>
+          </q-item>
         </q-expansion-item>
 
         <q-expansion-item icon="audiotrack" label="聽覺學習" class="op-expansion-item" dense-toggle>
