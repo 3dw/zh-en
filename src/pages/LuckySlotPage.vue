@@ -32,6 +32,99 @@
           <div v-if="result.task" class="task-container">
             <div style="font-weight: 600; margin-bottom: 8px; color: #1a1a1a;">今日任務：</div>
             <div>{{ result.task }}</div>
+            
+            <div class="task-input-container q-mt-md" v-if="!taskCompleted">
+              <!-- 動詞造句任務 -->
+              <div v-if="result.title.includes('動詞')">
+                <p class="task-instruction">請使用上方動詞造一個完整的英文句子：</p>
+                <q-input 
+                  v-model="textTaskAnswer" 
+                  outlined 
+                  type="textarea" 
+                  placeholder="例如：I run every morning to stay healthy." 
+                  class="task-input"
+                />
+              </div>
+              
+              <!-- 名詞功能描述任務 -->
+              <div v-else-if="result.title.includes('名詞')">
+                <p class="task-instruction">請用英文描述其中一個物品的功能或特點：</p>
+                <q-input 
+                  v-model="textTaskAnswer" 
+                  outlined 
+                  type="textarea" 
+                  placeholder="例如：A guitar is a musical instrument that produces sound when you pluck its strings." 
+                  class="task-input"
+                />
+              </div>
+              
+              <!-- 形容詞描述任務 -->
+              <div v-else-if="result.title.includes('形容詞')">
+                <p class="task-instruction">請用英文形容你現在的心情或一件事物：</p>
+                <q-input 
+                  v-model="textTaskAnswer" 
+                  outlined 
+                  type="textarea" 
+                  placeholder="例如：I feel happy when I listen to my favorite music." 
+                  class="task-input"
+                />
+              </div>
+              
+              <!-- 特殊組合翻譯任務 -->
+              <div v-else-if="result.title.includes('特殊')">
+                <p class="task-instruction">請翻譯以下句子：</p>
+                <div class="translation-text q-mb-md">{{ specialCombinationSentence }}</div>
+                <q-input 
+                  v-model="textTaskAnswer" 
+                  outlined 
+                  type="textarea" 
+                  placeholder="請輸入中文翻譯..." 
+                  class="task-input"
+                />
+              </div>
+              
+              <!-- 雙七問答題 -->
+              <div v-else-if="result.title.includes('雙七')">
+                <p class="task-instruction">{{ bonusQuestion }}</p>
+                <div class="bonus-options">
+                  <q-radio v-model="radioTaskAnswer" val="A" :label="bonusOptions.A" class="q-mb-sm" />
+                  <q-radio v-model="radioTaskAnswer" val="B" :label="bonusOptions.B" class="q-mb-sm" />
+                  <q-radio v-model="radioTaskAnswer" val="C" :label="bonusOptions.C" class="q-mb-sm" />
+                  <q-radio v-model="radioTaskAnswer" val="D" :label="bonusOptions.D" />
+                </div>
+              </div>
+              
+              <!-- 幸運小知識 -->
+              <div v-else-if="result.title.includes('幸運')">
+                <div class="knowledge-card">
+                  <p class="knowledge-title">{{ knowledgeCard.title }}</p>
+                  <p class="knowledge-content">{{ knowledgeCard.content }}</p>
+                  <p class="knowledge-tip">{{ knowledgeCard.tip }}</p>
+                </div>
+                <q-checkbox v-model="checkboxTaskAnswer" true-value="true" label="我已閱讀並理解這個小知識" />
+              </div>
+              
+              <div class="task-actions q-mt-md">
+                <q-btn 
+                  color="primary" 
+                  :disable="!isTaskAnswerValid" 
+                  @click="submitTask"
+                  style="border-radius: 8px;"
+                >
+                  提交答案
+                </q-btn>
+              </div>
+            </div>
+            
+            <div v-else class="task-completed-container q-mt-md">
+              <div class="task-completed-message">
+                <q-icon name="check_circle" color="positive" size="24px" class="q-mr-sm" />
+                任務已完成！
+              </div>
+              <div class="task-feedback q-mt-sm" v-if="taskFeedback">
+                {{ taskFeedback }}
+              </div>
+            </div>
           </div>
           
           <div class="points-container">
@@ -63,7 +156,7 @@
   </template>
   
   <script lang="ts">
-  import { defineComponent, ref, onMounted, onUnmounted, nextTick } from 'vue'
+  import { defineComponent, ref, onMounted, onUnmounted, nextTick, computed } from 'vue'
   import { getDatabase, ref as dbRef, get, set, serverTimestamp, push } from 'firebase/database'
   import type { User } from 'firebase/auth';
   import { getAuth, onAuthStateChanged } from 'firebase/auth'
@@ -105,6 +198,49 @@
       const currentUser = ref<User | null>(null)
       const isLoading = ref(true)
       const result = ref<Result | null>(null)
+      
+      // 任務相關參數
+      const textTaskAnswer = ref('')
+      const radioTaskAnswer = ref('')
+      const checkboxTaskAnswer = ref(false)
+      const taskCompleted = ref(false)
+      const taskFeedback = ref('')
+      const specialCombinationSentence = ref('')
+      const bonusQuestion = ref('')
+      const bonusOptions = ref({
+        A: '',
+        B: '',
+        C: '',
+        D: ''
+      })
+      const bonusCorrectAnswer = ref('')
+      const knowledgeCard = ref({
+        title: '',
+        content: '',
+        tip: ''
+      })
+      
+      // 檢查任務答案是否有效
+      const isTaskAnswerValid = computed(() => {
+        if (!result.value || !result.value.task) return false;
+        
+        // 各種任務的有效性檢查
+        if (result.value.title.includes('動詞') || 
+            result.value.title.includes('名詞') || 
+            result.value.title.includes('形容詞') || 
+            result.value.title.includes('特殊')) {
+          // 文字類任務至少需要10個字符
+          return textTaskAnswer.value.trim().length >= 10;
+        } else if (result.value.title.includes('雙七')) {
+          // 選擇題需要選擇一個選項
+          return ['A', 'B', 'C', 'D'].includes(radioTaskAnswer.value);
+        } else if (result.value.title.includes('幸運')) {
+          // 知識卡片需要勾選閱讀確認
+          return Boolean(checkboxTaskAnswer.value) === true;
+        }
+        
+        return false;
+      })
   
       // 符號庫：根據企劃要求設定不同類型的符號
       const symbols: Symbol[] = [
@@ -604,8 +740,200 @@
         
         result.value = resultData;
         
+        // 重置任務狀態
+        textTaskAnswer.value = '';
+        radioTaskAnswer.value = '';
+        checkboxTaskAnswer.value = false;
+        taskCompleted.value = false;
+        taskFeedback.value = '';
+        
+        // 準備任務內容
+        if (resultTask) {
+          prepareTasks(finalSymbols.filter((s): s is Symbol => s !== undefined));
+        }
+        
         // 儲存遊戲記錄到資料庫
         await saveGameRecord(finalSymbols.filter((s): s is Symbol => s !== undefined), points);
+      };
+  
+      // 準備不同類型的任務內容
+      const prepareTasks = (symbols: Symbol[]) => {
+        if (!result.value || !result.value.title) return;
+        
+        // 根據結果類型準備不同的任務
+        if (result.value.title.includes('特殊')) {
+          // 特殊組合：生成一個句子供用戶翻譯
+          const verb = symbols.find(s => s.type === 'verb')?.value || '';
+          const noun = symbols.find(s => s.type === 'noun')?.value || '';
+          const special = symbols.find(s => s.type === 'special')?.emoji || '';
+          
+          specialCombinationSentence.value = `I ${verb} the ${noun} when I see ${special}.`;
+        } 
+        else if (result.value.title.includes('雙七')) {
+          // 雙七問答題：從資料庫獲取一個隨機問題
+          fetchBonusQuestion();
+        } 
+        else if (result.value.title.includes('幸運')) {
+          // 幸運小知識：準備一個英文小知識卡片
+          prepareKnowledgeCard();
+        }
+      };
+      
+      // 獲取隨機問答題
+      const fetchBonusQuestion = async () => {
+        try {
+          const db = getDatabase();
+          const questionsRef = dbRef(db, 'bonusQuestions');
+          const snapshot = await get(questionsRef);
+          
+          if (snapshot.exists()) {
+            const questions = snapshot.val();
+            const keys = Object.keys(questions);
+            if (keys.length > 0) {
+              const randomKey = keys[Math.floor(Math.random() * keys.length)];
+              const question = questions[randomKey as keyof typeof questions];
+              
+              bonusQuestion.value = question.question;
+              bonusOptions.value = question.options;
+              bonusCorrectAnswer.value = question.answer;
+            } else {
+              useDefaultBonusQuestion();
+            }
+          } else {
+            useDefaultBonusQuestion();
+          }
+        } catch (error) {
+          console.error('獲取問答題失敗:', error);
+          useDefaultBonusQuestion();
+        }
+      };
+      
+      // 使用默認問答題
+      const useDefaultBonusQuestion = () => {
+        bonusQuestion.value = "Which of these is NOT a part of speech in English?";
+        bonusOptions.value = {
+          A: "Noun",
+          B: "Adjective",
+          C: "Transitive",
+          D: "Adverb"
+        };
+        bonusCorrectAnswer.value = "C";
+      };
+      
+      // 準備知識卡片
+      const prepareKnowledgeCard = async () => {
+        try {
+          const db = getDatabase();
+          const cardsRef = dbRef(db, 'knowledgeCards');
+          const snapshot = await get(cardsRef);
+          
+          if (snapshot.exists()) {
+            const cards = snapshot.val();
+            const keys = Object.keys(cards);
+            if (keys.length > 0) {
+              const randomKey = keys[Math.floor(Math.random() * keys.length)];
+              const card = cards[randomKey as keyof typeof cards];
+              
+              knowledgeCard.value = card;
+            } else {
+              useDefaultKnowledgeCard();
+            }
+          } else {
+            useDefaultKnowledgeCard();
+          }
+        } catch (error) {
+          console.error('獲取知識卡片失敗:', error);
+          useDefaultKnowledgeCard();
+        }
+      };
+      
+      // 使用默認知識卡片
+      const useDefaultKnowledgeCard = () => {
+        knowledgeCard.value = {
+          title: "英文學習小技巧",
+          content: "研究表明，每天學習10-15個新單詞並立即使用它們造句，能夠顯著提高你的詞彙量和記憶效果。",
+          tip: "嘗試在日常生活中尋找機會使用新學的單詞，這樣能夠更好地鞏固記憶。"
+        };
+      };
+      
+      // 提交任務答案
+      const submitTask = async () => {
+        if (!currentUser.value || !result.value || !isTaskAnswerValid.value) return;
+        
+        try {
+          // 儲存任務完成記錄
+          const db = getDatabase();
+          const taskRecordsRef = dbRef(db, `taskRecords/${currentUser.value.uid}`);
+          const newTaskRef = push(taskRecordsRef);
+          
+          let correct = true;
+          let extraPoints = 0;
+          let answerValue: string | boolean = '';
+          
+          // 根據任務類型確定答案值和驗證答案
+          if (result.value.title.includes('動詞') || 
+              result.value.title.includes('名詞') || 
+              result.value.title.includes('形容詞') || 
+              result.value.title.includes('特殊')) {
+            answerValue = textTaskAnswer.value;
+            extraPoints = 1;
+            taskFeedback.value = "感謝你完成今天的學習任務！";
+          } else if (result.value.title.includes('雙七')) {
+            // 問答題驗證
+            answerValue = radioTaskAnswer.value;
+            correct = radioTaskAnswer.value === bonusCorrectAnswer.value;
+            extraPoints = correct ? 2 : 0;
+            taskFeedback.value = correct ? 
+              "答對了！獲得額外的獎勵點數！" : 
+              `答錯了！正確答案是 ${bonusCorrectAnswer.value}`;
+          } else if (result.value.title.includes('幸運')) {
+            answerValue = checkboxTaskAnswer.value;
+            extraPoints = 1;
+            taskFeedback.value = "感謝你完成今天的學習任務！";
+          } else {
+            // 其他任務
+            extraPoints = 1;
+            taskFeedback.value = "感謝你完成今天的學習任務！";
+          }
+          
+          // 記錄任務完成
+          await set(newTaskRef, {
+            taskType: getTaskType(),
+            answer: answerValue,
+            correct: correct,
+            points: result.value.points + extraPoints,
+            timestamp: serverTimestamp()
+          });
+          
+          // 如果有額外獎勵點數，更新用戶積分
+          if (extraPoints > 0) {
+            const userRef = dbRef(db, `users/${currentUser.value.uid}`);
+            const userSnapshot = await get(userRef);
+            const currentPoints = userSnapshot.exists() ? (userSnapshot.val().points || 0) : 0;
+            await set(dbRef(db, `users/${currentUser.value.uid}/points`), currentPoints + extraPoints);
+          }
+          
+          // 設置任務完成狀態
+          taskCompleted.value = true;
+          
+        } catch (error) {
+          console.error('提交任務失敗:', error);
+          alert('提交任務時發生錯誤，請稍後再試。');
+        }
+      };
+      
+      // 獲取任務類型
+      const getTaskType = (): string => {
+        if (!result.value) return 'unknown';
+        
+        if (result.value.title.includes('動詞')) return 'verb';
+        if (result.value.title.includes('名詞')) return 'noun';
+        if (result.value.title.includes('形容詞')) return 'adjective';
+        if (result.value.title.includes('特殊')) return 'special';
+        if (result.value.title.includes('雙七')) return 'bonus';
+        if (result.value.title.includes('幸運')) return 'knowledge';
+        
+        return 'unknown';
       };
   
       // 儲存遊戲記錄
@@ -647,30 +975,6 @@
           });
         } catch (error) {
           console.error('儲存遊戲記錄失敗:', error);
-        }
-      };
-  
-      // 開始任務
-      const startTask = async () => {
-        if (!currentUser.value || !result.value?.task) return;
-        
-        // 根據任務類型獲取並顯示任務內容
-        const taskType = result.value.title.includes('動詞') ? 'verb' :
-                        result.value.title.includes('名詞') ? 'noun' :
-                        result.value.title.includes('形容詞') ? 'adjective' :
-                        result.value.title.includes('特殊') ? 'special' :
-                        result.value.title.includes('雙七') ? 'bonus' :
-                        result.value.title.includes('幸運') ? 'knowledge' : 'default';
-        
-        const db = getDatabase();
-        const taskRef = dbRef(db, `tasks/${taskType}`);
-        const snapshot = await get(taskRef);
-        
-        if (snapshot.exists()) {
-          const taskData = snapshot.val();
-          alert(`任務內容: ${JSON.stringify(taskData)}`);
-        } else {
-          alert(`任務類型: ${taskType}\n任務內容: ${result.value.task}`);
         }
       };
   
@@ -738,8 +1042,21 @@
         currentUser,
         result,
         pullLever,
-        startTask,
-        forceRedraw
+        forceRedraw,
+        textTaskAnswer,
+        radioTaskAnswer,
+        checkboxTaskAnswer,
+        taskCompleted,
+        taskFeedback,
+        specialCombinationSentence,
+        bonusQuestion,
+        bonusOptions,
+        bonusCorrectAnswer,
+        knowledgeCard,
+        isTaskAnswerValid,
+        submitTask,
+        useDefaultBonusQuestion,
+        useDefaultKnowledgeCard
       }
     }
   })
@@ -837,6 +1154,89 @@
     border-radius: 12px;
     margin-bottom: 16px;
     border-left: 4px solid #0070ff;
+  }
+  
+  .task-input-container {
+    margin-top: 16px;
+  }
+  
+  .task-instruction {
+    font-size: 18px;
+    font-weight: 600;
+    margin-bottom: 8px;
+    color: #1a1a1a;
+  }
+  
+  .task-input {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #e6e6eb;
+    border-radius: 8px;
+  }
+  
+  .task-actions {
+    text-align: right;
+  }
+  
+  .task-completed-container {
+    text-align: center;
+  }
+  
+  .task-completed-message {
+    font-size: 18px;
+    font-weight: 600;
+    margin-bottom: 8px;
+    color: #1a1a1a;
+  }
+  
+  .task-feedback {
+    font-size: 16px;
+    color: #404040;
+  }
+  
+  .knowledge-card {
+    background-color: #f0f7ff;
+    border-radius: 12px;
+    padding: 16px;
+    margin-bottom: 16px;
+    border-left: 4px solid #0070ff;
+  }
+  
+  .knowledge-title {
+    font-size: 18px;
+    font-weight: 700;
+    margin-bottom: 12px;
+    color: #1a1a1a;
+  }
+  
+  .knowledge-content {
+    font-size: 16px;
+    line-height: 1.5;
+    color: #404040;
+    margin-bottom: 12px;
+  }
+  
+  .knowledge-tip {
+    font-size: 15px;
+    font-style: italic;
+    color: #0070ff;
+  }
+  
+  .translation-text {
+    font-size: 18px;
+    background-color: rgba(0, 112, 255, 0.1);
+    padding: 12px;
+    border-radius: 8px;
+    color: #0070ff;
+    font-weight: 500;
+    margin-bottom: 16px;
+  }
+  
+  .bonus-options {
+    display: flex;
+    flex-direction: column;
+    margin-top: 16px;
+    margin-bottom: 16px;
   }
   
   .points-container {
