@@ -1,13 +1,13 @@
 <template>
-    <q-page class="flex flex-center column">
-      <div v-if="!currentUser" class="text-center q-pa-lg">
+    <q-page class="flex flex-center column" style="background-color: #f5f5f7; min-height: 100vh; padding: 24px;">
+      <div v-if="!currentUser" class="text-center q-pa-lg" style="background-color: white; border-radius: 16px; width: 100%; max-width: 400px; border: 1px solid #e6e6eb; box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);">
         <q-icon name="lock" size="50px" color="grey-5" />
-        <p class="text-h6 q-mt-md">請先登入以使用拉霸機</p>
-        <q-btn color="primary" label="登入" to="/login" />
+        <p class="text-h6 q-mt-md" style="color: #1a1a1a;">請先登入以使用拉霸機</p>
+        <q-btn color="primary" label="登入" to="/login" style="margin-top: 16px;" />
       </div>
   
       <template v-else>
-        <div class="text-h4 q-mb-md">🎉 每天拉一次，強化你的英文力！</div>
+        <div class="text-h4 q-mb-md" style="color: #1a1a1a; font-weight: 700; letter-spacing: -0.5px;">🎉 每天拉一次，強化你的英文力！</div>
   
         <div class="slot-machine-container">
           <canvas ref="slotCanvas" width="600" height="400" style="z-index: 5;"></canvas>
@@ -25,33 +25,37 @@
           </div>
         </div>
   
-        <q-btn 
-          color="primary" 
-          class="q-mt-lg" 
-          :disable="!canPlay || spinning"
-          @click="pullLever"
-        >
-          {{ spinning ? '旋轉中...' : (canPlay ? '拉霸開始！' : '今日已玩過') }}
-        </q-btn>
-        
-        <q-btn 
-          color="secondary" 
-          class="q-mt-md" 
-          @click="forceRedraw"
-        >
-          重繪畫面
-        </q-btn>
-  
         <div v-if="result" class="result-container q-mt-lg">
-          <div class="text-h5">{{ result.title }}</div>
-          <div class="text-body1">{{ result.description }}</div>
+          <div class="result-title">{{ result.title }}</div>
+          <div class="result-description">{{ result.description }}</div>
+          
+          <div v-if="result.task" class="task-container">
+            <div style="font-weight: 600; margin-bottom: 8px; color: #1a1a1a;">今日任務：</div>
+            <div>{{ result.task }}</div>
+          </div>
+          
+          <div class="points-container">
+            <q-icon name="stars" color="primary" size="24px" class="q-mr-sm" />
+            獲得 {{ result.points }} 點
+          </div>
+        </div>
+        
+        <div class="q-mt-lg" style="display: flex; gap: 12px;">
           <q-btn 
-            v-if="result.task" 
-            color="secondary" 
-            class="q-mt-sm"
-            @click="startTask"
+            color="primary" 
+            :disable="!canPlay || spinning"
+            @click="pullLever"
+            style="min-width: 120px; border-radius: 8px;"
           >
-            {{ result.task }}
+            {{ spinning ? '旋轉中...' : (canPlay ? '拉霸開始！' : '今日已玩過') }}
+          </q-btn>
+          
+          <q-btn 
+            color="secondary" 
+            @click="forceRedraw"
+            style="min-width: 100px; border-radius: 8px;"
+          >
+            重繪畫面
           </q-btn>
         </div>
       </template>
@@ -70,6 +74,7 @@
     value: string; // 單字或符號文字值
     emoji: string; // 展示的表情符號
     category: string; // 分類
+    text: string; // 顯示的文字 (用於繪製)
   }
   
   // 轉輪定義
@@ -104,30 +109,30 @@
       // 符號庫：根據企劃要求設定不同類型的符號
       const symbols: Symbol[] = [
         // 動詞
-        { type: 'verb', value: 'run', emoji: '🏃', category: '運動' },
-        { type: 'verb', value: 'eat', emoji: '🍽️', category: '飲食' },
-        { type: 'verb', value: 'jump', emoji: '🦘', category: '運動' },
-        { type: 'verb', value: 'play', emoji: '🎮', category: '娛樂' },
-        { type: 'verb', value: 'sing', emoji: '🎤', category: '音樂' },
+        { type: 'verb', value: 'run', emoji: '🏃', category: '運動', text: 'run' },
+        { type: 'verb', value: 'eat', emoji: '🍽️', category: '飲食', text: 'eat' },
+        { type: 'verb', value: 'jump', emoji: '🦘', category: '運動', text: 'jump' },
+        { type: 'verb', value: 'play', emoji: '🎮', category: '娛樂', text: 'play' },
+        { type: 'verb', value: 'sing', emoji: '🎤', category: '音樂', text: 'sing' },
         
         // 名詞
-        { type: 'noun', value: 'guitar', emoji: '🎸', category: '音樂' },
-        { type: 'noun', value: 'book', emoji: '📚', category: '校園' },
-        { type: 'noun', value: 'computer', emoji: '💻', category: '科技' },
-        { type: 'noun', value: 'ball', emoji: '⚽', category: '運動' },
-        { type: 'noun', value: 'fruit', emoji: '🍎', category: '飲食' },
+        { type: 'noun', value: 'guitar', emoji: '🎸', category: '音樂', text: 'guitar' },
+        { type: 'noun', value: 'book', emoji: '📚', category: '校園', text: 'book' },
+        { type: 'noun', value: 'computer', emoji: '💻', category: '科技', text: 'computer' },
+        { type: 'noun', value: 'ball', emoji: '⚽', category: '運動', text: 'ball' },
+        { type: 'noun', value: 'fruit', emoji: '🍎', category: '飲食', text: 'fruit' },
         
         // 形容詞
-        { type: 'adjective', value: 'happy', emoji: '😊', category: '情緒' },
-        { type: 'adjective', value: 'smart', emoji: '🧠', category: '特質' },
-        { type: 'adjective', value: 'fast', emoji: '⚡', category: '特質' },
-        { type: 'adjective', value: 'big', emoji: '📏', category: '大小' },
-        { type: 'adjective', value: 'sweet', emoji: '🍭', category: '味道' },
+        { type: 'adjective', value: 'happy', emoji: '😊', category: '情緒', text: 'happy' },
+        { type: 'adjective', value: 'smart', emoji: '🧠', category: '特質', text: 'smart' },
+        { type: 'adjective', value: 'fast', emoji: '⚡', category: '特質', text: 'fast' },
+        { type: 'adjective', value: 'big', emoji: '📏', category: '大小', text: 'big' },
+        { type: 'adjective', value: 'sweet', emoji: '🍭', category: '味道', text: 'sweet' },
         
         // 特殊符號
-        { type: 'special', value: 'seven', emoji: '7️⃣', category: '特殊' },
-        { type: 'special', value: 'light', emoji: '💡', category: '特殊' },
-        { type: 'special', value: 'music', emoji: '🎵', category: '特殊' }
+        { type: 'special', value: 'seven', emoji: '7️⃣', category: '特殊', text: '7️⃣' },
+        { type: 'special', value: 'light', emoji: '💡', category: '特殊', text: '💡' },
+        { type: 'special', value: 'music', emoji: '🎵', category: '特殊', text: '🎵' }
       ];
   
       // 初始化三個轉輪
@@ -137,13 +142,14 @@
         { position: 0, finalPosition: 0, spinning: false, symbols: [] }
       ]);
   
-      // Canvas相關參數
+      // 拉霸機顏色設定
       const slotMachineColors = {
-        body: '#d4af37',     // 機器主體
-        frame: '#905e26',    // 框架
-        reelBg: '#ffffff',   // 轉輪背景
-        reelFrame: '#444444', // 轉輪邊框
-        lever: '#cc3333'     // 拉霸桿
+        body: '#ffffff',
+        frame: '#0070ff',
+        reelBackground: '#f5f8ff',
+        reelBorder: '#e6e6eb',
+        reelSeparator: '#e6e6eb',
+        symbolBackground: '#ffffff'
       };
   
       // 初始化Canvas
@@ -201,47 +207,36 @@
         // 清空畫布
         context.clearRect(0, 0, canvas.width, canvas.height);
         
-        // 繪製機器主體
-        context.fillStyle = slotMachineColors.body;
-        context.fillRect(50, 50, 500, 300);
+        // 繪製機器主體 - 圓角矩形背景
+        roundRect(context, 50, 50, 500, 300, 12, slotMachineColors.body, false);
         
         // 繪製機器框架
         context.strokeStyle = slotMachineColors.frame;
-        context.lineWidth = 10;
-        context.strokeRect(45, 45, 510, 310);
+        context.lineWidth = 3;
+        roundRect(context, 50, 50, 500, 300, 12, null, true);
         
         // 繪製標題
-        context.fillStyle = '#ffffff';
+        context.fillStyle = '#1a1a1a';
         context.font = 'bold 24px Arial';
         context.textAlign = 'center';
-        context.fillText('Lucky English Slot Machine', 300, 80);
+        context.fillText('Lucky English Slot', canvas.width / 2, 35);
+        
+        // 計算每個轉輪的寬度和高度
+        const reelWidth = 120;
+        const reelHeight = 200;
+        const startX = canvas.width / 2 - (reelWidth * 1.5) - 20;
+        const startY = 100;
         
         // 繪製三個轉輪
-        const reelWidth = 120;
-        const reelHeight = 150;
-        const reelSpacing = 20;
-        const startX = 100;
-        const startY = 120;
-        
-        for (let i = 0; i < 3; i++) {
-          const x = startX + i * (reelWidth + reelSpacing);
+        for (let i = 0; i < reels.value.length; i++) {
+          // 計算轉輪的X座標
+          const reelX = startX + i * (reelWidth + 20);
           
-          // 轉輪背景
-          context.fillStyle = slotMachineColors.reelBg;
-          context.fillRect(x, startY, reelWidth, reelHeight);
-          
-          // 轉輪框架
-          context.strokeStyle = slotMachineColors.reelFrame;
-          context.lineWidth = 3;
-          context.strokeRect(x, startY, reelWidth, reelHeight);
-          
-          // 中間線 (顯示當前選中的符號)
-          context.strokeStyle = '#ff0000';
+          // 繪製轉輪背景
+          roundRect(context, reelX, startY, reelWidth, reelHeight, 8, slotMachineColors.reelBackground, false);
+          context.strokeStyle = slotMachineColors.reelBorder;
           context.lineWidth = 2;
-          context.beginPath();
-          context.moveTo(x, startY + reelHeight/2);
-          context.lineTo(x + reelWidth, startY + reelHeight/2);
-          context.stroke();
+          roundRect(context, reelX, startY, reelWidth, reelHeight, 8, null, true);
           
           // 繪製符號 (顯示當前位置和上下兩個位置的符號)
           const reel = reels.value[i];
@@ -250,40 +245,86 @@
             
             // 繪製三個位置的符號 (上、中、下)
             for (let j = -1; j <= 1; j++) {
-              try {
-                // 計算符號索引，循環顯示
-                const symbolIndex = (reel.position + j + reel.symbols.length) % reel.symbols.length;
-                const symbol = reel.symbols[symbolIndex];
-                
-                const symbolY = startY + (j + 1) * symbolHeight;
-                
-                // 繪製符號文字
-                context.fillStyle = j === 0 ? '#000000' : '#999999'; // 中間位置顏色加深
-                context.font = j === 0 ? 'bold 24px Arial' : '20px Arial';
-                context.textAlign = 'center';
-                context.textBaseline = 'middle';
-                
-                // 繪製emoji和文字
-                if (symbol) {
-                  context.fillText(symbol.emoji, x + reelWidth/2, symbolY - 10);
-                  context.fillText(symbol.value, x + reelWidth/2, symbolY + 20);
-                  console.log(`繪製符號: ${symbol.emoji} ${symbol.value} 在 x=${x + reelWidth/2}, y=${symbolY}`);
-                }
-              } catch (error) {
-                console.error(`繪製轉輪 ${i} 的符號時出錯:`, error);
+              // 計算符號索引，循環顯示
+              const symbolIndex = (reel.position + j + reel.symbols.length) % reel.symbols.length;
+              const symbol = reel.symbols[symbolIndex];
+              
+              const symbolY = startY + (j + 1) * symbolHeight;
+              
+              // 繪製符號背景 (圓形)
+              context.fillStyle = slotMachineColors.symbolBackground;
+              context.beginPath();
+              context.arc(reelX + reelWidth / 2, symbolY + symbolHeight / 2, symbolHeight / 2 - 5, 0, Math.PI * 2);
+              context.fill();
+              context.strokeStyle = '#0070ff';
+              context.lineWidth = 1;
+              context.stroke();
+              
+              // 繪製符號 (文字)
+              context.fillStyle = j === 0 ? '#0070ff' : '#666666';
+              context.font = j === 0 ? 'bold 24px Arial' : '20px Arial';
+              context.textAlign = 'center';
+              context.textBaseline = 'middle';
+              
+              // 根據符號類型設定顏色
+              if (symbol && j === 0) {
+                if (symbol.type === 'verb') context.fillStyle = '#0070ff';
+                else if (symbol.type === 'noun') context.fillStyle = '#FF9500';
+                else if (symbol.type === 'adjective') context.fillStyle = '#34C759';
+                else if (symbol.type === 'special') context.fillStyle = '#AF52DE';
+              }
+              
+              if (symbol && symbol.text) {
+                context.fillText(symbol.text, reelX + reelWidth / 2, symbolY + symbolHeight / 2);
+              } else if (symbol) {
+                context.fillText(symbol.value, reelX + reelWidth / 2, symbolY + symbolHeight / 2);
               }
             }
           }
         }
         
-        // 繪製底部裝飾
-        context.fillStyle = '#905e26';
-        context.fillRect(50, 320, 500, 30);
+        // 繪製底部控制區
+        context.fillStyle = '#f5f8ff';
+        roundRect(context, 100, startY + reelHeight + 20, 400, 50, 8, '#f5f8ff', false);
         
-        // 繪製拉霸桿底座 (右側)
-        context.fillStyle = '#555555';
-        context.fillRect(500, 200, 50, 20);
-      }
+        context.fillStyle = '#1a1a1a';
+        context.font = '16px Arial';
+        context.textAlign = 'center';
+        context.textBaseline = 'middle';
+        context.fillText(spinning.value ? '旋轉中...' : (canPlay.value ? '拉下右側手柄開始' : '今日已玩過'), canvas.width / 2, startY + reelHeight + 45);
+      };
+      
+      // 繪製圓角矩形的輔助函數
+      const roundRect = (
+        ctx: CanvasRenderingContext2D, 
+        x: number, 
+        y: number, 
+        width: number, 
+        height: number, 
+        radius: number, 
+        fill?: string | null, 
+        stroke?: boolean
+      ): void => {
+        if (typeof radius === 'undefined') radius = 5;
+        ctx.beginPath();
+        ctx.moveTo(x + radius, y);
+        ctx.lineTo(x + width - radius, y);
+        ctx.quadraticCurveTo(x + width, y, x + width, y + radius);
+        ctx.lineTo(x + width, y + height - radius);
+        ctx.quadraticCurveTo(x + width, y + height, x + width - radius, y + height);
+        ctx.lineTo(x + radius, y + height);
+        ctx.quadraticCurveTo(x, y + height, x, y + height - radius);
+        ctx.lineTo(x, y + radius);
+        ctx.quadraticCurveTo(x, y, x + radius, y);
+        ctx.closePath();
+        if (fill) {
+          ctx.fillStyle = fill;
+          ctx.fill();
+        }
+        if (stroke) {
+          ctx.stroke();
+        }
+      };
   
       // 拉動拉霸機
       const pullLever = () => {
@@ -582,7 +623,8 @@
               type: s.type,
               value: s.value,
               emoji: s.emoji,
-              category: s.category
+              category: s.category,
+              text: s.text
             })),
             points: points,
             timestamp: serverTimestamp()
@@ -666,6 +708,7 @@
           
           // 使用nextTick確保DOM已經渲染完成
           nextTick(() => {
+            console.log("DOM已更新，準備初始化Canvas");
             // 畫面已載入，初始化Canvas
             if (slotCanvas.value) {
               initCanvas();
@@ -674,7 +717,9 @@
               setTimeout(() => {
                 drawSlotMachine();
                 console.log('繪製拉霸機畫面');
-              }, 100);
+              }, 500);
+            } else {
+              console.error("Canvas元素未找到");
             }
           });
         });
@@ -705,70 +750,114 @@
     position: relative;
     width: 600px;
     height: 400px;
-    background-color: #333;
+    background-color: #f5f5f7;
     padding: 0;
-    border-radius: 10px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    border-radius: 16px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
     display: flex;
     justify-content: center;
     align-items: center;
     overflow: visible;
+    border: 1px solid #e6e6eb;
   }
   
-  /* 拉霸機桿 */
+  canvas {
+    display: block;
+    border-radius: 12px;
+    z-index: 10;
+    position: relative;
+  }
+  
   .slot-lever {
     position: absolute;
-    right: 40px;
-    top: 120px;
+    right: -50px;
+    top: 150px;
     cursor: pointer;
-    transform-origin: bottom center;
     transition: transform 0.3s ease;
-  }
-  
-  .lever-pulled {
-    transform: rotate(30deg);
-    transition: transform 0.3s ease;
+    z-index: 15;
   }
   
   .lever-grip {
     width: 30px;
     height: 30px;
-    background-color: #cc3333;
+    background-color: #0070ff;
     border-radius: 50%;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+    margin-bottom: 5px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
   }
   
   .lever-stick {
     width: 10px;
-    height: 100px;
-    background-color: #666;
-    margin-left: 10px;
+    height: 80px;
+    background-color: #1a84ff;
+    margin: 0 auto;
+    border-radius: 5px;
   }
   
   .lever-base {
-    width: 50px;
+    width: 40px;
     height: 15px;
-    background-color: #444;
+    background-color: #0070ff;
     border-radius: 5px;
-    margin-top: -5px;
-    margin-left: -10px;
+    margin-top: 5px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   }
   
-  canvas {
-    display: block;
-    border-radius: 10px;
-    z-index: 10;
-    position: relative;
+  .lever-pulled {
+    transform: rotate(30deg);
   }
   
   .result-container {
-    background-color: #f8f9fa;
-    padding: 20px;
-    border-radius: 10px;
-    text-align: center;
-    max-width: 500px;
     margin-top: 20px;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    padding: 24px;
+    background-color: white;
+    border-radius: 16px;
+    width: 600px;
+    border: 1px solid #e6e6eb;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+  }
+  
+  .result-title {
+    font-size: 24px;
+    font-weight: 700;
+    margin-bottom: 12px;
+    color: #1a1a1a;
+  }
+  
+  .result-description {
+    font-size: 16px;
+    margin-bottom: 16px;
+    color: #404040;
+    line-height: 1.5;
+  }
+  
+  .task-container {
+    background-color: #f5f8ff;
+    padding: 16px;
+    border-radius: 12px;
+    margin-bottom: 16px;
+    border-left: 4px solid #0070ff;
+  }
+  
+  .points-container {
+    font-size: 18px;
+    font-weight: 600;
+    color: #0070ff;
+  }
+  
+  .q-btn {
+    text-transform: none;
+    font-weight: 600;
+    letter-spacing: 0.3px;
+  }
+  
+  /* AT Protocol inspired color palette */
+  :deep(.q-btn.primary) {
+    background: #0070ff !important;
+  }
+  
+  :deep(.q-btn.secondary) {
+    background: #8e8e93 !important;
   }
   </style>
   
