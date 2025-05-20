@@ -294,9 +294,22 @@ export default defineComponent({
     // 刪除卡片
     const deleteCard = () => {
       if (cardToDeleteIndex.value !== -1) {
-        customCards.value.splice(cardToDeleteIndex.value, 1)
-        flippedCards.value.splice(cardToDeleteIndex.value, 1)
-        saveCards()
+        const savedFavorites = localStorage.getItem('en_love_arr')
+        const en_love_arr = JSON.parse(savedFavorites || '[]')
+        const cardToDelete = customCards.value[cardToDeleteIndex.value]
+
+        if (cardToDelete) {
+          // 刪除收藏的卡片
+          const updatedFavorites = en_love_arr.filter(
+            (item: Card) => item.english !== cardToDelete.english,
+          )
+          localStorage.setItem('en_love_arr', JSON.stringify(updatedFavorites))
+
+          // 刪除自訂字卡
+          customCards.value.splice(cardToDeleteIndex.value, 1)
+          flippedCards.value.splice(cardToDeleteIndex.value, 1)
+          saveCards()
+        }
       }
     }
 
