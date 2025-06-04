@@ -6,7 +6,7 @@
     <div v-if="uid === ''" class="text-center q-pa-lg login-container">
       <q-icon name="lock" size="50px" color="grey-5" />
       <p class="text-h6 q-mt-md" style="color: #1a1a1a">請先登入以使用拉霸機</p>
-      <q-btn color="primary" label="登入" to="/login" style="margin-top: 16px" />
+      <q-btn color="primary" label="登入" @click="toggleLogin" style="margin-top: 16px" />
     </div>
 
     <template v-else>
@@ -257,7 +257,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, onMounted, onUnmounted, computed, nextTick } from 'vue'
+import { defineComponent, ref, onMounted, onUnmounted, computed, nextTick, watch } from 'vue'
 import { getDatabase, ref as dbRef, get, set, serverTimestamp, push } from 'firebase/database'
 
 // 符號類型定義
@@ -293,7 +293,7 @@ export default defineComponent({
       default: '',
     },
   },
-  setup(props) {
+  setup(props, { emit }) {
     // 基本參數設定
     const slotCanvas = ref<HTMLCanvasElement | null>(null)
     const ctx = ref<CanvasRenderingContext2D | null>(null)
@@ -1197,6 +1197,10 @@ export default defineComponent({
       }
     }
 
+    const toggleLogin = () => {
+      emit('toggleLogin')
+    }
+
     // 初始化頁面
     onMounted(() => {
       console.log('開始初始化頁面')
@@ -1226,6 +1230,18 @@ export default defineComponent({
       window.removeEventListener('resize', updateCanvasSize)
     })
 
+    watch(
+      () => props.uid,
+      (newUid) => {
+        console.log('uid changed:', newUid)
+        if (newUid !== '') {
+          // 如果uid有值，則重繪畫面
+          initCanvas()
+          forceRedraw()
+        }
+      },
+    )
+
     return {
       slotCanvas,
       canPlay,
@@ -1251,6 +1267,7 @@ export default defineComponent({
       showRules,
       canvasWidth,
       canvasHeight,
+      toggleLogin,
     }
   },
 })

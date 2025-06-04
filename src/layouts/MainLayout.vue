@@ -460,6 +460,7 @@
         @earn-xp="earnXP"
         @toggle-drawer="toggleLeftDrawer"
         @close-drawer="closeLeftDrawer"
+        @toggleLogin="toggleLogin"
       />
     </q-page-container>
   </q-layout>
