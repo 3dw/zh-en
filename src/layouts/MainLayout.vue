@@ -210,6 +210,13 @@
             <q-item-section>句型學習</q-item-section>
           </q-item>
 
+          <q-item clickable to="/lucky-slot" class="op-drawer-item">
+            <q-item-section avatar>
+              <q-icon name="attractions" />
+            </q-item-section>
+            <q-item-section>幸運轉盤</q-item-section>
+          </q-item>
+
           <q-item clickable to="/main-game" class="op-drawer-item">
             <q-item-section avatar>
               <q-icon name="gamepad" />

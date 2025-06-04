@@ -1,0 +1,17 @@
+{
+    "firstPlay": {
+      "title": "初次體驗",
+      "description": "完成第一次拉霸遊戲",
+      "points": 1
+    },
+    "verbMaster": {
+      "title": "動詞大師",
+      "description": "抽中三次動詞組合",
+      "points": 5
+    },
+    "specialCombo": {
+      "title": "特殊組合",
+      "description": "抽中特殊組合",
+      "points": 3
+    }
+}
