@@ -210,6 +210,13 @@
             <q-item-section>句型學習</q-item-section>
           </q-item>
 
+          <q-item clickable to="/lucky-slot" class="op-drawer-item">
+            <q-item-section avatar>
+              <q-icon name="attractions" />
+            </q-item-section>
+            <q-item-section>幸運轉盤</q-item-section>
+          </q-item>
+
           <q-item clickable to="/main-game" class="op-drawer-item">
             <q-item-section avatar>
               <q-icon name="gamepad" />
@@ -270,12 +277,6 @@
               <q-icon name="draw" />
             </q-item-section>
             <q-item-section>畫出英文單字圖</q-item-section>
-          </q-item>
-          <q-item clickable to="/lucky-slot" class="op-drawer-item" v-if="devMode">
-            <q-item-section avatar>
-              <q-icon name="gamepad" />
-            </q-item-section>
-            <q-item-section>幸運轉盤</q-item-section>
           </q-item>
         </q-expansion-item>
 
@@ -605,7 +606,7 @@ export default defineComponent({
       showLoginDialog.value = !showLoginDialog.value
     }
 
-    const devMode = ref(true)
+    const devMode = ref(false)
     const showLoginDialog = ref(false)
 
     const logout = () => {

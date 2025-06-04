@@ -1,5 +1,10 @@
 export const changelogs = [
   {
+    version: '1.1.0',
+    date: '2025-06-04',
+    changes: [{ text: '新增幸運轉盤功能', route: '/lucky-slot', type: 'new' }],
+  },
+  {
     version: '1.0.2',
     date: '2025-03-24',
     changes: [{ text: '新增自訂字卡管理功能', route: '/custom_cards', type: 'improvement' }],
