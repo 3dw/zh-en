@@ -324,7 +324,7 @@
             <q-item-section avatar>
               <q-icon name="collections" />
             </q-item-section>
-            <q-item-section>小測驗與畫廊</q-item-section>
+            <q-item-section>圖片小測驗</q-item-section>
           </q-item>
         </q-expansion-item>
 
