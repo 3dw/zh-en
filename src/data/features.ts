@@ -191,6 +191,15 @@ export const features: Feature[] = [
     category: '進階學習',
   },
   {
+    id: 'mario-game',
+    title: '跳跳人遊戲',
+    description: '透過跳跳人遊戲學習英文，讓學習過程更加有趣。',
+    keywords: ['跳跳人', '遊戲', '學習', '英文'],
+    route: '/mario-game',
+    icon: 'sports_basketball',
+    category: '趣味學習',
+  },
+  {
     id: 'opposites',
     featured: true,
     title: '相反詞拉鋸戰',

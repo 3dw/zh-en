@@ -3,6 +3,7 @@ export const changelogs = [
     version: '1.1.0',
     date: '2025-06-05',
     changes: [
+      { text: '新增跳跳人遊戲功能', route: '/mario-game', type: 'new' },
       { text: '首頁新增精選項目', route: '/', type: 'improvement' },
       { text: '首頁新增搜尋功能', route: '/', type: 'improvement' },
       { text: '新增幸運轉盤功能', route: '/lucky-slot', type: 'new' },

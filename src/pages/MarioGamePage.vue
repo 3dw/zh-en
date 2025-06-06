@@ -3,7 +3,7 @@
     <div class="game-header">
       <h1 class="game-title">
         <q-icon name="sports_esports" size="md" color="primary" class="q-mr-sm" />
-        Mario English Adventure
+        Jump Jump English Adventure
       </h1>
       <div class="score-display">Score: {{ score }}</div>
     </div>
@@ -32,11 +32,50 @@
         />
       </div>
 
+      <!-- 虛擬按鈕控制區 -->
+      <div class="virtual-controls">
+        <div class="movement-buttons">
+          <q-btn
+            round
+            color="primary"
+            icon="arrow_left"
+            size="lg"
+            class="movement-btn"
+            @click="handleTouchStart('left')"
+            @mousedown="handleTouchStart('left')"
+            @mouseup="handleTouchEnd('left')"
+            @mouseleave="handleTouchEnd('left')"
+          />
+          <q-btn
+            round
+            color="primary"
+            icon="arrow_right"
+            size="lg"
+            class="movement-btn"
+            @click="handleTouchStart('right')"
+            @mousedown="handleTouchStart('right')"
+            @mouseup="handleTouchEnd('right')"
+            @mouseleave="handleTouchEnd('right')"
+          />
+        </div>
+        <q-btn
+          round
+          color="secondary"
+          icon="arrow_upward"
+          size="lg"
+          class="jump-btn"
+          @click="handleTouchStart('jump')"
+          @mousedown="handleTouchStart('jump')"
+          @mouseup="handleTouchEnd('jump')"
+          @mouseleave="handleTouchEnd('jump')"
+        />
+      </div>
+
       <!-- 遊戲說明 -->
       <div class="instructions">
         <h3>How to Play:</h3>
         <ul>
-          <li>使用方向鍵 ← → 移動瑪莉歐</li>
+          <li>使用方向鍵 ← → 移動跳跳人</li>
           <li>使用空白鍵跳躍</li>
           <li>頭頂對應的英文單字香菇獲得分數</li>
           <li>撞到錯誤的香菇會失去生命值</li>
@@ -48,11 +87,33 @@
     <q-dialog v-model="showGameOver">
       <q-card>
         <q-card-section class="row items-center">
-          <q-avatar icon="sentiment_very_satisfied" color="primary" text-color="white" />
-          <span class="q-ml-sm">Game Over! Final Score: {{ score }}</span>
+          <q-avatar icon="sentiment_very_dissatisfied" color="negative" text-color="white" />
+          <span class="q-ml-sm">Game Over!</span>
+        </q-card-section>
+        <q-card-section>
+          <div class="text-h6 text-center q-mb-md">正確答案是：{{ gameState.targetWord }}</div>
+          <div class="text-subtitle1 text-center q-mb-sm">中文：{{ gameState.currentWord }}</div>
+          <div class="text-h5 text-center">最終得分：{{ score }}</div>
         </q-card-section>
         <q-card-actions align="right">
-          <q-btn flat label="Play Again" color="primary" @click="resetGame" v-close-popup />
+          <q-btn flat label="再玩一次" color="primary" @click="resetGame" v-close-popup />
+        </q-card-actions>
+      </q-card>
+    </q-dialog>
+
+    <!-- 答對得分提示 -->
+    <q-dialog v-model="showCorrectAnswer" persistent>
+      <q-card class="correct-answer-card">
+        <q-card-section class="row items-center">
+          <q-avatar icon="celebration" color="positive" text-color="white" />
+          <span class="q-ml-sm text-h6">答對了！</span>
+        </q-card-section>
+        <q-card-section>
+          <div class="text-h5 text-center q-mb-md">得分：{{ score }}</div>
+          <div class="text-subtitle1 text-center">繼續挑戰下一題！</div>
+        </q-card-section>
+        <q-card-actions align="center">
+          <q-btn flat label="繼續" color="primary" @click="continueGame" v-close-popup />
         </q-card-actions>
       </q-card>
     </q-dialog>
@@ -61,6 +122,7 @@
 
 <script lang="ts">
 import { defineComponent, ref, onMounted, onUnmounted } from 'vue'
+import { wordPairs } from '../data/wordPairs'
 
 interface GameObject {
   x: number
@@ -88,6 +150,7 @@ export default defineComponent({
     const score = ref(0)
     const isGameRunning = ref(false)
     const showGameOver = ref(false)
+    const showCorrectAnswer = ref(false)
     const gameLoop = ref<number | null>(null)
 
     // 遊戲狀態
@@ -105,15 +168,6 @@ export default defineComponent({
       targetWord: '',
     })
 
-    // 英文單字庫
-    const wordPairs = [
-      { word: 'cat', translation: '貓' },
-      { word: 'dog', translation: '狗' },
-      { word: 'bird', translation: '鳥' },
-      { word: 'fish', translation: '魚' },
-      { word: 'tree', translation: '樹' },
-    ]
-
     // 遊戲物理參數
     const physics = {
       gravity: 0.5,
@@ -121,7 +175,7 @@ export default defineComponent({
       moveSpeed: 5,
     }
 
-    // 瑪莉歐狀態
+    // 跳跳人狀態
     const marioState = ref({
       velocityY: 0,
       isJumping: false,
@@ -130,7 +184,7 @@ export default defineComponent({
       isMovingRight: false,
     })
 
-    // 在 setup() 中添加新的遊戲元素
+    // 遊戲元素
     const clouds = ref([
       { x: 100, y: 50, width: 80, height: 40 },
       { x: 300, y: 70, width: 100, height: 50 },
@@ -138,6 +192,7 @@ export default defineComponent({
     ])
 
     const pipes = ref([
+      { x: 100, y: 370, width: 60, height: 80 },
       { x: 500, y: 370, width: 60, height: 80 },
       { x: 700, y: 350, width: 60, height: 100 },
     ])
@@ -152,15 +207,34 @@ export default defineComponent({
 
     // 音效系統
     const sounds = {
-      jump: new Audio('/sounds/jump_11.wav'),
-      coin: new Audio('/sounds/coin.aif'),
-      gameover: new Audio('/sounds/mario-die.mp3'),
-      background: new Audio('/sounds/mario-theme.mp3'),
+      jump: new Audio('/sounds/correct.mp3'), // 使用正確音效作為跳躍音效
+      coin: new Audio('/sounds/correct.mp3'), // 使用正確音效作為收集音效
+      gameover: new Audio('/sounds/wrong.mp3'), // 使用錯誤音效作為遊戲結束音效
+      background: new Audio('/sounds/jumping_game_bgm.mp3'), // 使用背景音樂
     }
 
-    // 設置背景音樂循環播放
-    sounds.background.loop = true
-    sounds.background.volume = 0.5
+    // 預載入音效
+    const preloadSounds = () => {
+      Object.values(sounds).forEach((sound) => {
+        sound.load()
+        // 設置音量
+        sound.volume = 0.5
+      })
+      // 設置背景音樂循環播放
+      sounds.background.loop = true
+    }
+
+    // 播放音效的輔助函數
+    const playSound = (sound: HTMLAudioElement) => {
+      // 重置音效並播放
+      sound.currentTime = 0
+      const playPromise = sound.play()
+      if (playPromise !== undefined) {
+        playPromise.catch((error) => {
+          console.log('音效播放失敗:', error)
+        })
+      }
+    }
 
     const initCanvas = () => {
       if (!gameCanvas.value) return
@@ -175,23 +249,36 @@ export default defineComponent({
 
     const generateMushrooms = () => {
       const mushrooms: GameObject[] = []
-      const words = [...wordPairs]
-      const correctIndex = Math.floor(Math.random() * words.length)
-      const targetPair = words[correctIndex]
+      // 複製並打亂單字庫
+      const shuffledWords = [...wordPairs].sort(() => Math.random() - 0.5)
+      // 取前三個不同的單字
+      const selectedWords = shuffledWords.slice(0, 3)
+      const correctIndex = Math.floor(Math.random() * 3)
+      const targetPair = selectedWords[correctIndex]
 
       if (!targetPair) return
 
       gameState.value.targetWord = targetPair.word
       gameState.value.currentWord = targetPair.translation
 
-      // 生成3個香菇，一個正確，兩個錯誤
+      // 生成3個香菇，一個正確，兩個錯誤，位置調整到更合理的高度
+      const mushroomPositions = [
+        { x: 180, y: 300 }, // 左側香菇，可以從左側水管跳上去
+        { x: 400, y: 300 }, // 中間香菇
+        { x: 620, y: 300 }, // 右側香菇
+      ] as const
+
+      // 使用選出的三個不同單字生成香菇
       for (let i = 0; i < 3; i++) {
-        const word = i === correctIndex ? targetPair.word : words[(i + 1) % words.length]?.word
+        const position = mushroomPositions[i]
+        if (!position) continue
+
+        const word = selectedWords[i]?.word
         if (!word) continue
 
         mushrooms.push({
-          x: 200 + i * 200,
-          y: 200,
+          x: position.x,
+          y: position.y,
           width: 32,
           height: 32,
           type: 'mushroom',
@@ -211,29 +298,82 @@ export default defineComponent({
 
         // 繪製單字
         ctx.value!.fillStyle = '#000'
-        ctx.value!.font = '14px Arial'
+        // 根據螢幕寬度調整字體大小
+        const fontSize = window.innerWidth <= 768 ? '28px' : '20px'
+        ctx.value!.font = `bold ${fontSize} Arial`
         ctx.value!.textAlign = 'center'
-        ctx.value!.fillText(mushroom.word || '', mushroom.x + mushroom.width / 2, mushroom.y - 5)
+        // 調整文字位置，避免與香菇重疊
+        const textY = window.innerWidth <= 768 ? -15 : -10
+        ctx.value!.fillText(
+          mushroom.word || '',
+          mushroom.x + mushroom.width / 2,
+          mushroom.y + textY,
+        )
       })
     }
 
     const drawMario = () => {
       if (!ctx.value) return
       const mario = gameState.value.mario
-      ctx.value.fillStyle = '#ff0000'
-      ctx.value.fillRect(mario.x, mario.y, mario.width, mario.height)
+      const canvasCtx = ctx.value
+
+      // 繪製跳跳人的身體（紅色）
+      canvasCtx.fillStyle = '#ff0000'
+      canvasCtx.fillRect(mario.x, mario.y, mario.width, mario.height)
+
+      // 繪製帽子（紅色）
+      canvasCtx.fillStyle = '#ff0000'
+      canvasCtx.fillRect(mario.x - 4, mario.y - 8, mario.width + 8, 8)
+
+      // 繪製帽子的白色部分
+      canvasCtx.fillStyle = '#ffffff'
+      canvasCtx.fillRect(mario.x - 4, mario.y - 8, mario.width + 8, 4)
+
+      // 繪製眼睛（白色）
+      canvasCtx.fillStyle = '#ffffff'
+      const eyeSize = 6
+      const eyeY = mario.y + 8
+      // 根據移動方向決定眼睛位置
+      if (marioState.value.direction === 1) {
+        // 向右看
+        canvasCtx.fillRect(mario.x + 18, eyeY, eyeSize, eyeSize)
+        canvasCtx.fillRect(mario.x + 8, eyeY, eyeSize, eyeSize)
+      } else {
+        // 向左看
+        canvasCtx.fillRect(mario.x + 8, eyeY, eyeSize, eyeSize)
+        canvasCtx.fillRect(mario.x + 18, eyeY, eyeSize, eyeSize)
+      }
+
+      // 繪製眼睛的黑色部分
+      canvasCtx.fillStyle = '#000000'
+      const pupilSize = 3
+      if (marioState.value.direction === 1) {
+        // 向右看
+        canvasCtx.fillRect(mario.x + 20, eyeY + 2, pupilSize, pupilSize)
+        canvasCtx.fillRect(mario.x + 10, eyeY + 2, pupilSize, pupilSize)
+      } else {
+        // 向左看
+        canvasCtx.fillRect(mario.x + 10, eyeY + 2, pupilSize, pupilSize)
+        canvasCtx.fillRect(mario.x + 20, eyeY + 2, pupilSize, pupilSize)
+      }
+
+      // 繪製鬍子（黑色）
+      canvasCtx.fillStyle = '#000000'
+      canvasCtx.fillRect(mario.x + 6, mario.y + 20, 20, 2)
+
+      // 繪製褲子（藍色）
+      canvasCtx.fillStyle = '#0000ff'
+      canvasCtx.fillRect(mario.x, mario.y + 24, mario.width, 8)
     }
 
     const drawCurrentWord = () => {
       if (!ctx.value) return
       ctx.value.fillStyle = '#000'
-      ctx.value.font = '24px Arial'
+      // 根據螢幕寬度調整字體大小
+      const fontSize = window.innerWidth <= 768 ? '32px' : '24px'
+      ctx.value.font = `bold ${fontSize} Arial`
       ctx.value.textAlign = 'center'
-      ctx.value.fillText(
-        `找出 "${gameState.value.currentWord}" 的英文: ${gameState.value.targetWord}`,
-        400,
-        50,
-      )
+      ctx.value.fillText(`找出 "${gameState.value.currentWord}" 的英文`, 400, 50)
     }
 
     const drawGame = () => {
@@ -340,15 +480,19 @@ export default defineComponent({
           mario.x < mushroom.x + mushroom.width
         ) {
           if (mushroom.isCorrect) {
+            // 答對時加分並顯示得分提示
             score.value += 100
             // 播放收集音效
-            sounds.coin.currentTime = 0
-            sounds.coin.play()
-            generateMushrooms()
+            playSound(sounds.coin)
+            // 顯示得分提示
+            showCorrectAnswer.value = true
+            // 暫停遊戲
+            isGameRunning.value = false
           } else {
+            // 答錯時結束遊戲
             showGameOver.value = true
             // 播放遊戲結束音效
-            sounds.gameover.play()
+            playSound(sounds.gameover)
             stopGame()
           }
         }
@@ -371,7 +515,7 @@ export default defineComponent({
         gameCanvas.value.focus()
       }
       // 開始播放背景音樂
-      sounds.background.play()
+      playSound(sounds.background)
     }
 
     const stopGame = () => {
@@ -392,20 +536,49 @@ export default defineComponent({
       marioState.value.isJumping = false
       score.value = 0
       showGameOver.value = false
+      showCorrectAnswer.value = false
       startGame()
     }
 
+    const continueGame = () => {
+      // 重置跳跳人位置
+      gameState.value.mario.x = 100
+      gameState.value.mario.y = 400
+      marioState.value.velocityY = 0
+      marioState.value.isJumping = false
+      // 生成新的題目
+      generateMushrooms()
+      // 重新開始遊戲
+      isGameRunning.value = true
+      if (gameCanvas.value) {
+        gameCanvas.value.focus()
+      }
+    }
+
     const handleKeyDown = (event: KeyboardEvent) => {
-      if (!isGameRunning.value) return
+      if (!isGameRunning.value) {
+        // 當遊戲暫停時，檢查是否在對話框中
+        if (event.code === 'Enter') {
+          if (showCorrectAnswer.value) {
+            continueGame()
+            showCorrectAnswer.value = false
+          } else if (showGameOver.value) {
+            resetGame()
+            showGameOver.value = false
+          }
+          return
+        }
+        return
+      }
 
       switch (event.code) {
         case 'Space':
+          // 阻止空白鍵的預設捲動行為
+          event.preventDefault()
           if (!marioState.value.isJumping) {
             marioState.value.velocityY = physics.jumpForce
             marioState.value.isJumping = true
-            // 播放跳躍音效
-            sounds.jump.currentTime = 0
-            sounds.jump.play()
+            playSound(sounds.jump)
           }
           break
         case 'ArrowLeft':
@@ -430,8 +603,53 @@ export default defineComponent({
       }
     }
 
+    const handleTouchStart = (action: 'left' | 'right' | 'jump') => {
+      if (!isGameRunning.value) return
+
+      // 防止事件冒泡
+      event?.preventDefault()
+      event?.stopPropagation()
+
+      switch (action) {
+        case 'left':
+          marioState.value.isMovingLeft = true
+          marioState.value.direction = -1
+          break
+        case 'right':
+          marioState.value.isMovingRight = true
+          marioState.value.direction = 1
+          break
+        case 'jump':
+          if (!marioState.value.isJumping) {
+            marioState.value.velocityY = physics.jumpForce
+            marioState.value.isJumping = true
+            playSound(sounds.jump)
+          }
+          break
+      }
+    }
+
+    const handleTouchEnd = (action: 'left' | 'right' | 'jump') => {
+      // 防止事件冒泡
+      event?.preventDefault()
+      event?.stopPropagation()
+
+      switch (action) {
+        case 'left':
+          marioState.value.isMovingLeft = false
+          break
+        case 'right':
+          marioState.value.isMovingRight = false
+          break
+        case 'jump':
+          // 跳躍不需要處理結束事件
+          break
+      }
+    }
+
     onMounted(() => {
       initCanvas()
+      preloadSounds() // 預載入音效
       window.addEventListener('keydown', handleKeyDown)
       window.addEventListener('keyup', handleKeyUp)
     })
@@ -447,10 +665,15 @@ export default defineComponent({
       score,
       isGameRunning,
       showGameOver,
+      showCorrectAnswer,
+      gameState,
       startGame,
       resetGame,
+      continueGame,
       handleKeyDown,
       handleKeyUp,
+      handleTouchStart,
+      handleTouchEnd,
     }
   },
 })
@@ -506,6 +729,40 @@ canvas {
   gap: 10px;
 }
 
+.virtual-controls {
+  display: none; /* 預設隱藏，在手機上顯示 */
+  width: 100%;
+  max-width: 400px;
+  margin: 20px auto;
+  position: relative;
+  padding: 20px;
+}
+
+.movement-buttons {
+  display: flex;
+  gap: 20px;
+  justify-content: center;
+}
+
+.movement-btn {
+  width: 60px !important;
+  height: 60px !important;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+  touch-action: manipulation;
+}
+
+.jump-btn {
+  position: absolute;
+  right: 20px;
+  bottom: 20px;
+  width: 60px !important;
+  height: 60px !important;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+  touch-action: manipulation;
+}
+
 .instructions {
   background: #f5f5f5;
   padding: 20px;
@@ -536,5 +793,70 @@ canvas {
   display: inline-block;
   width: 1em;
   margin-left: -1em;
+}
+
+/* 在手機上顯示虛擬按鈕 */
+@media (max-width: 768px) {
+  .virtual-controls {
+    display: block;
+  }
+
+  .game-container {
+    margin-bottom: 0;
+  }
+
+  canvas {
+    max-width: 100%;
+    height: auto;
+  }
+
+  /* 手機版對話框樣式 */
+  .q-dialog__inner > div {
+    width: 90% !important;
+    max-width: 400px !important;
+  }
+
+  .q-card {
+    padding: 16px;
+  }
+
+  .q-card .text-h6 {
+    font-size: 1.5rem !important;
+  }
+
+  .q-card .text-subtitle1 {
+    font-size: 1.2rem !important;
+  }
+
+  .q-card .text-h5 {
+    font-size: 1.8rem !important;
+  }
+
+  /* 手機版遊戲標題和分數 */
+  .game-title {
+    font-size: 1.5rem !important;
+  }
+
+  .score-display {
+    font-size: 1.3rem !important;
+  }
+}
+
+.correct-answer-card {
+  min-width: 300px;
+  text-align: center;
+}
+
+.correct-answer-card .q-card-section {
+  padding: 20px;
+}
+
+.correct-answer-card .text-h5 {
+  color: #4caf50;
+  font-weight: bold;
+}
+
+.correct-answer-card .text-subtitle1 {
+  color: #666;
 }
 </style>

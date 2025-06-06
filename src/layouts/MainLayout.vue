@@ -266,11 +266,11 @@
             </q-item-section>
             <q-item-section>運動規則</q-item-section>
           </q-item>
-          <q-item clickable to="/mario-game" class="op-drawer-item" v-if="devMode">
+          <q-item clickable to="/mario-game" class="op-drawer-item">
             <q-item-section avatar>
               <q-icon name="gamepad" />
             </q-item-section>
-            <q-item-section>Mario遊戲</q-item-section>
+            <q-item-section>跳跳人遊戲</q-item-section>
           </q-item>
           <q-item clickable to="/draw-guess" class="op-drawer-item" v-if="devMode">
             <q-item-section avatar>
