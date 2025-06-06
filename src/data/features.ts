@@ -193,6 +193,7 @@ export const features: Feature[] = [
   {
     id: 'mario-game',
     title: '跳跳人遊戲',
+    featured: true,
     description: '透過跳跳人遊戲學習英文，讓學習過程更加有趣。',
     keywords: ['跳跳人', '遊戲', '學習', '英文'],
     route: '/mario-game',
