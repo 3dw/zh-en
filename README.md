@@ -6,9 +6,7 @@ Learn English With Chinese
 ## Install the dependencies
 
 ```bash
-yarn
-# or
-npm install
+yarn install
 ```
 
 ### Start the app in development mode (hot-code reloading, error reporting, etc.)

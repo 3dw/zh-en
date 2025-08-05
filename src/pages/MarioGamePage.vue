@@ -210,7 +210,6 @@ export default defineComponent({
       jump: new Audio('/sounds/correct.mp3'), // 使用正確音效作為跳躍音效
       coin: new Audio('/sounds/correct.mp3'), // 使用正確音效作為收集音效
       gameover: new Audio('/sounds/wrong.mp3'), // 使用錯誤音效作為遊戲結束音效
-      background: new Audio('/sounds/jumping_game_bgm.mp3'), // 使用背景音樂
     }
 
     // 預載入音效
@@ -220,8 +219,6 @@ export default defineComponent({
         // 設置音量
         sound.volume = 0.5
       })
-      // 設置背景音樂循環播放
-      sounds.background.loop = true
     }
 
     // 播放音效的輔助函數
@@ -233,6 +230,17 @@ export default defineComponent({
         playPromise.catch((error) => {
           console.log('音效播放失敗:', error)
         })
+      }
+    }
+
+    // 播放題目發音
+    const speakTargetWord = () => {
+      if (gameState.value.targetWord) {
+        const utterance = new SpeechSynthesisUtterance(gameState.value.targetWord)
+        utterance.lang = 'en-US'
+        utterance.rate = 0.8
+        utterance.volume = 0.8
+        window.speechSynthesis.speak(utterance)
       }
     }
 
@@ -288,6 +296,11 @@ export default defineComponent({
       }
 
       gameState.value.mushrooms = mushrooms
+
+      // 播放題目發音
+      setTimeout(() => {
+        speakTargetWord()
+      }, 500) // 延遲500ms播放，讓玩家有時間準備
     }
 
     const drawMushrooms = () => {
@@ -514,8 +527,6 @@ export default defineComponent({
       if (gameCanvas.value) {
         gameCanvas.value.focus()
       }
-      // 開始播放背景音樂
-      playSound(sounds.background)
     }
 
     const stopGame = () => {
@@ -523,9 +534,6 @@ export default defineComponent({
       if (gameLoop.value) {
         cancelAnimationFrame(gameLoop.value)
       }
-      // 停止背景音樂
-      sounds.background.pause()
-      sounds.background.currentTime = 0
     }
 
     const resetGame = () => {
