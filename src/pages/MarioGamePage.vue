@@ -5,7 +5,11 @@
         <q-icon name="sports_esports" size="md" color="primary" class="q-mr-sm" />
         Jump Jump English Adventure
       </h1>
-      <div class="score-display">Score: {{ score }}</div>
+      <div class="score-display">
+        <div>Score: {{ score }}</div>
+        <div class="difficulty-level">Level: {{ getDifficultyLevel() }}</div>
+        <div class="xp-info">答對可獲得 50 XP</div>
+      </div>
     </div>
 
     <!-- 遊戲畫布 -->
@@ -117,6 +121,24 @@
         </q-card-actions>
       </q-card>
     </q-dialog>
+
+    <!-- 答錯扣分提示 -->
+    <q-dialog v-model="showWrongAnswer" persistent>
+      <q-card class="wrong-answer-card">
+        <q-card-section class="row items-center">
+          <q-avatar icon="sentiment_dissatisfied" color="negative" text-color="white" />
+          <span class="q-ml-sm text-h6">答錯了！</span>
+        </q-card-section>
+        <q-card-section>
+          <div class="text-h5 text-center q-mb-md">扣分：-1000</div>
+          <div class="text-subtitle1 text-center">當前分數：{{ score }}</div>
+          <div class="text-subtitle1 text-center">正確答案是：{{ gameState.targetWord }}</div>
+        </q-card-section>
+        <q-card-actions align="center">
+          <q-btn flat label="繼續" color="primary" @click="continueAfterWrong" v-close-popup />
+        </q-card-actions>
+      </q-card>
+    </q-dialog>
   </q-page>
 </template>
 
@@ -144,7 +166,8 @@ interface GameState {
 
 export default defineComponent({
   name: 'MarioGamePage',
-  setup() {
+  emits: ['earn-xp'],
+  setup(props, { emit }) {
     const gameCanvas = ref<HTMLCanvasElement | null>(null)
     const ctx = ref<CanvasRenderingContext2D | null>(null)
     const score = ref(0)
@@ -152,6 +175,7 @@ export default defineComponent({
     const showGameOver = ref(false)
     const showCorrectAnswer = ref(false)
     const gameLoop = ref<number | null>(null)
+    const showWrongAnswer = ref(false)
 
     // 遊戲狀態
     const gameState = ref<GameState>({
@@ -257,8 +281,17 @@ export default defineComponent({
 
     const generateMushrooms = () => {
       const mushrooms: GameObject[] = []
+
+      // 根據當前分數篩選可用的單字
+      const availableWords = wordPairs.filter(
+        (word) => score.value >= word.minScore && score.value <= word.maxScore,
+      )
+
+      // 如果可用單字不足，則使用所有單字
+      const wordsToUse = availableWords.length >= 3 ? availableWords : wordPairs
+
       // 複製並打亂單字庫
-      const shuffledWords = [...wordPairs].sort(() => Math.random() - 0.5)
+      const shuffledWords = [...wordsToUse].sort(() => Math.random() - 0.5)
       // 取前三個不同的單字
       const selectedWords = shuffledWords.slice(0, 3)
       const correctIndex = Math.floor(Math.random() * 3)
@@ -306,7 +339,7 @@ export default defineComponent({
     const drawMushrooms = () => {
       if (!ctx.value) return
       gameState.value.mushrooms.forEach((mushroom) => {
-        ctx.value!.fillStyle = mushroom.isCorrect ? '#4CAF50' : '#FFA000'
+        ctx.value!.fillStyle = '#FF7700' // 統一使用橘色
         ctx.value!.fillRect(mushroom.x, mushroom.y, mushroom.width, mushroom.height)
 
         // 繪製單字
@@ -492,9 +525,18 @@ export default defineComponent({
           mario.x + mario.width > mushroom.x &&
           mario.x < mushroom.x + mushroom.width
         ) {
+          // 播放該答案的發音
+          const utterance = new SpeechSynthesisUtterance(mushroom.word || '')
+          utterance.lang = 'en-US'
+          utterance.rate = 0.8
+          utterance.volume = 0.8
+          window.speechSynthesis.speak(utterance)
+
           if (mushroom.isCorrect) {
             // 答對時加分並顯示得分提示
             score.value += 100
+            // 向父元件發送 XP 事件
+            emit('earn-xp', 50) // 答對獲得 50 XP
             // 播放收集音效
             playSound(sounds.coin)
             // 顯示得分提示
@@ -502,10 +544,17 @@ export default defineComponent({
             // 暫停遊戲
             isGameRunning.value = false
           } else {
-            // 答錯時結束遊戲
-            showGameOver.value = true
-            // 移除答錯音效播放
-            stopGame()
+            // 答錯時扣分
+            score.value = Math.max(0, score.value - 1000)
+            showWrongAnswer.value = true
+            // 暫停遊戲
+            isGameRunning.value = false
+
+            // 檢查是否遊戲結束
+            if (score.value <= 0) {
+              showGameOver.value = true
+              stopGame()
+            }
           }
         }
       })
@@ -544,10 +593,39 @@ export default defineComponent({
       score.value = 0
       showGameOver.value = false
       showCorrectAnswer.value = false
+      showWrongAnswer.value = false
       startGame()
     }
 
+    const getDifficultyLevel = () => {
+      if (score.value < 1000) return 'Beginner'
+      if (score.value < 2000) return 'Easy'
+      if (score.value < 3000) return 'Medium'
+      if (score.value < 4000) return 'Hard'
+      if (score.value < 5000) return 'Expert'
+      if (score.value < 6000) return 'Master'
+      if (score.value < 7000) return 'Grand Master'
+      if (score.value < 8000) return 'Legend'
+      if (score.value < 9000) return 'Mythic'
+      return 'Divine'
+    }
+
     const continueGame = () => {
+      // 重置跳跳人位置
+      gameState.value.mario.x = 100
+      gameState.value.mario.y = 400
+      marioState.value.velocityY = 0
+      marioState.value.isJumping = false
+      // 生成新的題目
+      generateMushrooms()
+      // 重新開始遊戲
+      isGameRunning.value = true
+      if (gameCanvas.value) {
+        gameCanvas.value.focus()
+      }
+    }
+
+    const continueAfterWrong = () => {
       // 重置跳跳人位置
       gameState.value.mario.x = 100
       gameState.value.mario.y = 400
@@ -673,14 +751,18 @@ export default defineComponent({
       isGameRunning,
       showGameOver,
       showCorrectAnswer,
+      showWrongAnswer,
       gameState,
       startGame,
       resetGame,
       continueGame,
+      continueAfterWrong,
+      getDifficultyLevel,
       handleKeyDown,
       handleKeyUp,
       handleTouchStart,
       handleTouchEnd,
+      emit,
     }
   },
 })
@@ -710,6 +792,26 @@ export default defineComponent({
   font-size: 1.5rem;
   font-weight: bold;
   color: #4caf50;
+  text-align: left;
+  margin-right: 300px;
+}
+
+@media (max-width: 768px) {
+  .score-display {
+    margin-right: 0;
+  }
+}
+
+.difficulty-level {
+  font-size: 1rem;
+  color: #ff7700;
+  margin-top: 5px;
+}
+
+.xp-info {
+  font-size: 0.9rem;
+  color: #4caf50;
+  margin-top: 3px;
 }
 
 .game-container {
@@ -864,6 +966,24 @@ canvas {
 }
 
 .correct-answer-card .text-subtitle1 {
+  color: #666;
+}
+
+.wrong-answer-card {
+  min-width: 300px;
+  text-align: center;
+}
+
+.wrong-answer-card .q-card-section {
+  padding: 20px;
+}
+
+.wrong-answer-card .text-h5 {
+  color: #f44336;
+  font-weight: bold;
+}
+
+.wrong-answer-card .text-subtitle1 {
   color: #666;
 }
 </style>

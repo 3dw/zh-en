@@ -1,5 +1,10 @@
 export const changelogs = [
   {
+    version: '1.1.1',
+    date: '2025-08-06',
+    changes: [{ text: '跳跳人遊戲優化', route: '/mario-game', type: 'improvement' }],
+  },
+  {
     version: '1.1.0',
     date: '2025-06-05',
     changes: [
