@@ -8,7 +8,7 @@
       <div class="score-display">
         <div>Score: {{ score }}</div>
         <div class="difficulty-level">Level: {{ getDifficultyLevel() }}</div>
-        <div class="xp-info">答對可獲得 50 XP</div>
+        <div class="xp-info">下題答對獎勵：50×{{ consecutiveCorrect + 1 }} XP</div>
       </div>
     </div>
 
@@ -114,6 +114,12 @@
         </q-card-section>
         <q-card-section>
           <div class="text-h5 text-center q-mb-md">得分：{{ score }}</div>
+          <div class="text-subtitle1 text-center q-mb-sm">
+            連續答對：{{ consecutiveCorrect }} 次
+          </div>
+          <div class="text-subtitle1 text-center q-mb-sm">
+            本次獲得：{{ 50 * consecutiveCorrect }} 分 + {{ 50 * consecutiveCorrect }} XP
+          </div>
           <div class="text-subtitle1 text-center">繼續挑戰下一題！</div>
         </q-card-section>
         <q-card-actions align="center">
@@ -171,6 +177,7 @@ export default defineComponent({
     const gameCanvas = ref<HTMLCanvasElement | null>(null)
     const ctx = ref<CanvasRenderingContext2D | null>(null)
     const score = ref(0)
+    const consecutiveCorrect = ref(0) // 連續答對次數
     const isGameRunning = ref(false)
     const showGameOver = ref(false)
     const showCorrectAnswer = ref(false)
@@ -533,10 +540,18 @@ export default defineComponent({
           window.speechSynthesis.speak(utterance)
 
           if (mushroom.isCorrect) {
-            // 答對時加分並顯示得分提示
-            score.value += 100
-            // 向父元件發送 XP 事件
-            emit('earn-xp', 50) // 答對獲得 50 XP
+            // 連續答對次數增加
+            consecutiveCorrect.value += 1
+
+            // 等差計分：第1次50分，第2次100分，第3次150分，第4次200分...
+            const baseScore = 50
+            const earnedScore = baseScore * consecutiveCorrect.value
+            score.value += earnedScore
+
+            // 向父元件發送 XP 事件，XP 也使用等差計分
+            const earnedXP = baseScore * consecutiveCorrect.value
+            emit('earn-xp', earnedXP)
+
             // 播放收集音效
             playSound(sounds.coin)
             // 顯示得分提示
@@ -544,8 +559,9 @@ export default defineComponent({
             // 暫停遊戲
             isGameRunning.value = false
           } else {
-            // 答錯時扣分
+            // 答錯時扣分並重置連續答對次數
             score.value = Math.max(0, score.value - 1000)
+            consecutiveCorrect.value = 0 // 重置連續答對次數
             showWrongAnswer.value = true
             // 暫停遊戲
             isGameRunning.value = false
@@ -591,6 +607,7 @@ export default defineComponent({
       marioState.value.velocityY = 0
       marioState.value.isJumping = false
       score.value = 0
+      consecutiveCorrect.value = 0 // 重置連續答對次數
       showGameOver.value = false
       showCorrectAnswer.value = false
       showWrongAnswer.value = false
@@ -598,16 +615,20 @@ export default defineComponent({
     }
 
     const getDifficultyLevel = () => {
-      if (score.value < 1000) return 'Beginner'
-      if (score.value < 2000) return 'Easy'
-      if (score.value < 3000) return 'Medium'
-      if (score.value < 4000) return 'Hard'
-      if (score.value < 5000) return 'Expert'
-      if (score.value < 6000) return 'Master'
-      if (score.value < 7000) return 'Grand Master'
-      if (score.value < 8000) return 'Legend'
-      if (score.value < 9000) return 'Mythic'
-      return 'Divine'
+      if (score.value < 1000) return 'Beginner(初學者)'
+      if (score.value < 2000) return 'Easy(簡單)'
+      if (score.value < 3000) return 'Medium(中等)'
+      if (score.value < 4000) return 'Hard(困難)'
+      if (score.value < 5000) return 'Expert(專家)'
+      if (score.value < 6000) return 'Master(大師)'
+      if (score.value < 7000) return 'Grand Master(傳奇)'
+      if (score.value < 8000) return 'Legend(傳說)'
+      if (score.value < 9000) return 'Mythic(神話)'
+      if (score.value < 10000) return 'Divine(神)'
+      if (score.value < 12000) return 'Technical(技術)'
+      if (score.value < 14000) return 'Professional(專業)'
+      if (score.value < 15000) return 'Academic(學術)'
+      return 'Elite'
     }
 
     const continueGame = () => {
@@ -748,6 +769,7 @@ export default defineComponent({
     return {
       gameCanvas,
       score,
+      consecutiveCorrect,
       isGameRunning,
       showGameOver,
       showCorrectAnswer,

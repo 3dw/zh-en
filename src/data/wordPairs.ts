@@ -102,4 +102,60 @@ export const wordPairs: WordPair[] = [
   { word: 'stem', translation: '莖', minScore: 6000, maxScore: 10000 },
   { word: 'seed', translation: '種子', minScore: 6000, maxScore: 10000 },
   { word: 'branch', translation: '枝', minScore: 6000, maxScore: 10000 },
+
+  // ===== 高級單字 (10000-15000分) =====
+
+  // 技術詞彙 (10000-12000分)
+  { word: 'margin', translation: '邊距', minScore: 10000, maxScore: 12000 },
+  { word: 'padding', translation: '內邊距', minScore: 10000, maxScore: 12000 },
+  { word: 'border', translation: '邊框', minScore: 10000, maxScore: 12000 },
+  { word: 'background', translation: '背景', minScore: 10000, maxScore: 12000 },
+  { word: 'container', translation: '容器', minScore: 10000, maxScore: 12000 },
+  { word: 'function', translation: '函數', minScore: 10000, maxScore: 12000 },
+  { word: 'variable', translation: '變數', minScore: 10000, maxScore: 12000 },
+  { word: 'parameter', translation: '參數', minScore: 10000, maxScore: 12000 },
+
+  // 抽象概念 (11000-13000分)
+  { word: 'information', translation: '資訊', minScore: 11000, maxScore: 13000 },
+  { word: 'knowledge', translation: '知識', minScore: 11000, maxScore: 13000 },
+  { word: 'experience', translation: '經驗', minScore: 11000, maxScore: 13000 },
+  { word: 'education', translation: '教育', minScore: 11000, maxScore: 13000 },
+  { word: 'development', translation: '發展', minScore: 11000, maxScore: 13000 },
+  { word: 'improvement', translation: '改善', minScore: 11000, maxScore: 13000 },
+  { word: 'progress', translation: '進步', minScore: 11000, maxScore: 13000 },
+  { word: 'achievement', translation: '成就', minScore: 11000, maxScore: 13000 },
+
+  // 商業詞彙 (12000-14000分)
+  { word: 'industry', translation: '產業', minScore: 12000, maxScore: 14000 },
+  { word: 'business', translation: '商業', minScore: 12000, maxScore: 14000 },
+  { word: 'company', translation: '公司', minScore: 12000, maxScore: 14000 },
+  { word: 'organization', translation: '組織', minScore: 12000, maxScore: 14000 },
+  { word: 'management', translation: '管理', minScore: 12000, maxScore: 14000 },
+  { word: 'strategy', translation: '策略', minScore: 12000, maxScore: 14000 },
+  { word: 'marketing', translation: '行銷', minScore: 12000, maxScore: 14000 },
+  { word: 'finance', translation: '財務', minScore: 12000, maxScore: 14000 },
+
+  // 學術詞彙 (13000-15000分)
+  { word: 'research', translation: '研究', minScore: 13000, maxScore: 15000 },
+  { word: 'analysis', translation: '分析', minScore: 13000, maxScore: 15000 },
+  { word: 'theory', translation: '理論', minScore: 13000, maxScore: 15000 },
+  { word: 'methodology', translation: '方法論', minScore: 13000, maxScore: 15000 },
+  { word: 'hypothesis', translation: '假設', minScore: 13000, maxScore: 15000 },
+  { word: 'conclusion', translation: '結論', minScore: 13000, maxScore: 15000 },
+  { word: 'evidence', translation: '證據', minScore: 13000, maxScore: 15000 },
+  { word: 'argument', translation: '論點', minScore: 13000, maxScore: 15000 },
+
+  // 社會詞彙 (14000-15000分)
+  { word: 'society', translation: '社會', minScore: 14000, maxScore: 15000 },
+  { word: 'culture', translation: '文化', minScore: 14000, maxScore: 15000 },
+  { word: 'community', translation: '社群', minScore: 14000, maxScore: 15000 },
+  { word: 'environment', translation: '環境', minScore: 14000, maxScore: 15000 },
+  { word: 'technology', translation: '科技', minScore: 14000, maxScore: 15000 },
+  { word: 'innovation', translation: '創新', minScore: 14000, maxScore: 15000 },
+  { word: 'sustainability', translation: '永續性', minScore: 14000, maxScore: 15000 },
+  { word: 'collaboration', translation: '合作', minScore: 14000, maxScore: 15000 },
+  { word: 'communication', translation: '溝通', minScore: 14000, maxScore: 15000 },
+  { word: 'conflict', translation: '衝突', minScore: 14000, maxScore: 15000 },
+  { word: 'cooperation', translation: '合作', minScore: 14000, maxScore: 15000 },
+  { word: 'competition', translation: '競爭', minScore: 14000, maxScore: 15000 },
 ]
