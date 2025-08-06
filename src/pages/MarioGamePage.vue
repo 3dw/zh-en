@@ -504,8 +504,7 @@ export default defineComponent({
           } else {
             // 答錯時結束遊戲
             showGameOver.value = true
-            // 播放遊戲結束音效
-            playSound(sounds.gameover)
+            // 移除答錯音效播放
             stopGame()
           }
         }
