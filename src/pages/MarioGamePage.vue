@@ -79,8 +79,9 @@
       <div class="instructions">
         <h3>How to Play:</h3>
         <ul>
-          <li>使用方向鍵 ← → 移動跳跳人</li>
-          <li>使用空白鍵跳躍</li>
+          <li v-if="!isMobile">使用方向鍵 ← → 移動跳跳人</li>
+          <li v-if="!isMobile">使用空白鍵跳躍</li>
+          <li v-if="isMobile">使用下方按鈕控制跳跳人</li>
           <li>頭頂對應的英文單字香菇獲得分數</li>
           <li>撞到錯誤的香菇會失去生命值</li>
         </ul>
@@ -183,6 +184,9 @@ export default defineComponent({
     const showCorrectAnswer = ref(false)
     const gameLoop = ref<number | null>(null)
     const showWrongAnswer = ref(false)
+
+    // 檢測是否為手機設備
+    const isMobile = ref(false)
 
     // 遊戲狀態
     const gameState = ref<GameState>({
@@ -351,8 +355,8 @@ export default defineComponent({
 
         // 繪製單字
         ctx.value!.fillStyle = '#000'
-        // 根據螢幕寬度調整字體大小
-        const fontSize = window.innerWidth <= 768 ? '28px' : '20px'
+        // 根據螢幕寬度調整字體大小，再大3px
+        const fontSize = window.innerWidth <= 768 ? '31px' : '23px'
         ctx.value!.font = `bold ${fontSize} Arial`
         ctx.value!.textAlign = 'center'
         // 調整文字位置，避免與香菇重疊
@@ -758,6 +762,12 @@ export default defineComponent({
       preloadSounds() // 預載入音效
       window.addEventListener('keydown', handleKeyDown)
       window.addEventListener('keyup', handleKeyUp)
+
+      // 檢測是否為手機設備
+      isMobile.value =
+        /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
+          navigator.userAgent,
+        ) || window.innerWidth <= 768
     })
 
     onUnmounted(() => {
@@ -775,6 +785,7 @@ export default defineComponent({
       showCorrectAnswer,
       showWrongAnswer,
       gameState,
+      isMobile,
       startGame,
       resetGame,
       continueGame,
