@@ -1,5 +1,10 @@
 export const changelogs = [
   {
+    version: '1.2.1',
+    date: '2025-11-14',
+    changes: [{ text: '以字、詞、句結構重整網站架構', route: '/', type: 'improvement' }],
+  },
+  {
     version: '1.1.1',
     date: '2025-08-06',
     changes: [{ text: '跳跳人遊戲優化', route: '/mario-game', type: 'improvement' }],
