@@ -230,13 +230,13 @@ const routes: RouteRecordRaw[] = [
     component: () => import('layouts/MainLayout.vue'),
     children: [{ path: '', component: () => import('pages/FavoritePage.vue') }],
   },
-  {
+  /* {
     path: '/story',
     component: () => import('layouts/MainLayout.vue'),
     children: [
       { path: '', component: () => import('pages/StoryPage.vue'), meta: { title: '故事' } },
     ],
-  },
+  }, */
   {
     path: '/story_backend',
     component: () => import('layouts/MainLayout.vue'),
