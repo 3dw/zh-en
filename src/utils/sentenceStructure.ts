@@ -1,3 +1,5 @@
+// TODO: 優化判斷句子結構的函數
+
 // 判斷句子結構的函數
 export function getSentenceStructure(english: string, chinese: string): string {
   const eng = english.trim()
@@ -30,9 +32,10 @@ export function getSentenceStructure(english: string, chinese: string): string {
     return '疑問句'
   }
 
-  // 祈使句：以動詞開頭或 Let's 開頭
+  // 祈使句：以動詞開頭或 Let's 開頭，或只有2個單字
   if (
-    eng.toLowerCase().startsWith('let\'s') ||
+    eng.split(/[\s,!?]+/).length <= 2 ||
+    eng.toLowerCase().startsWith("let's") ||
     eng.toLowerCase().startsWith('please') ||
     eng.toLowerCase().startsWith('be') ||
     eng.toLowerCase().startsWith('have') ||
@@ -85,8 +88,7 @@ export function getSentenceStructure(english: string, chinese: string): string {
     chn.startsWith('注意') ||
     chn.startsWith('保持') ||
     chn.startsWith('補') ||
-    chn.startsWith('加強') ||
-    chn.endsWith('！')
+    chn.startsWith('加強')
   ) {
     return '祈使句'
   }
@@ -94,4 +96,3 @@ export function getSentenceStructure(english: string, chinese: string): string {
   // 其他為肯定句
   return '肯定句'
 }
-
