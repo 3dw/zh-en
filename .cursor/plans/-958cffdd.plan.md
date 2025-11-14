@@ -11,8 +11,9 @@
 
 - 將現有的"字母學習"和"字卡學習"重新組織為：
 - **字**：字母學習（ABC之歌、手寫練習）+ 音標學習（待新增）
-- **詞**：單詞字卡（待新增，包含動詞、名詞、形容詞、副詞等分類）
-- **句**：現有句子字卡（BeginnerPage、EmotionCardsPage、BodyPage、NumberPage、Env1-4等）
+- **詞**：單詞字卡（待新增，包含動詞、名詞、形容詞、副詞等分類）、跳跳人遊戲(src/pages/MarioGamePage.vue)
+- **句**：現有句子字卡（BeginnerPage、EmotionCardsPage、BodyPage、NumberPage、Env1-4等）、拍照學英文(src/pages/WhatIsThisPage.vue)、圖庫與小測驗(src/pages/GalleryPage.vue)、睡前故事(src/pages/StoryPage_backend.vue)
+- **其他**：所有無法分類的功能和小遊戲等
 
 ### 2. 修改首頁分類（IndexPage.vue 和 features.ts）
 
