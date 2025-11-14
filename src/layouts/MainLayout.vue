@@ -105,226 +105,24 @@
         </q-item>
 
         <q-expansion-item
-          icon="text_fields"
-          label="字母學習"
+          v-for="category in sidebarCategories"
+          :key="category"
+          :icon="getCategoryIcon(category)"
+          :label="category"
           class="op-expansion-item"
           dense-toggle
         >
-          <q-item clickable to="/alphabet" class="op-drawer-item">
+          <q-item
+            v-for="feature in getSortedFeaturesByCategory(category)"
+            :key="feature.id"
+            clickable
+            :to="feature.route"
+            class="op-drawer-item"
+          >
             <q-item-section avatar>
-              <q-icon name="add" />
+              <q-icon :name="feature.icon" />
             </q-item-section>
-            <q-item-section>ABC之歌</q-item-section>
-          </q-item>
-
-          <q-item clickable to="/hand-written" class="op-drawer-item">
-            <q-item-section avatar>
-              <q-icon name="edit" />
-            </q-item-section>
-            <q-item-section>英文字母手寫練習</q-item-section>
-          </q-item>
-        </q-expansion-item>
-
-        <q-expansion-item
-          icon="library_books"
-          label="字卡學習"
-          class="op-expansion-item"
-          dense-toggle
-        >
-          <q-item clickable to="/beginner" class="op-drawer-item">
-            <q-item-section avatar>
-              <q-icon name="add" />
-            </q-item-section>
-            <q-item-section>初級雙語字卡</q-item-section>
-          </q-item>
-
-          <q-item clickable to="/emotion" class="op-drawer-item">
-            <q-item-section avatar>
-              <q-icon name="sentiment_satisfied" />
-            </q-item-section>
-            <q-item-section>狀態雙語字卡</q-item-section>
-          </q-item>
-
-          <q-item clickable to="/body" class="op-drawer-item">
-            <q-item-section avatar>
-              <q-icon name="person" />
-            </q-item-section>
-            <q-item-section>健康雙語字卡</q-item-section>
-          </q-item>
-
-          <q-item clickable to="/number" class="op-drawer-item">
-            <q-item-section avatar>
-              <q-icon name="school" />
-            </q-item-section>
-            <q-item-section>數字雙語字卡</q-item-section>
-          </q-item>
-
-          <q-item clickable to="/env1_at_home" class="op-drawer-item">
-            <q-item-section avatar>
-              <q-icon name="home" />
-            </q-item-section>
-            <q-item-section>情境1：在家裡</q-item-section>
-          </q-item>
-
-          <q-item clickable to="/env2_playing_basketball" class="op-drawer-item">
-            <q-item-section avatar>
-              <q-icon name="sports_basketball" />
-            </q-item-section>
-            <q-item-section>情境2：打籃球</q-item-section>
-          </q-item>
-
-          <q-item clickable to="/env3_at_restaurant" class="op-drawer-item">
-            <q-item-section avatar>
-              <q-icon name="restaurant" />
-            </q-item-section>
-            <q-item-section>情境3：在餐廳</q-item-section>
-          </q-item>
-
-          <q-item clickable to="/env4_traveling" class="op-drawer-item">
-            <q-item-section avatar>
-              <q-icon name="travel_explore" />
-            </q-item-section>
-            <q-item-section>情境4：旅行中</q-item-section>
-          </q-item>
-
-          <q-item clickable to="/favorites" class="op-drawer-item">
-            <q-item-section avatar>
-              <q-icon name="favorite" />
-            </q-item-section>
-            <q-item-section>我的最愛</q-item-section>
-          </q-item>
-
-          <q-item clickable to="/custom_cards" class="op-drawer-item">
-            <q-item-section avatar>
-              <q-icon name="edit_note" />
-            </q-item-section>
-            <q-item-section>自訂字卡</q-item-section>
-          </q-item>
-        </q-expansion-item>
-
-        <q-expansion-item icon="handshake" label="操作學習" class="op-expansion-item" dense-toggle>
-          <q-item clickable to="/structures" class="op-drawer-item">
-            <q-item-section avatar>
-              <q-icon name="build" />
-            </q-item-section>
-            <q-item-section>句型學習</q-item-section>
-          </q-item>
-
-          <q-item clickable to="/lucky-slot" class="op-drawer-item">
-            <q-item-section avatar>
-              <q-icon name="attractions" />
-            </q-item-section>
-            <q-item-section>幸運轉盤</q-item-section>
-          </q-item>
-
-          <q-item clickable to="/main-game" class="op-drawer-item">
-            <q-item-section avatar>
-              <q-icon name="gamepad" />
-            </q-item-section>
-            <q-item-section>小遊戲</q-item-section>
-          </q-item>
-
-          <q-item clickable to="/ball-direction" class="op-drawer-item">
-            <q-item-section avatar>
-              <q-icon name="swap_horiz" />
-            </q-item-section>
-            <q-item-section>英文方向學習</q-item-section>
-          </q-item>
-          <q-item clickable to="/image-paint" class="op-drawer-item">
-            <q-item-section avatar>
-              <q-icon name="palette" />
-            </q-item-section>
-            <q-item-section>圖片上色學英文</q-item-section>
-          </q-item>
-          <q-item clickable to="/nine-grid-game" class="op-drawer-item">
-            <q-item-section avatar>
-              <q-icon name="grid_view" />
-            </q-item-section>
-            <q-item-section>中英文九宮格對戰</q-item-section>
-          </q-item>
-          <q-item clickable to="/relationship" class="op-drawer-item">
-            <q-item-section avatar>
-              <q-icon name="supervisor_account" />
-            </q-item-section>
-            <q-item-section>中英文關係稱謂學習</q-item-section>
-          </q-item>
-          <q-item clickable to="/opposites" class="op-drawer-item">
-            <q-item-section avatar>
-              <q-icon name="swap_horiz" />
-            </q-item-section>
-            <q-item-section>相反詞拉鋸戰</q-item-section>
-          </q-item>
-          <q-item clickable to="/playback" class="op-drawer-item">
-            <q-item-section avatar>
-              <q-icon name="edit" />
-            </q-item-section>
-            <q-item-section>今日回顧</q-item-section>
-          </q-item>
-          <q-item clickable to="/rules" class="op-drawer-item" v-if="devMode">
-            <q-item-section avatar>
-              <q-icon name="rule" />
-            </q-item-section>
-            <q-item-section>運動規則</q-item-section>
-          </q-item>
-          <q-item clickable to="/mario-game" class="op-drawer-item">
-            <q-item-section avatar>
-              <q-icon name="gamepad" />
-            </q-item-section>
-            <q-item-section>跳跳人遊戲</q-item-section>
-          </q-item>
-          <q-item clickable to="/draw-guess" class="op-drawer-item" v-if="devMode">
-            <q-item-section avatar>
-              <q-icon name="draw" />
-            </q-item-section>
-            <q-item-section>畫出英文單字圖</q-item-section>
-          </q-item>
-        </q-expansion-item>
-
-        <q-expansion-item icon="audiotrack" label="聽覺學習" class="op-expansion-item" dense-toggle>
-          <q-item clickable to="/fav/speakout" class="op-drawer-item">
-            <q-item-section avatar>
-              <q-icon name="volume_up" />
-            </q-item-section>
-            <q-item-section>開口說</q-item-section>
-          </q-item>
-          <q-item clickable to="/main-song-word" class="op-drawer-item">
-            <q-item-section avatar>
-              <q-icon name="music_note" />
-            </q-item-section>
-            <q-item-section>英文兒歌</q-item-section>
-          </q-item>
-          <!-- <q-item clickable to="/story" class="op-drawer-item" v-if="devMode">
-            <q-item-section avatar>
-              <q-icon name="music_note" />
-            </q-item-section>
-            <q-item-section>英文睡前故事(old_version)</q-item-section>
-          </q-item> -->
-          <q-item clickable to="/story_backend" class="op-drawer-item">
-            <q-item-section avatar>
-              <q-icon name="image" />
-            </q-item-section>
-            <q-item-section>英文睡前故事</q-item-section>
-          </q-item>
-        </q-expansion-item>
-
-        <q-expansion-item icon="visibility" label="視覺學習" class="op-expansion-item" dense-toggle>
-          <q-item clickable to="/main-image" class="op-drawer-item">
-            <q-item-section avatar>
-              <q-icon name="visibility" />
-            </q-item-section>
-            <q-item-section>看圖學單字</q-item-section>
-          </q-item>
-          <q-item clickable to="/what_is_this" class="op-drawer-item">
-            <q-item-section avatar>
-              <q-icon name="camera_alt" />
-            </q-item-section>
-            <q-item-section>拍照分析</q-item-section>
-          </q-item>
-          <q-item clickable to="/gallery" class="op-drawer-item">
-            <q-item-section avatar>
-              <q-icon name="collections" />
-            </q-item-section>
-            <q-item-section>圖片小測驗</q-item-section>
+            <q-item-section>{{ feature.title }}</q-item-section>
           </q-item>
         </q-expansion-item>
 
@@ -473,6 +271,7 @@ import { GoogleAuthProvider, signInWithPopup, signOut } from 'firebase/auth'
 import { getAuth, setPersistence, browserLocalPersistence } from 'firebase/auth'
 import { ref as dbRef, onValue, get, set } from 'firebase/database'
 import { getDatabase } from 'firebase/database'
+import { getFeaturesByCategory, getAllCategories } from '../data/features'
 
 // 建立 Google 驗證提供者
 const googleAuthProvider = new GoogleAuthProvider()
@@ -572,6 +371,33 @@ export default defineComponent({
     })
 
     const xpProgress = computed(() => currentXP.value / 1000)
+
+    // 側欄分類（排除「其他」分類，因為它包含太多項目）
+    const sidebarCategories = computed(() => {
+      return getAllCategories().filter((cat) => cat !== '其他')
+    })
+
+    // 獲取分類圖標
+    const getCategoryIcon = (category: string): string => {
+      const iconMap: { [key: string]: string } = {
+        字: 'text_fields',
+        詞: 'library_books',
+        句: 'chat_bubble',
+        個人管理: 'person',
+        其他: 'apps',
+      }
+      return iconMap[category] || 'apps'
+    }
+
+    // 獲取排序後的分類功能（featured 排在前面）
+    const getSortedFeaturesByCategory = (category: string) => {
+      const features = getFeaturesByCategory(category)
+      return features.sort((a, b) => {
+        if (a.featured && !b.featured) return -1
+        if (!a.featured && b.featured) return 1
+        return 0
+      })
+    }
 
     const earnXP = (amount: number) => {
       currentXP.value += amount
@@ -767,6 +593,9 @@ export default defineComponent({
       devMode,
       setXPandLevel,
       links,
+      sidebarCategories,
+      getSortedFeaturesByCategory,
+      getCategoryIcon,
     }
   },
 })

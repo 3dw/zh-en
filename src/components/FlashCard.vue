@@ -14,7 +14,7 @@
       @click="toggleCard(index)"
     >
       <div class="card-inner" :class="{ flipped: sentence.flipped }">
-        <div class="card-front" v-show="!sentence.flipped">
+        <div class="card-front" v-show="sentence.flipped">
           <div class="heart-button">
             <q-btn
               @click.stop="toggleFavorite(sentence)"
@@ -23,6 +23,11 @@
               round
               color="pink"
             />
+          </div>
+          <div v-if="sentence.structure" class="structure-label">
+            <q-chip size="sm" color="primary" text-color="white">
+              {{ sentence.structure }}
+            </q-chip>
           </div>
           <p>{{ sentence.chinese }}</p>
           <q-btn
@@ -33,7 +38,7 @@
             color="primary"
           />
         </div>
-        <div class="card-back" v-show="sentence.flipped">
+        <div class="card-back" v-show="!sentence.flipped">
           <div class="heart-button">
             <q-btn
               @click.stop="toggleFavorite(sentence)"
@@ -42,6 +47,11 @@
               round
               color="pink"
             />
+          </div>
+          <div v-if="sentence.structure" class="structure-label">
+            <q-chip size="sm" color="primary" text-color="white">
+              {{ sentence.structure }}
+            </q-chip>
           </div>
           <p>{{ sentence.english }}</p>
           <q-btn
@@ -64,6 +74,7 @@ interface Sentence {
   chinese: string
   english: string
   flipped: boolean
+  structure?: string
 }
 
 export default defineComponent({
@@ -77,18 +88,35 @@ export default defineComponent({
       type: String,
       default: '',
     },
+    selectedStructure: {
+      type: String,
+      default: '',
+    },
   },
 
   setup(props, { emit }) {
     const filteredSentences = computed(() => {
+      let filtered = props.sentences
+
+      // 根據關鍵字過濾
       const query = props.searchQuery.toLowerCase().trim()
-      if (!query) return props.sentences
-      return props.sentences.filter((sentence: Sentence) => {
-        return (
-          sentence.chinese.toLowerCase().includes(query) ||
-          sentence.english.toLowerCase().includes(query)
-        )
-      })
+      if (query) {
+        filtered = filtered.filter((sentence: Sentence) => {
+          return (
+            sentence.chinese.toLowerCase().includes(query) ||
+            sentence.english.toLowerCase().includes(query)
+          )
+        })
+      }
+
+      // 根據句型過濾
+      if (props.selectedStructure && props.selectedStructure !== '全部') {
+        filtered = filtered.filter((sentence: Sentence) => {
+          return sentence.structure === props.selectedStructure
+        })
+      }
+
+      return filtered
     })
 
     const toggleCard = (index: number) => {
@@ -281,10 +309,32 @@ export default defineComponent({
   font-size: 20px;
 }
 
+.card-front,
+.card-back {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+.card,
+.card-inner,
+.card-front,
+.card-back {
+  overflow: visible;
+}
+
 .heart-button {
   position: absolute;
   bottom: 5px;
   right: 5px;
   z-index: 1;
+}
+
+.structure-label {
+  position: absolute;
+  top: -1.2em;
+  left: -1em;
+  z-index: 10;
+  pointer-events: none;
 }
 </style>

@@ -19,7 +19,7 @@ export const features: Feature[] = [
     keywords: ['字卡', '單字', '學習', '英文', '中文', '對照', '發音', '例句', '圖片'],
     route: '/beginner',
     icon: 'school',
-    category: '基礎學習',
+    category: '句',
   },
   {
     id: 'alphabet',
@@ -28,7 +28,7 @@ export const features: Feature[] = [
     keywords: ['字母', 'ABC', '歌曲', '音樂', '初學者', '基礎'],
     route: '/alphabet',
     icon: 'add',
-    category: '基礎學習',
+    category: '字',
   },
   {
     id: 'hand-written',
@@ -38,7 +38,7 @@ export const features: Feature[] = [
     keywords: ['字母', '書寫', '練習', '筆順', '初學者', '手寫', 'ABC'],
     route: '/hand-written',
     icon: 'edit',
-    category: '基礎學習',
+    category: '字',
   },
   {
     id: 'emotion',
@@ -47,7 +47,7 @@ export const features: Feature[] = [
     keywords: ['情緒', '狀態', '感受', '字卡', '表達'],
     route: '/emotion',
     icon: 'sentiment_satisfied',
-    category: '基礎學習',
+    category: '句',
   },
   {
     id: 'body',
@@ -56,7 +56,7 @@ export const features: Feature[] = [
     keywords: ['健康', '身體', '醫療', '症狀', '字卡'],
     route: '/body',
     icon: 'person',
-    category: '基礎學習',
+    category: '句',
   },
   {
     id: 'number',
@@ -65,7 +65,7 @@ export const features: Feature[] = [
     keywords: ['數字', '計數', '數學', '字卡'],
     route: '/number',
     icon: 'school',
-    category: '基礎學習',
+    category: '句',
   },
   {
     id: 'env1_at_home',
@@ -74,7 +74,7 @@ export const features: Feature[] = [
     keywords: ['情境', '居家', '生活', '字卡', '實用'],
     route: '/env1_at_home',
     icon: 'home',
-    category: '情境學習',
+    category: '句',
   },
   {
     id: 'env2_playing_basketball',
@@ -83,7 +83,7 @@ export const features: Feature[] = [
     keywords: ['籃球', '運動', '情境', '字卡', '實用'],
     route: '/env2_playing_basketball',
     icon: 'sports_basketball',
-    category: '情境學習',
+    category: '句',
   },
   {
     id: 'env3_at_restaurant',
@@ -93,7 +93,7 @@ export const features: Feature[] = [
     keywords: ['餐廳', '用餐', '情境', '字卡', '實用'],
     route: '/env3_at_restaurant',
     icon: 'restaurant',
-    category: '情境學習',
+    category: '句',
   },
   {
     id: 'env4_traveling',
@@ -102,7 +102,7 @@ export const features: Feature[] = [
     keywords: ['旅行', '觀光', '情境', '字卡', '實用'],
     route: '/env4_traveling',
     icon: 'travel_explore',
-    category: '情境學習',
+    category: '句',
   },
   {
     id: 'favorites',
@@ -132,7 +132,7 @@ export const features: Feature[] = [
     keywords: ['句型', '語法', '結構', '表達', '學習'],
     route: '/structures',
     icon: 'build',
-    category: '進階學習',
+    category: '句',
   },
   {
     id: 'lucky-slot',
@@ -143,7 +143,7 @@ export const features: Feature[] = [
     keywords: ['轉盤', '遊戲', '單字', '學習', '趣味', '每日任務', '獎勵'],
     route: '/lucky-slot',
     icon: 'attractions',
-    category: '趣味學習',
+    category: '其他',
   },
   {
     id: 'main-game',
@@ -152,7 +152,7 @@ export const features: Feature[] = [
     keywords: ['遊戲', '趣味', '學習', '互動', '娛樂'],
     route: '/main-game',
     icon: 'gamepad',
-    category: '趣味學習',
+    category: '其他',
   },
   {
     id: 'ball-direction',
@@ -161,7 +161,7 @@ export const features: Feature[] = [
     keywords: ['方向', '空間', '遊戲', '學習', '互動'],
     route: '/ball-direction',
     icon: 'swap_horiz',
-    category: '趣味學習',
+    category: '詞',
   },
   {
     id: 'image-paint',
@@ -170,7 +170,7 @@ export const features: Feature[] = [
     keywords: ['上色', '圖片', '藝術', '學習', '視覺'],
     route: '/image-paint',
     icon: 'palette',
-    category: '趣味學習',
+    category: '詞',
   },
   {
     id: 'nine-grid-game',
@@ -179,7 +179,7 @@ export const features: Feature[] = [
     keywords: ['九宮格', '對戰', '遊戲', '學習', '對照'],
     route: '/nine-grid-game',
     icon: 'grid_view',
-    category: '趣味學習',
+    category: '其他',
   },
   {
     id: 'relationship',
@@ -188,7 +188,7 @@ export const features: Feature[] = [
     keywords: ['關係', '稱謂', '人際', '學習', '對照'],
     route: '/relationship',
     icon: 'supervisor_account',
-    category: '進階學習',
+    category: '其他',
   },
   {
     id: 'mario-game',
@@ -198,7 +198,7 @@ export const features: Feature[] = [
     keywords: ['跳跳人', '遊戲', '學習', '英文'],
     route: '/mario-game',
     icon: 'sports_basketball',
-    category: '趣味學習',
+    category: '詞',
   },
   {
     id: 'opposites',
@@ -208,7 +208,7 @@ export const features: Feature[] = [
     keywords: ['相反詞', '對比', '遊戲', '學習', '詞彙'],
     route: '/opposites',
     icon: 'swap_horiz',
-    category: '趣味學習',
+    category: '詞',
   },
   {
     id: 'playback',
@@ -217,7 +217,7 @@ export const features: Feature[] = [
     keywords: ['回顧', '複習', '進度', '學習', '追蹤'],
     route: '/playback',
     icon: 'edit',
-    category: '個人管理',
+    category: '其他',
   },
   {
     id: 'speakout',
@@ -227,7 +227,7 @@ export const features: Feature[] = [
     keywords: ['口說', '發音', '練習', '對話', '學習'],
     route: '/fav/speakout',
     icon: 'volume_up',
-    category: '聽覺學習',
+    category: '句',
   },
   {
     id: 'main-song-word',
@@ -236,7 +236,7 @@ export const features: Feature[] = [
     keywords: ['兒歌', '音樂', '歌曲', '學習', '聽覺'],
     route: '/main-song-word',
     icon: 'music_note',
-    category: '聽覺學習',
+    category: '其他',
   },
   {
     id: 'story_backend',
@@ -247,7 +247,7 @@ export const features: Feature[] = [
     keywords: ['故事', '閱讀', '文章', '翻譯', '單字', '閱讀能力', '英文故事'],
     route: '/story_backend',
     icon: 'image',
-    category: '聽覺學習',
+    category: '句',
   },
   {
     id: 'main-image',
@@ -256,7 +256,7 @@ export const features: Feature[] = [
     keywords: ['圖片', '單字', '視覺', '學習', '記憶'],
     route: '/main-image',
     icon: 'visibility',
-    category: '視覺學習',
+    category: '其他',
   },
   {
     id: 'what_is_this',
@@ -267,7 +267,7 @@ export const features: Feature[] = [
     keywords: ['拍照', '識別', '物品', '實用', '生活', '相機', 'AI', '識別'],
     route: '/what_is_this',
     icon: 'camera_alt',
-    category: '視覺學習',
+    category: '句',
   },
   {
     id: 'gallery',
@@ -278,7 +278,7 @@ export const features: Feature[] = [
     keywords: ['測驗', '圖片', '選擇題', '畫廊', 'AI', '發音', '獎勵', '連續答對', '學習'],
     route: '/gallery',
     icon: 'collections',
-    category: '視覺學習',
+    category: '句',
   },
 ]
 
@@ -301,9 +301,9 @@ export function searchFeatures(keyword: string): Feature[] {
   })
 }
 
-// 獲取所有分類
+// 獲取所有分類（按指定順序）
 export function getAllCategories(): string[] {
-  return [...new Set(features.map((feature) => feature.category))]
+  return ['字', '詞', '句', '個人管理', '其他']
 }
 
 // 根據分類獲取功能

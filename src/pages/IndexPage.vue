@@ -34,7 +34,7 @@
       </div>
 
       <!-- 更新記錄 -->
-      <div class="text-dark">
+      <div class="text-dark q-mb-lg">
         <h2>
           版本更新記錄 {{ new_changelogs?.version }}
           <q-btn
@@ -62,8 +62,42 @@
         </ul>
       </div>
 
-      <!-- 功能卡片 -->
-      <div class="cards-container">
+      <!-- 當 searchQuery 為空時顯示分類按鈕 -->
+      <div v-if="showCategoryButtons" class="category-buttons-container">
+        <div class="category-intro text-dark q-mb-md">
+          <h2 class="text-h5 q-mb-sm">選擇學習層次</h2>
+          <p class="text-body1">
+            從基礎的「字」開始，逐步學習「詞」彙，最後掌握完整的「句」子表達。每個層次都有豐富的學習資源等著您探索！
+          </p>
+        </div>
+        <div class="category-buttons">
+          <q-card
+            v-for="category in mainCategories"
+            :key="category"
+            class="category-button-card"
+            :class="getFeatureCardClass(category)"
+            @click="selectCategory(category)"
+          >
+            <q-card-section class="text-center">
+              <div class="category-icon">
+                <q-icon :name="getCategoryIcon(category)" size="64px" color="white" />
+              </div>
+              <div class="text-h4 text-white q-mt-md">{{ category }}</div>
+              <div class="category-description text-white q-mt-sm">
+                {{ getCategoryDescription(category) }}
+              </div>
+            </q-card-section>
+          </q-card>
+        </div>
+      </div>
+
+      <!-- 功能卡片（當有搜尋或選擇分類時顯示） -->
+      <div v-else class="cards-container">
+        <div v-if="filteredFeatures.length === 0" class="text-center text-dark q-pa-lg">
+          <q-icon name="search_off" size="64px" color="grey" />
+          <p class="text-h6 q-mt-md">找不到相關功能</p>
+          <p class="text-body2">請嘗試其他關鍵字或分類</p>
+        </div>
         <q-card
           v-for="feature in filteredFeatures"
           :key="feature.id"
@@ -120,9 +154,13 @@ export default defineComponent({
       searchQuery: '',
       selectedCategory: '',
       categories: getAllCategories(),
+      mainCategories: ['字', '詞', '句', '個人管理'],
     }
   },
   computed: {
+    showCategoryButtons(): boolean {
+      return !this.searchQuery && !this.selectedCategory
+    },
     filteredFeatures(): Feature[] {
       const features = this.selectedCategory
         ? getFeaturesByCategory(this.selectedCategory)
@@ -151,15 +189,33 @@ export default defineComponent({
       this.selectedCategory = this.selectedCategory === category ? '' : category
       this.searchQuery = ''
     },
+    getCategoryIcon(category: string): string {
+      const iconMap: { [key: string]: string } = {
+        字: 'text_fields',
+        詞: 'library_books',
+        句: 'chat_bubble',
+        個人管理: 'person',
+      }
+      return iconMap[category] || 'apps'
+    },
+    getCategoryDescription(category: string): string {
+      const descMap: { [key: string]: string } = {
+        字: '學習字母、音標等基礎元素',
+        詞: '學習單詞、詞彙和詞性',
+        句: '學習完整的句子和句型結構',
+        個人管理: '管理個人學習進度和收藏',
+      }
+      return descMap[category] || ''
+    },
     getFeatureCardClass(category: string): string {
       const categoryMap: { [key: string]: string } = {
-        基礎學習: 'breathing-card',
-        實用工具: 'quotes-card',
-        進階學習: 'movement-card',
-        趣味學習: 'emotions-card',
+        字: 'breathing-card',
+        詞: 'quotes-card',
+        句: 'movement-card',
         個人管理: 'mindfulness-card',
+        其他: 'emotions-card',
       }
-      return categoryMap[category] || 'breathing-card'
+      return categoryMap[category] || 'mindfulness-card'
     },
     // 根據更新類型返回對應的圖標
     getIconForChangeType(type?: string) {
@@ -237,6 +293,58 @@ export default defineComponent({
 
 .mindfulness-card {
   background: linear-gradient(145deg, #006064, #00838f);
+}
+
+.category-buttons-container {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 2rem 1rem;
+}
+
+.category-intro {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.category-buttons {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 24px;
+  margin-top: 2rem;
+}
+
+.category-button-card {
+  cursor: pointer;
+  transition: all 0.3s ease;
+  min-height: 280px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.category-button-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.3);
+}
+
+.category-icon {
+  margin-bottom: 16px;
+}
+
+.category-description {
+  font-size: 16px;
+  opacity: 0.95;
+  line-height: 1.5;
+}
+
+@media (max-width: 768px) {
+  .category-buttons {
+    grid-template-columns: 1fr;
+  }
+
+  .category-button-card {
+    min-height: 240px;
+  }
 }
 
 .cards-container {

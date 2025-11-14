@@ -1,7 +1,7 @@
 <template>
   <q-page class="q-pa-md">
     <div class="word-card-list">
-      <h1>英文數字(點擊空白處可翻面)</h1>
+      <h1>英文數字(點擊空白處切換中英文)</h1>
       <div class="search-bar">
         <q-input
           v-model="searchQuery"
