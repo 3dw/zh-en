@@ -175,7 +175,7 @@ export default defineComponent({
       { label: '疑問句', value: 'question' },
       { label: '主詞+不及物動詞', value: 'subject-intransitive-verb' },
       { label: '及物動詞+受詞 (祈使句)', value: 'imperative-transitive' },
-      { label: '不物動詞(祈使句)', value: 'imperative-intransitive' },
+      { label: '不及物動詞(祈使句)', value: 'imperative-intransitive' },
     ])
 
     const definite_articles = ref([
