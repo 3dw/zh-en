@@ -2,19 +2,23 @@
   <q-page class="q-pa-md">
     <div class="word-card-list">
       <h1>身體健康(點擊空白處切換中英文)</h1>
-      <div class="search-bar">
-        <q-input
-          v-model="searchQuery"
-          placeholder="輸入關鍵字搜尋（中或英）"
+      <div class="search-bar q-mb-md">
+        <q-input v-model="searchQuery" placeholder="輸入關鍵字搜尋（中或英）" outlined dense />
+        <q-select
+          v-model="selectedStructure"
+          :options="structureOptions"
+          label="選擇句型"
           outlined
           dense
-          class="q-mb-md"
+          class="q-ml-md"
+          style="min-width: 150px"
         />
       </div>
       <flash-card
         :sentences="sentences"
         :searchQuery="searchQuery"
-        @earn-xp="(xp) => $emit('earn-xp', xp)"
+        :selectedStructure="selectedStructure"
+        @earn-xp="(xp: number) => $emit('earn-xp', xp)"
       />
     </div>
   </q-page>
@@ -33,6 +37,8 @@ export default defineComponent({
 
   setup() {
     const searchQuery = ref('')
+    const selectedStructure = ref('全部')
+    const structureOptions = ['全部', '肯定句', '疑問句', '祈使句']
     const sentences = ref([
       {
         chinese: '我身體很健康。',
@@ -338,6 +344,8 @@ export default defineComponent({
 
     return {
       searchQuery,
+      selectedStructure,
+      structureOptions,
       sentences,
     }
   },
@@ -370,5 +378,8 @@ export default defineComponent({
 .search-bar {
   display: flex;
   justify-content: center;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
 }
 </style>

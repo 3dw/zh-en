@@ -4,12 +4,22 @@
       <h1 class="page-title">常用句子(點擊空白處切換中英文)</h1>
       <div class="search-bar q-mb-md">
         <q-input v-model="searchQuery" placeholder="輸入關鍵字搜尋（中或英）" outlined dense />
+        <q-select
+          v-model="selectedStructure"
+          :options="structureOptions"
+          label="選擇句型"
+          outlined
+          dense
+          class="q-ml-md"
+          style="min-width: 150px"
+        />
       </div>
 
       <!-- FlashCard 組件 (含翻卡與朗讀功能) -->
       <flash-card
         :sentences="sentences"
         :searchQuery="searchQuery"
+        :selectedStructure="selectedStructure"
         @earn-xp="$emit('earn-xp', $event)"
       />
     </div>
@@ -30,18 +40,20 @@ export default defineComponent({
 
   setup(props, { emit }) {
     const searchQuery = ref('')
+    const selectedStructure = ref('全部')
+    const structureOptions = ['全部', '肯定句', '疑問句', '祈使句', '省略句']
     const sentences = ref([
       {
         chinese: '早安，爸爸！',
         english: 'Good morning, dad!',
         flipped: false,
-        structure: getSentenceStructure('Good morning, dad!', '早安，爸爸！'),
+        structure: '省略句',
       },
       {
         chinese: '早安，媽媽！',
         english: 'Good morning, mom!',
         flipped: false,
-        structure: getSentenceStructure('Good morning, mom!', '早安，媽媽！'),
+        structure: '省略句',
       },
       {
         chinese: '今天是星期一，要開始學習的一週了。',
@@ -469,6 +481,8 @@ export default defineComponent({
 
     return {
       searchQuery,
+      selectedStructure,
+      structureOptions,
       sentences,
       toggleFlip,
     }
@@ -502,5 +516,8 @@ export default defineComponent({
 .search-bar {
   display: flex;
   justify-content: center;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
 }
 </style>
