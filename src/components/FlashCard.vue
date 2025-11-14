@@ -101,10 +101,118 @@ export default defineComponent({
       }
     }
 
+    // 選擇高品質的英文語音
+    const pickEnVoice = (voices: SpeechSynthesisVoice[]): SpeechSynthesisVoice | null => {
+      try {
+        voices = voices || []
+        let en = voices.filter(
+          (v) => v && v.lang && String(v.lang).toLowerCase().indexOf('en') === 0,
+        )
+
+        // 避免較差音色的候選（如 Compact/Fred 等）
+        en = en.filter((v) => {
+          const nm = (v.name || '').toLowerCase()
+          return nm.indexOf('compact') < 0 && nm !== 'fred'
+        })
+
+        // 優先序（macOS 常見）：Samantha, Alex，其次 en-US，再退 en-GB / en-AU / 其他 en*
+        const prefName =
+          en.find((v) => {
+            const nm = (v.name || '').toLowerCase()
+            return nm.indexOf('samantha') >= 0
+          }) ||
+          en.find((v) => {
+            const nm = (v.name || '').toLowerCase()
+            return nm.indexOf('alex') >= 0
+          })
+
+        if (prefName) return prefName
+
+        const enus = en.find((v) => String(v.lang).toLowerCase() === 'en-us')
+        if (enus) return enus
+
+        const engb = en.find((v) => String(v.lang).toLowerCase() === 'en-gb')
+        if (engb) return engb
+
+        const enau = en.find((v) => String(v.lang).toLowerCase() === 'en-au')
+        if (enau) return enau
+
+        return en[0] || null
+      } catch {
+        return null
+      }
+    }
+
+    // 選擇高品質的中文語音
+    const pickZhVoice = (voices: SpeechSynthesisVoice[]): SpeechSynthesisVoice | null => {
+      try {
+        voices = voices || []
+        const zh = voices.filter(
+          (v) => v && v.lang && String(v.lang).toLowerCase().indexOf('zh') === 0,
+        )
+
+        // 優先選擇 zh-TW，其次 zh-CN，再退其他中文語音
+        const zhtw = zh.find((v) => String(v.lang).toLowerCase() === 'zh-tw')
+        if (zhtw) return zhtw
+
+        const zhcn = zh.find((v) => String(v.lang).toLowerCase() === 'zh-cn')
+        if (zhcn) return zhcn
+
+        return zh[0] || null
+      } catch {
+        return null
+      }
+    }
+
     const speak = (text: string, lang: string) => {
+      // 停止之前的語音，避免重疊
+      window.speechSynthesis.cancel()
+
       const utterance = new SpeechSynthesisUtterance(text)
       utterance.lang = lang
-      window.speechSynthesis.speak(utterance)
+
+      // 調整語音參數以改善音質
+      utterance.rate = 1.0
+      utterance.pitch = 1.0
+      utterance.volume = 1.0
+
+      // 選擇高品質語音
+      const selectAndSpeak = () => {
+        const voices = window.speechSynthesis.getVoices()
+
+        if (voices.length > 0) {
+          let selectedVoice: SpeechSynthesisVoice | null = null
+
+          if (lang.startsWith('en')) {
+            selectedVoice = pickEnVoice(voices)
+          } else if (lang.startsWith('zh')) {
+            selectedVoice = pickZhVoice(voices)
+          }
+
+          if (selectedVoice) {
+            utterance.voice = selectedVoice
+          }
+        }
+
+        // 添加錯誤處理
+        utterance.onerror = (event) => {
+          console.error('語音合成錯誤:', event)
+        }
+
+        // 播放語音
+        window.speechSynthesis.speak(utterance)
+      }
+
+      // 如果語音列表尚未載入，等待載入完成
+      const voices = window.speechSynthesis.getVoices()
+      if (voices.length === 0) {
+        window.speechSynthesis.onvoiceschanged = () => {
+          selectAndSpeak()
+        }
+      } else {
+        selectAndSpeak()
+      }
+
       emit('earn-xp', 5)
     }
 
