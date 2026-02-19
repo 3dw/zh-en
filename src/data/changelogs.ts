@@ -1,5 +1,12 @@
 export const changelogs = [
   {
+    version: '1.2.2',
+    date: '2026-02-20',
+    changes: [
+      { text: '新增正確發音讀詩詞與讀經功能', route: '/classics/custom', type: 'improvement' },
+    ],
+  },
+  {
     version: '1.2.1',
     date: '2025-11-14',
     changes: [{ text: '以字、詞、句結構重整網站架構', route: '/', type: 'improvement' }],
