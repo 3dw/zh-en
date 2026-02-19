@@ -81,6 +81,7 @@
 
 <script lang="ts">
 import { defineComponent, computed, nextTick, ref } from 'vue'
+import { ZH_TW_PREFERRED_KEYWORDS, getPreferredVoice } from 'src/utils/speechVoice'
 
 interface Sentence {
   chinese: string
@@ -184,21 +185,15 @@ export default defineComponent({
       }
     }
 
-    // 選擇高品質的中文語音
     const pickZhVoice = (voices: SpeechSynthesisVoice[]): SpeechSynthesisVoice | null => {
       try {
-        voices = voices || []
+        if (voices.length === 0) return null
+        const preferred = getPreferredVoice('zh-TW', ZH_TW_PREFERRED_KEYWORDS)
+        if (preferred) return preferred
+
         const zh = voices.filter(
           (v) => v && v.lang && String(v.lang).toLowerCase().indexOf('zh') === 0,
         )
-
-        // 優先選擇 zh-TW，其次 zh-CN，再退其他中文語音
-        const zhtw = zh.find((v) => String(v.lang).toLowerCase() === 'zh-tw')
-        if (zhtw) return zhtw
-
-        const zhcn = zh.find((v) => String(v.lang).toLowerCase() === 'zh-cn')
-        if (zhcn) return zhcn
-
         return zh[0] || null
       } catch {
         return null

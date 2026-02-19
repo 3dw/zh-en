@@ -67,7 +67,7 @@
         <div class="category-intro text-dark q-mb-md">
           <h2 class="text-h5 q-mb-sm">選擇學習層次</h2>
           <p class="text-body1">
-            從基礎的「字」開始，逐步學習「詞」彙，最後掌握完整的「句」子表達。每個層次都有豐富的學習資源等著您探索！
+            從基礎的「字」開始，逐步學習「詞」彙與「句」子表達，再進入「文」的短文朗讀與語感培養。每個層次都有豐富的學習資源等著您探索！
           </p>
         </div>
         <div class="category-buttons">
@@ -154,7 +154,7 @@ export default defineComponent({
       searchQuery: '',
       selectedCategory: '',
       categories: getAllCategories(),
-      mainCategories: ['字', '詞', '句', '個人管理'],
+      mainCategories: ['字', '詞', '句', '文', '個人管理'],
     }
   },
   computed: {
@@ -194,6 +194,7 @@ export default defineComponent({
         字: 'text_fields',
         詞: 'library_books',
         句: 'chat_bubble',
+        文: 'menu_book',
         個人管理: 'person',
       }
       return iconMap[category] || 'apps'
@@ -203,6 +204,7 @@ export default defineComponent({
         字: '學習字母、音標等基礎元素',
         詞: '學習單詞、詞彙和詞性',
         句: '學習完整的句子和句型結構',
+        文: '透過短文與經典段落培養語感與朗讀',
         個人管理: '管理個人學習進度和收藏',
       }
       return descMap[category] || ''
@@ -212,6 +214,7 @@ export default defineComponent({
         字: 'breathing-card',
         詞: 'quotes-card',
         句: 'movement-card',
+        文: 'literature-card',
         個人管理: 'mindfulness-card',
         其他: 'emotions-card',
       }
@@ -293,6 +296,10 @@ export default defineComponent({
 
 .mindfulness-card {
   background: linear-gradient(145deg, #006064, #00838f);
+}
+
+.literature-card {
+  background: linear-gradient(145deg, #5d4037, #795548);
 }
 
 .category-buttons-container {

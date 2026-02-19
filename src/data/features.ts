@@ -11,6 +11,27 @@ export interface Feature {
 
 export const features: Feature[] = [
   {
+    id: 'three-character-classics',
+    featured: true,
+    title: '三字經節選',
+    description:
+      '透過經典短文練習朗讀與語感，搭配台灣口音語音播放，幫助您更自然地掌握中文文句節奏。',
+    keywords: ['三字經', '經典', '短文', '朗讀', '語感', '台灣口音'],
+    route: '/classics/three-character',
+    icon: 'menu_book',
+    category: '文',
+  },
+  {
+    id: 'custom-classics-reader',
+    title: '自訂長文朗讀',
+    description:
+      '可自行輸入長篇文字與同音字 CSV 對照，先預覽替換結果，再用台灣口音優先語音朗讀。',
+    keywords: ['自訂', '長文', '朗讀', 'CSV', '同音字', '台灣口音'],
+    route: '/classics/custom',
+    icon: 'edit_note',
+    category: '文',
+  },
+  {
     id: 'beginner',
     featured: true,
     title: '雙語字卡',
@@ -303,7 +324,7 @@ export function searchFeatures(keyword: string): Feature[] {
 
 // 獲取所有分類（按指定順序）
 export function getAllCategories(): string[] {
-  return ['字', '詞', '句', '個人管理', '其他']
+  return ['字', '詞', '句', '文', '個人管理', '其他']
 }
 
 // 根據分類獲取功能

@@ -25,6 +25,28 @@ const routes: RouteRecordRaw[] = [
     ],
   },
   {
+    path: '/classics/three-character',
+    component: () => import('layouts/MainLayout.vue'),
+    children: [
+      {
+        path: '',
+        component: () => import('../views/Classics/ThreeCharacterPage.vue'),
+        meta: { title: '三字經節選' },
+      },
+    ],
+  },
+  {
+    path: '/classics/custom',
+    component: () => import('layouts/MainLayout.vue'),
+    children: [
+      {
+        path: '',
+        component: () => import('../views/Classics/CustomPage.vue'),
+        meta: { title: '自訂長文朗讀' },
+      },
+    ],
+  },
+  {
     path: '/env1_at_home',
     component: () => import('layouts/MainLayout.vue'),
     children: [{ path: '', component: () => import('pages/Flashcards/Env1AtHomePage.vue') }],

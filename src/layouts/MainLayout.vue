@@ -383,6 +383,7 @@ export default defineComponent({
         字: 'text_fields',
         詞: 'library_books',
         句: 'chat_bubble',
+        文: 'menu_book',
         個人管理: 'person',
         其他: 'apps',
       }
