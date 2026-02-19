@@ -23,7 +23,7 @@
     "openai": "^4.80.1",
     "pica": "^9.0.1",
     "pinia": "^2.0.11",
-    "quasar": "^2.16.0",
+    "quasar": "^2.18.6",
     "register-service-worker": "^1.7.2",
     "string-width": "4",
     "vue": "^3.4.18",
