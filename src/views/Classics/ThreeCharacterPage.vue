@@ -3,14 +3,8 @@
     <div class="sanzijing-container">
       <h1 class="title">三字經節選</h1>
       <div class="content">{{ text }}</div>
-      <q-btn
-        :label="isSpeaking ? '暫停' : '朗讀'"
-        :icon="isSpeaking ? 'stop_circle' : 'volume_up'"
-        color="primary"
-        text-color="white"
-        class="speak-btn"
-        @click="toggleSpeech"
-      />
+      <q-btn :label="isSpeaking ? '暫停' : '朗讀'" :icon="isSpeaking ? 'stop_circle' : 'volume_up'" color="primary"
+        text-color="white" class="speak-btn" @click="toggleSpeech" />
     </div>
   </q-page>
 </template>
@@ -32,7 +26,8 @@ const text = `人之初，性本善，性相近，習相遠。
 const homophoneMap: Record<string, string> = {
   教: '叫',
   為人子: '危人子',
-  鄰處: '鄰杵',
+  擇鄰處: '擇鄰杵',
+  方少時: '方哨時'
 }
 
 const isSpeaking = ref(false)

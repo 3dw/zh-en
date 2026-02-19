@@ -71,7 +71,10 @@ const rawText = ref(`人之初，性本善，性相近，習相遠。
 首孝悌，次見聞。`)
 
 const rawCsv = ref(`教,叫
-為人子,危人子`)
+為人子,危人子
+擇鄰處,擇鄰杵
+方少時,方哨時
+`)
 
 const isSpeaking = ref(false)
 
