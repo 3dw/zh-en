@@ -34,11 +34,7 @@ import menBodyImage from '../assets/learnfromimage/menbody.jpg'
 
 export default defineComponent({
   name: 'MenBodyImagePage',
-
-  // 新增 emits: ['earn-xp']，讓父層監聽到此事件即可加經驗值
-  emits: ['earn-xp'],
-
-  setup(_, { emit }) {
+  setup() {
     /**
      * menBodyParts: 依照需要增加/刪減身體部位
      *  - english: 顯示於標籤的英文
@@ -121,15 +117,11 @@ export default defineComponent({
     ])
 
     /**
-     * 點選文字後，使用瀏覽器語音合成朗讀對應英文，並觸發 "earn-xp"。
-     * 可根據需求調整每次增加的經驗值數量 (此處示範 +5)
+     * 點選文字後，使用瀏覽器語音合成朗讀對應英文。
      */
     function speakEnglish(text: string) {
       const utterance = new SpeechSynthesisUtterance(text)
       speechSynthesis.speak(utterance)
-
-      // 朗讀完同時觸發事件，讓父層或 MainLayout 去增加 XP
-      emit('earn-xp', 5)
     }
 
     return {

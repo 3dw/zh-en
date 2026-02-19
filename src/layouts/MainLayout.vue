@@ -223,30 +223,6 @@
       </q-list>
     </q-drawer>
 
-    <!-- XP 區塊 (固定右上角) -->
-    <div class="xp-bar-container fat-only">
-      <div class="xp-info">
-        <div class="level" :class="{ 'level-up': showLevelUpAnimation }">Level {{ level }}</div>
-        <div class="xp">{{ currentXP }} / 1000 XP</div>
-      </div>
-      <q-linear-progress
-        :value="xpProgress"
-        color="accent"
-        track-color="grey-3"
-        class="xp-progress"
-      />
-    </div>
-
-    <!-- 升級提示對話框 -->
-    <q-dialog v-model="showLevelUpDialog">
-      <q-card class="op-level-up-card">
-        <q-card-section class="row items-center justify-center">
-          <div class="text-h6 text-center">恭喜升級！</div>
-        </q-card-section>
-        <q-card-section class="text-center"> 你已經升到 Level {{ level }} 了！ </q-card-section>
-      </q-card>
-    </q-dialog>
-
     <!-- 主要頁面內容 -->
     <q-page-container>
       <router-view
@@ -255,7 +231,6 @@
         :user="user"
         :users="users"
         :uid="uid"
-        @earn-xp="earnXP"
         @toggle-drawer="toggleLeftDrawer"
         @close-drawer="closeLeftDrawer"
         @toggleLogin="toggleLogin"
@@ -265,7 +240,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, computed, onMounted, watch } from 'vue'
+import { defineComponent, ref, computed, onMounted } from 'vue'
 import type { User, UserInfo } from 'firebase/auth'
 import { GoogleAuthProvider, signInWithPopup, signOut } from 'firebase/auth'
 import { getAuth, setPersistence, browserLocalPersistence } from 'firebase/auth'
@@ -282,10 +257,6 @@ export default defineComponent({
 
   setup() {
     const leftDrawerOpen = ref(false)
-    const currentXP = ref(0)
-    const level = ref(1)
-    const showLevelUpAnimation = ref(false)
-    const showLevelUpDialog = ref(false)
     const rememberMe = ref(false)
 
     const uid = ref('')
@@ -331,14 +302,8 @@ export default defineComponent({
       },
     ])
 
-    // 讀取 localStorage
+    // 初始化登入與資料監聽
     onMounted(() => {
-      const savedXP = localStorage.getItem('currentXP')
-      const savedLevel = localStorage.getItem('level')
-
-      if (savedXP) currentXP.value = parseInt(savedXP)
-      if (savedLevel) level.value = parseInt(savedLevel)
-
       const auth = getAuth()
       auth.onAuthStateChanged(async (usr) => {
         if (usr) {
@@ -359,18 +324,6 @@ export default defineComponent({
         // console.log('users', users.value)
       })
     })
-
-    // 監聽變化並保存
-    watch([currentXP, level], () => {
-      localStorage.setItem('currentXP', currentXP.value.toString())
-      localStorage.setItem('level', level.value.toString())
-
-      if (uid.value) {
-        setXPandLevel()
-      }
-    })
-
-    const xpProgress = computed(() => currentXP.value / 1000)
 
     // 側欄分類（排除「其他」分類，因為它包含太多項目）
     const sidebarCategories = computed(() => {
@@ -400,28 +353,6 @@ export default defineComponent({
       })
     }
 
-    const earnXP = (amount: number) => {
-      currentXP.value += amount
-      if (currentXP.value >= 1000) {
-        // 先增加等級
-        level.value += 1
-        // 計算剩餘 XP
-        currentXP.value = currentXP.value - 1000
-
-        // 顯示升級動畫和對話框
-        showLevelUpAnimation.value = true
-        showLevelUpDialog.value = true
-
-        // 儲存新的等級和 XP 到資料庫
-        setXPandLevel()
-
-        // 3 秒後關閉動畫
-        setTimeout(() => {
-          showLevelUpAnimation.value = false
-        }, 3000)
-      }
-    }
-
     const toggleLeftDrawer = () => {
       leftDrawerOpen.value = !leftDrawerOpen.value
     }
@@ -445,17 +376,6 @@ export default defineComponent({
         photoURL.value = ''
         user.value = {}
       })
-    }
-
-    const setXPandLevel = () => {
-      if (uid.value) {
-        const userRef = dbRef(database, `users/${uid.value}`)
-        set(userRef, {
-          ...user.value,
-          xp: currentXP.value,
-          level: level.value,
-        })
-      }
     }
 
     const updateUserData = async (user: User) => {
@@ -490,8 +410,6 @@ export default defineComponent({
           (snapshot) => {
             const userData = snapshot.val()
             if (userData) {
-              currentXP.value = userData.xp || 0
-              level.value = userData.level || 1
               user.value = { ...userData, providerData: pvdata }
               if (
                 userData.photoURL &&
@@ -547,8 +465,6 @@ export default defineComponent({
             connect_me: user.email,
             photoURL: photoURL.value || '',
             login_method: 'google',
-            xp: 0,
-            level: 1,
           })
         } else {
           console.log('user already exists')
@@ -583,16 +499,9 @@ export default defineComponent({
       fetchUserData,
       logout,
       leftDrawerOpen,
-      currentXP,
-      level,
-      showLevelUpAnimation,
-      showLevelUpDialog,
-      xpProgress,
-      earnXP,
       toggleLeftDrawer,
       closeLeftDrawer,
       devMode,
-      setXPandLevel,
       links,
       sidebarCategories,
       getSortedFeaturesByCategory,
@@ -684,70 +593,6 @@ export default defineComponent({
   :deep(.q-expansion-item__content) {
     padding-left: 16px;
   }
-}
-
-/* -------------------------
-   XP Bar
----------------------------- */
-.xp-bar-container {
-  position: fixed;
-  z-index: 2000;
-  right: 20px;
-  top: 80px;
-  width: 240px;
-  background: #faf7f2; /* 與 Drawer 同色系 */
-  padding: 12px;
-  border-radius: 8px;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
-}
-
-.xp-info {
-  display: flex;
-  justify-content: space-between;
-  margin-bottom: 6px;
-  font-size: 1rem; /* 再大一點 */
-  color: #3e3e3e;
-}
-
-.level {
-  font-weight: 600;
-}
-
-.level-up {
-  animation: level-up-animation 1s ease-in-out;
-}
-
-@keyframes level-up-animation {
-  0% {
-    transform: scale(1);
-    color: #3e3e3e;
-  }
-  50% {
-    transform: scale(1.2);
-    color: #7a8b62; /* 棕綠系 */
-  }
-  100% {
-    transform: scale(1);
-    color: #3e3e3e;
-  }
-}
-
-.xp-progress {
-  height: 10px;
-  border-radius: 5px;
-  /* 可考慮設定 color="accent" => 在 Quasar Config 中可自定義 accent 為棕綠 */
-}
-
-/* -------------------------
-   Level Up Dialog
----------------------------- */
-.op-level-up-card {
-  border-radius: 8px;
-  min-width: 260px;
-}
-
-.op-level-up-dialog {
-  background-color: #faf7f2;
 }
 
 .op-drawer-item-label {

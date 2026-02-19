@@ -108,7 +108,7 @@ export default defineComponent({
     },
   },
 
-  setup(props, { emit }) {
+  setup(props) {
     const filteredSentences = computed(() => {
       let filtered = props.sentences
 
@@ -138,9 +138,6 @@ export default defineComponent({
       if (!sentence) return
       sentence.flipped = !sentence.flipped
 
-      if (sentence.flipped) {
-        emit('earn-xp', 5)
-      }
     }
 
     // 選擇高品質的英文語音
@@ -249,7 +246,6 @@ export default defineComponent({
         selectAndSpeak()
       }
 
-      emit('earn-xp', 5)
     }
 
     const getFavorites = () => {
@@ -276,7 +272,6 @@ export default defineComponent({
           chinese: sentence.chinese,
           ...(sentence.image ? { image: sentence.image } : {}),
         })
-        emit('earn-xp', 10)
       } else {
         favorites.value.splice(index, 1)
       }

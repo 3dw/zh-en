@@ -169,9 +169,7 @@ export default defineComponent({
     },
   },
 
-  emits: ['earn-xp'],
-
-  setup(props, { emit }) {
+  setup(props) {
     const $q = useQuasar()
     const searchQuery = ref('')
 
@@ -221,10 +219,9 @@ export default defineComponent({
       if (selectedOption.value === quiz.value.answer) {
         wins.value++
         incorrectAttempts.value = 0
-        emit('earn-xp', wins.value * 100)
         $q.notify({
           type: 'positive',
-          message: '答對了！您已連續答對 ' + wins.value + ' 題，得到 ' + wins.value * 100 + 'XP',
+          message: '答對了！您已連續答對 ' + wins.value + ' 題，得到 ' + wins.value * 100 + '分',
           position: 'top',
           timeout: 1500,
         })

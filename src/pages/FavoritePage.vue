@@ -36,7 +36,7 @@
             <p class="text-grey-7">在學習時點擊愛心圖示來收藏字卡</p>
           </div>
           <div v-else>
-            <FlashCard :sentences="favoriteCards" @earn-xp="emitEarnXp" />
+            <FlashCard :sentences="favoriteCards" />
           </div>
         </q-tab-panel>
 
@@ -229,11 +229,7 @@ export default defineComponent({
   components: {
     FlashCard,
   },
-  setup(props, { emit }) {
-    const emitEarnXp = (xp: number) => {
-      emit('earn-xp', xp)
-    }
-
+  setup() {
     const $q = useQuasar()
     const favoriteCards = ref<Sentence[]>([])
     const isRecording = ref(false)
@@ -307,7 +303,7 @@ export default defineComponent({
         correctCount.value++
         $q.notify({
           type: 'positive',
-          message: `答對了！您已連續答對${correctCount.value}題！獲得100xp！`,
+          message: `答對了！您已連續答對${correctCount.value}題！`,
           position: 'top',
           timeout: 2500,
         })
@@ -380,7 +376,6 @@ export default defineComponent({
           timeout: 2500,
           actions: [{ icon: 'close', color: 'white' }],
         })
-        emit('earn-xp', 50)
       } else {
         feedback.value = `答錯了，正確答案是：${correctWord}`
         correctCount.value = 0
@@ -465,12 +460,11 @@ export default defineComponent({
         correctCount.value++
         $q.notify({
           type: 'positive',
-          message: `答對了！您已連續答對${correctCount.value}題！獲得100xp！`,
+          message: `答對了！您已連續答對${correctCount.value}題！`,
           position: 'top',
           timeout: 2500,
           actions: [{ icon: 'close', color: 'white' }],
         })
-        emit('earn-xp', 100)
       } else {
         correctCount.value = 0
         $q.notify({
@@ -603,7 +597,6 @@ export default defineComponent({
 
     return {
       favoriteCards,
-      emitEarnXp,
       removeFromFavorites,
       activeTab,
       currentCard,

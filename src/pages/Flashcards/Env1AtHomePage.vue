@@ -20,7 +20,6 @@
         :sentences="sentences"
         :searchQuery="searchQuery"
         :selectedStructure="selectedStructure"
-        @earn-xp="$emit('earn-xp', $event)"
       />
     </div>
   </q-page>
@@ -36,9 +35,7 @@ export default defineComponent({
   components: {
     FlashCard,
   },
-  emits: ['earn-xp'],
-
-  setup(props, { emit }) {
+  setup() {
     const searchQuery = ref('')
     const selectedStructure = ref('全部')
     const structureOptions = ['全部', '肯定句', '疑問句', '祈使句', '省略句']
@@ -474,17 +471,11 @@ export default defineComponent({
       },
     ])
 
-    const toggleFlip = (sentence: { flipped: boolean }) => {
-      sentence.flipped = !sentence.flipped
-      emit('earn-xp', 5)
-    }
-
     return {
       searchQuery,
       selectedStructure,
       structureOptions,
       sentences,
-      toggleFlip,
     }
   },
 })

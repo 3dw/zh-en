@@ -18,7 +18,6 @@
         :sentences="sentences"
         :searchQuery="searchQuery"
         :selectedStructure="selectedStructure"
-        @earn-xp="(xp: number) => $emit('earn-xp', xp)"
       />
     </div>
   </q-page>

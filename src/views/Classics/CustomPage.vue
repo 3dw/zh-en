@@ -9,14 +9,7 @@
           <p class="section-help">
             使用說明：將想朗讀的內容貼到下方，可輸入多段文字。系統會保留換行，朗讀時依目前內容播放。
           </p>
-          <q-input
-            v-model="rawText"
-            type="textarea"
-            autogrow
-            outlined
-            label="Text"
-            placeholder="請輸入要朗讀的內容..."
-          />
+          <q-input v-model="rawText" type="textarea" autogrow outlined label="Text" placeholder="請輸入要朗讀的內容..." />
         </q-card-section>
       </q-card>
 
@@ -27,14 +20,8 @@
             使用說明：每行一組，格式為「原字詞,替換字詞」。例如：
             <code>教,叫</code>、<code>為人子,危人子</code>。空白行會自動忽略。
           </p>
-          <q-input
-            v-model="rawCsv"
-            type="textarea"
-            autogrow
-            outlined
-            label="homophoneMap (CSV)"
-            placeholder="教,叫&#10;為人子,危人子"
-          />
+          <q-input v-model="rawCsv" type="textarea" autogrow outlined label="homophoneMap (CSV)"
+            placeholder="教,叫&#10;為人子,危人子" />
 
           <q-banner v-if="csvErrors.length > 0" dense rounded class="bg-orange-1 text-orange-10 q-mt-sm">
             <div v-for="error in csvErrors" :key="error">{{ error }}</div>
@@ -59,13 +46,8 @@
             使用說明：按「開始朗讀」播放，按「停止朗讀」可立即停止。語音會優先使用 zh-TW 與台灣相關語音。
           </p>
           <div class="row items-center q-gutter-sm">
-            <q-btn
-              :label="isSpeaking ? '停止朗讀' : '開始朗讀'"
-              :icon="isSpeaking ? 'stop_circle' : 'volume_up'"
-              :color="isSpeaking ? 'negative' : 'primary'"
-              text-color="white"
-              @click="toggleSpeech"
-            />
+            <q-btn :label="isSpeaking ? '停止朗讀' : '開始朗讀'" :icon="isSpeaking ? 'stop_circle' : 'volume_up'"
+              :color="isSpeaking ? 'negative' : 'primary'" text-color="white" @click="toggleSpeech" />
             <span class="status-text">{{ statusText }}</span>
           </div>
         </q-card-section>
@@ -79,7 +61,14 @@ import { computed, onBeforeUnmount, ref } from 'vue'
 import { ZH_TW_PREFERRED_KEYWORDS, getPreferredVoice } from 'src/utils/speechVoice'
 
 const rawText = ref(`人之初，性本善，性相近，習相遠。
-苟不教，性乃遷，教之道，貴以專。`)
+苟不教，性乃遷，教之道，貴以專。
+昔孟母，擇鄰處，子不學，斷機杼。
+竇燕山，有義方，教五子，名俱揚。
+養不教，父之過，教不嚴，師之惰。
+子不學，非所宜，幼不學，老何為。
+玉不琢，不成器，人不學，不知義。
+為人子，方少時，親師友，習禮儀。
+首孝悌，次見聞。`)
 
 const rawCsv = ref(`教,叫
 為人子,危人子`)

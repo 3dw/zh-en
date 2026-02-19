@@ -8,7 +8,7 @@
       <div class="score-display">
         <div>Score: {{ score }}</div>
         <div class="difficulty-level">Level: {{ getDifficultyLevel() }}</div>
-        <div class="xp-info">下題答對獎勵：50×{{ consecutiveCorrect + 1 }} XP</div>
+        <div class="xp-info">下題答對獎勵：50×{{ consecutiveCorrect + 1 }} 分</div>
       </div>
     </div>
 
@@ -119,7 +119,7 @@
             連續答對：{{ consecutiveCorrect }} 次
           </div>
           <div class="text-subtitle1 text-center q-mb-sm">
-            本次獲得：{{ 50 * consecutiveCorrect }} 分 + {{ 50 * consecutiveCorrect }} XP
+            本次獲得：{{ 50 * consecutiveCorrect }} 分
           </div>
           <div class="text-subtitle1 text-center">繼續挑戰下一題！</div>
         </q-card-section>
@@ -173,8 +173,7 @@ interface GameState {
 
 export default defineComponent({
   name: 'MarioGamePage',
-  emits: ['earn-xp'],
-  setup(props, { emit }) {
+  setup() {
     const gameCanvas = ref<HTMLCanvasElement | null>(null)
     const ctx = ref<CanvasRenderingContext2D | null>(null)
     const score = ref(0)
@@ -552,10 +551,6 @@ export default defineComponent({
             const earnedScore = baseScore * consecutiveCorrect.value
             score.value += earnedScore
 
-            // 向父元件發送 XP 事件，XP 也使用等差計分
-            const earnedXP = baseScore * consecutiveCorrect.value
-            emit('earn-xp', earnedXP)
-
             // 播放收集音效
             playSound(sounds.coin)
             // 顯示得分提示
@@ -795,7 +790,6 @@ export default defineComponent({
       handleKeyUp,
       handleTouchStart,
       handleTouchEnd,
-      emit,
     }
   },
 })
