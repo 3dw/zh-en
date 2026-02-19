@@ -36,7 +36,7 @@
             <p class="text-grey-7">在學習時點擊愛心圖示來收藏字卡</p>
           </div>
           <div v-else>
-            <FlashCard :sentences="favoriteCards" @earn-xp="(xp) => $emit('earn-xp', xp)" />
+            <FlashCard :sentences="favoriteCards" @earn-xp="emitEarnXp" />
           </div>
         </q-tab-panel>
 
@@ -55,6 +55,12 @@
                 英文：{{ currentCard.english }}
                 <q-btn icon="volume_up" size="lg" color="primary" @click="playSpeakoutAudio" flat />
               </h2>
+              <img
+                v-if="currentCard.image"
+                :src="currentCard.image"
+                alt="字卡圖片"
+                class="favorite-card-image q-mb-md"
+              />
               <q-btn
                 v-if="!isRecording"
                 icon="mic"
@@ -103,6 +109,12 @@
                 <!-- 將發音按鈕改為較大的發音圖示 -->
                 <q-btn icon="volume_up" size="lg" color="primary" @click="playAudio" flat />
               </h2>
+              <img
+                v-if="currentClozeCard.image"
+                :src="currentClozeCard.image"
+                alt="字卡圖片"
+                class="favorite-card-image q-mb-md"
+              />
 
               <h2>英文：</h2>
               <p>
@@ -161,6 +173,12 @@
                   flat
                 />   -->
               </h2>
+              <img
+                v-if="currentMultipleChoiceCard.image"
+                :src="currentMultipleChoiceCard.image"
+                alt="字卡圖片"
+                class="favorite-card-image q-mb-md"
+              />
               <q-option-group
                 v-model="selectedOption"
                 :options="multipleChoiceOptions"
@@ -195,13 +213,15 @@ import { useRoute } from 'vue-router'
 interface Card {
   english: string
   chinese: string
-  category: string
+  category?: string
+  image?: string
 }
 
 interface Sentence {
   chinese: string
   english: string
   flipped: boolean
+  image?: string
 }
 
 export default defineComponent({
@@ -210,6 +230,10 @@ export default defineComponent({
     FlashCard,
   },
   setup(props, { emit }) {
+    const emitEarnXp = (xp: number) => {
+      emit('earn-xp', xp)
+    }
+
     const $q = useQuasar()
     const favoriteCards = ref<Sentence[]>([])
     const isRecording = ref(false)
@@ -226,6 +250,7 @@ export default defineComponent({
           chinese: item.chinese,
           english: item.english,
           flipped: false,
+          ...(item.image ? { image: item.image } : {}),
         }))
       }
       if (savedFavorites) {
@@ -256,7 +281,7 @@ export default defineComponent({
       favoriteCards.value = favoriteCards.value.filter(
         (c) => !(c.english === card.english && c.chinese === card.chinese),
       )
-      localStorage.setItem('favoriteCards', JSON.stringify(favoriteCards.value))
+      localStorage.setItem('en_love_arr', JSON.stringify(favoriteCards.value))
     }
 
     // 用於切換檢視與克漏字分頁的變數
@@ -578,6 +603,7 @@ export default defineComponent({
 
     return {
       favoriteCards,
+      emitEarnXp,
       removeFromFavorites,
       activeTab,
       currentCard,
@@ -649,5 +675,13 @@ export default defineComponent({
   :deep(.q-field__label) {
     font-size: 1.2rem;
   }
+}
+
+.favorite-card-image {
+  width: 100%;
+  max-width: 360px;
+  max-height: 220px;
+  object-fit: cover;
+  border-radius: 8px;
 }
 </style>

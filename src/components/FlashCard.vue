@@ -29,6 +29,12 @@
               {{ sentence.structure }}
             </q-chip>
           </div>
+          <img
+            v-if="sentence.image"
+            :src="sentence.image"
+            alt="字卡圖片"
+            class="card-image q-mb-sm"
+          />
           <p>{{ sentence.chinese }}</p>
           <q-btn
             @click.stop="speak(sentence.chinese, 'zh-TW')"
@@ -53,6 +59,12 @@
               {{ sentence.structure }}
             </q-chip>
           </div>
+          <img
+            v-if="sentence.image"
+            :src="sentence.image"
+            alt="字卡圖片"
+            class="card-image q-mb-sm"
+          />
           <p>{{ sentence.english }}</p>
           <q-btn
             @click.stop="speak(sentence.english, 'en-US')"
@@ -75,6 +87,7 @@ interface Sentence {
   english: string
   flipped: boolean
   structure?: string
+  image?: string
 }
 
 export default defineComponent({
@@ -263,7 +276,11 @@ export default defineComponent({
       )
 
       if (index === -1) {
-        favorites.value.push({ english: sentence.english, chinese: sentence.chinese })
+        favorites.value.push({
+          english: sentence.english,
+          chinese: sentence.chinese,
+          ...(sentence.image ? { image: sentence.image } : {}),
+        })
         emit('earn-xp', 10)
       } else {
         favorites.value.splice(index, 1)
@@ -296,7 +313,7 @@ export default defineComponent({
   position: relative;
   padding: 10px;
   width: 200px;
-  height: 250px;
+  height: 300px;
   perspective: 1000px;
   cursor: pointer;
   border: 1px solid #ccc;
@@ -336,5 +353,12 @@ export default defineComponent({
   left: -1em;
   z-index: 10;
   pointer-events: none;
+}
+
+.card-image {
+  width: 100%;
+  max-height: 110px;
+  object-fit: cover;
+  border-radius: 8px;
 }
 </style>

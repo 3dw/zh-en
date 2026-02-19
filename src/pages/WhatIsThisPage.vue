@@ -7,10 +7,21 @@
       <div class="upload-section q-mb-md">
         <!-- 新增拍照按鈕 -->
         <div class="camera-buttons q-mb-sm">
-          <q-btn color="primary" icon="photo_camera" label="使用相機拍照" @click="openCamera" class="q-mr-sm" />
+          <q-btn
+            color="primary"
+            icon="photo_camera"
+            label="使用相機拍照"
+            @click="openCamera"
+            class="q-mr-sm"
+          />
 
-          <q-file v-model="imageFile" label="上傳圖片" outlined accept=".jpg,.jpeg,.png,.heic,.heif"
-            @update:model-value="handleImageUpload">
+          <q-file
+            v-model="imageFile"
+            label="上傳圖片"
+            outlined
+            accept=".jpg,.jpeg,.png,.heic,.heif"
+            @update:model-value="handleImageUpload"
+          >
             <template v-slot:prepend>
               <q-icon name="attach_file" />
             </template>
@@ -18,10 +29,23 @@
         </div>
 
         <!-- 相機預覽 -->
-        <video v-show="showCamera" ref="videoRef" autoplay playsinline class="camera-preview q-mb-md"></video>
+        <video
+          v-show="showCamera"
+          ref="videoRef"
+          autoplay
+          playsinline
+          class="camera-preview q-mb-md"
+        ></video>
 
         <!-- 拍照按鈕 -->
-        <q-btn v-if="showCamera" color="primary" icon="camera" label="拍照" @click="takePhoto" class="q-mb-md" />
+        <q-btn
+          v-if="showCamera"
+          color="primary"
+          icon="camera"
+          label="拍照"
+          @click="takePhoto"
+          class="q-mb-md"
+        />
 
         <!-- 預覽圖片 -->
         <div v-if="imagePreview" class="image-preview q-mt-md">
@@ -42,16 +66,45 @@
           <div class="text-body1 q-mb-sm">中文：{{ resultZh }}</div>
           <div class="text-body2 text-grey-8">英文原句：{{ resultEn }}</div>
 
-          <q-btn class="q-mt-sm" color="primary" icon="volume_up" label="播放中文發音" @click="playZhAudio" />
-          <q-btn class="q-mt-sm q-ml-sm" color="teal" icon="record_voice_over" label="播放英文發音" @click="playEnAudio" />
-          <q-btn v-if="uid" class="q-mt-sm" color="secondary" icon="arrow_upward" label="上傳至資料庫" @click="uploadCard" />
+          <q-btn
+            class="q-mt-sm"
+            color="primary"
+            icon="volume_up"
+            label="播放中文發音"
+            @click="playZhAudio"
+          />
+          <q-btn
+            class="q-mt-sm q-ml-sm"
+            color="teal"
+            icon="record_voice_over"
+            label="播放英文發音"
+            @click="playEnAudio"
+          />
+          <q-btn
+            class="q-mt-sm q-ml-sm"
+            color="pink"
+            icon="favorite"
+            label="存到最愛"
+            @click="saveToFavorites"
+          />
+          <q-btn
+            v-if="uid"
+            class="q-mt-sm"
+            color="secondary"
+            icon="arrow_upward"
+            label="上傳至資料庫"
+            @click="uploadCard"
+          />
 
           <div class="q-mt-sm" v-if="uid">
             <!-- check box -->
             <q-checkbox v-model="isChecked" label="我已閱讀並同意"></q-checkbox>
 
-            <a href="https://github.com/3dw/zh-en/wiki/%E9%9A%B1%E7%A7%81%E6%AC%8A%E6%94%BF%E7%AD%96" target="_blank"
-              rel="noopener noreferrer">
+            <a
+              href="https://github.com/3dw/zh-en/wiki/%E9%9A%B1%E7%A7%81%E6%AC%8A%E6%94%BF%E7%AD%96"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
               隱私權政策
             </a>
           </div>
@@ -86,6 +139,7 @@ export default defineComponent({
   },
 
   setup(props) {
+    const FAVORITES_KEY = 'en_love_arr'
     const isChecked = ref(false)
     const imageFile = ref(null)
     const imagePreview = ref('')
@@ -183,6 +237,107 @@ export default defineComponent({
           console.error('處理圖片失敗:', error)
           window.alert('處理圖片失敗，請重試')
         }
+      }
+    }
+
+    const getFavorites = () => {
+      try {
+        const raw = localStorage.getItem(FAVORITES_KEY)
+        if (!raw) return []
+        const parsed = JSON.parse(raw)
+        return Array.isArray(parsed) ? parsed : []
+      } catch (error) {
+        console.error('讀取最愛失敗:', error)
+        return []
+      }
+    }
+
+    const blobToDataUrl = (blob: Blob) =>
+      new Promise<string>((resolve, reject) => {
+        const reader = new FileReader()
+        reader.onloadend = () => resolve(reader.result as string)
+        reader.onerror = reject
+        reader.readAsDataURL(blob)
+      })
+
+    const createLowResImage = async () => {
+      if (!imagePreview.value) return ''
+
+      const previewResponse = await fetch(imagePreview.value)
+      const sourceBlob = await previewResponse.blob()
+      const imageElement = new Image()
+      const imageLoaded = new Promise<void>((resolve, reject) => {
+        imageElement.onload = () => resolve()
+        imageElement.onerror = reject
+      })
+      imageElement.src = URL.createObjectURL(sourceBlob)
+      await imageLoaded
+
+      const canvas = document.createElement('canvas')
+      const maxWidth = 320
+      const targetWidth = Math.min(maxWidth, imageElement.width)
+      const targetHeight = Math.max(
+        1,
+        Math.floor((targetWidth / imageElement.width) * imageElement.height),
+      )
+      canvas.width = targetWidth
+      canvas.height = targetHeight
+
+      const context = canvas.getContext('2d')
+      if (!context) return ''
+      context.drawImage(imageElement, 0, 0, targetWidth, targetHeight)
+
+      let quality = 0.7
+      let compressedBlob = await new Promise<Blob>((resolve) => {
+        canvas.toBlob((blob) => resolve(blob!), 'image/jpeg', quality)
+      })
+
+      const MAX_IMAGE_SIZE = 90 * 1024
+      while (compressedBlob.size > MAX_IMAGE_SIZE && quality > 0.4) {
+        quality -= 0.1
+        compressedBlob = await new Promise<Blob>((resolve) => {
+          canvas.toBlob((blob) => resolve(blob!), 'image/jpeg', quality)
+        })
+      }
+
+      return blobToDataUrl(compressedBlob)
+    }
+
+    const saveToFavorites = async () => {
+      if (!resultEn.value || !resultZh.value) {
+        window.alert('請先拍照或上傳圖片，產生中英文內容後再收藏')
+        return
+      }
+
+      try {
+        const favorites = getFavorites()
+        const existingIndex = favorites.findIndex(
+          (card: { english: string; chinese: string }) =>
+            card.english === resultEn.value && card.chinese === resultZh.value,
+        )
+
+        const image = await createLowResImage()
+        const favoriteCard = {
+          english: resultEn.value,
+          chinese: resultZh.value,
+          ...(image ? { image } : {}),
+        }
+
+        if (existingIndex >= 0) {
+          favorites[existingIndex] = {
+            ...favorites[existingIndex],
+            ...favoriteCard,
+          }
+          window.alert('已更新最愛中的字卡')
+        } else {
+          favorites.push(favoriteCard)
+          window.alert('已加入最愛')
+        }
+
+        localStorage.setItem(FAVORITES_KEY, JSON.stringify(favorites))
+      } catch (error) {
+        console.error('儲存最愛失敗:', error)
+        window.alert('儲存最愛失敗，請稍後再試')
       }
     }
 
@@ -343,12 +498,7 @@ export default defineComponent({
       return preferredVoice
     }
 
-    const speakText = (
-      text: string,
-      lang: string,
-      preferredNameKeywords: string[],
-      rate = 0.6,
-    ) => {
+    const speakText = (text: string, lang: string, preferredNameKeywords: string[], rate = 0.6) => {
       if (!text) return
 
       window.speechSynthesis.cancel()
@@ -379,7 +529,15 @@ export default defineComponent({
     }
 
     const playZhAudio = () => {
-      const zhTwPreferredKeywords = ['taiwan', 'zh-tw', '國語', '臺灣', '台湾', 'hanhan', 'hsiaochen']
+      const zhTwPreferredKeywords = [
+        'taiwan',
+        'zh-tw',
+        '國語',
+        '臺灣',
+        '台湾',
+        'hanhan',
+        'hsiaochen',
+      ]
       speakText(resultZh.value, 'zh-TW', zhTwPreferredKeywords, 0.72)
     }
 
@@ -458,6 +616,7 @@ export default defineComponent({
       openCamera,
       takePhoto,
       uploadCard,
+      saveToFavorites,
     }
   },
 })
