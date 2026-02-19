@@ -1,27 +1,16 @@
 <template>
   <q-page class="q-pa-md">
     <div class="word-card-list">
-      <h1>AI 圖片描述</h1>
+      <h1>AI 圖片學英文/中文</h1>
 
       <!-- 上傳圖片區域 -->
       <div class="upload-section q-mb-md">
         <!-- 新增拍照按鈕 -->
         <div class="camera-buttons q-mb-sm">
-          <q-btn
-            color="primary"
-            icon="photo_camera"
-            label="使用相機拍照"
-            @click="openCamera"
-            class="q-mr-sm"
-          />
+          <q-btn color="primary" icon="photo_camera" label="使用相機拍照" @click="openCamera" class="q-mr-sm" />
 
-          <q-file
-            v-model="imageFile"
-            label="上傳圖片"
-            outlined
-            accept=".jpg,.jpeg,.png,.heic,.heif"
-            @update:model-value="handleImageUpload"
-          >
+          <q-file v-model="imageFile" label="上傳圖片" outlined accept=".jpg,.jpeg,.png,.heic,.heif"
+            @update:model-value="handleImageUpload">
             <template v-slot:prepend>
               <q-icon name="attach_file" />
             </template>
@@ -29,23 +18,10 @@
         </div>
 
         <!-- 相機預覽 -->
-        <video
-          v-show="showCamera"
-          ref="videoRef"
-          autoplay
-          playsinline
-          class="camera-preview q-mb-md"
-        ></video>
+        <video v-show="showCamera" ref="videoRef" autoplay playsinline class="camera-preview q-mb-md"></video>
 
         <!-- 拍照按鈕 -->
-        <q-btn
-          v-if="showCamera"
-          color="primary"
-          icon="camera"
-          label="拍照"
-          @click="takePhoto"
-          class="q-mb-md"
-        />
+        <q-btn v-if="showCamera" color="primary" icon="camera" label="拍照" @click="takePhoto" class="q-mb-md" />
 
         <!-- 預覽圖片 -->
         <div v-if="imagePreview" class="image-preview q-mt-md">
@@ -56,40 +32,26 @@
       <!-- 載入中提示 -->
       <div v-if="loading" class="text-center">
         <q-spinner color="primary" size="3em" />
-        <p>正在分析圖片...</p>
+        <p>正在分析圖片並產生學習句...</p>
       </div>
 
       <!-- 顯示 AI 描述結果 -->
-      <div v-if="result" class="result-section q-mt-lg">
-        <div class="text-h6">AI 描述：</div>
+      <div v-if="resultZh || resultEn" class="result-section q-mt-lg">
+        <div class="text-h6">學習內容：</div>
         <q-card class="q-pa-md q-mt-sm">
-          <div class="text-body1">{{ result }}</div>
+          <div class="text-body1 q-mb-sm">中文：{{ resultZh }}</div>
+          <div class="text-body2 text-grey-8">英文原句：{{ resultEn }}</div>
 
-          <q-btn
-            class="q-mt-sm"
-            color="primary"
-            icon="volume_up"
-            label="播放發音"
-            @click="playAudio"
-          />
-          <q-btn
-            v-if="uid"
-            class="q-mt-sm"
-            color="secondary"
-            icon="arrow_upward"
-            label="上傳至資料庫"
-            @click="uploadCard"
-          />
+          <q-btn class="q-mt-sm" color="primary" icon="volume_up" label="播放中文發音" @click="playZhAudio" />
+          <q-btn class="q-mt-sm q-ml-sm" color="teal" icon="record_voice_over" label="播放英文發音" @click="playEnAudio" />
+          <q-btn v-if="uid" class="q-mt-sm" color="secondary" icon="arrow_upward" label="上傳至資料庫" @click="uploadCard" />
 
           <div class="q-mt-sm" v-if="uid">
             <!-- check box -->
             <q-checkbox v-model="isChecked" label="我已閱讀並同意"></q-checkbox>
 
-            <a
-              href="https://github.com/3dw/zh-en/wiki/%E9%9A%B1%E7%A7%81%E6%AC%8A%E6%94%BF%E7%AD%96"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
+            <a href="https://github.com/3dw/zh-en/wiki/%E9%9A%B1%E7%A7%81%E6%AC%8A%E6%94%BF%E7%AD%96" target="_blank"
+              rel="noopener noreferrer">
               隱私權政策
             </a>
           </div>
@@ -128,7 +90,8 @@ export default defineComponent({
     const imageFile = ref(null)
     const imagePreview = ref('')
     const loading = ref(false)
-    const result = ref('')
+    const resultEn = ref('')
+    const resultZh = ref('')
     const videoRef = ref<HTMLVideoElement | null>(null)
     const showCamera = ref(false)
     let stream: MediaStream | null = null
@@ -205,7 +168,9 @@ export default defineComponent({
 
           const newCard = {
             image: base64,
-            description: result.value,
+            description: resultZh.value || resultEn.value,
+            descriptionEn: resultEn.value,
+            descriptionZh: resultZh.value,
             createdAt: new Date().toISOString(),
             createdBy: props.uid,
           }
@@ -326,14 +291,15 @@ export default defineComponent({
       imagePreview.value = URL.createObjectURL(processedFile)
 
       loading.value = true
-      result.value = ''
+      resultEn.value = ''
+      resultZh.value = ''
 
       try {
         const formData = new FormData()
         formData.append('image', processedFile)
 
         const response = await axios.post(
-          'https://zh-en-backend.alearn13994229.workers.dev/detect-image',
+          'https://zh-en-backend.alearn13994229.workers.dev/detect-image-zh',
           formData,
           {
             headers: {
@@ -342,7 +308,8 @@ export default defineComponent({
           },
         )
 
-        result.value = response.data.description
+        resultEn.value = response.data.descriptionEn || ''
+        resultZh.value = response.data.descriptionZh || response.data.description || ''
       } catch (error) {
         console.error('上傳圖片失敗:', error)
         // 可以加入錯誤提示
@@ -351,13 +318,74 @@ export default defineComponent({
       }
     }
 
-    const playAudio = () => {
-      if (result.value) {
-        const utterance = new SpeechSynthesisUtterance(result.value)
-        utterance.lang = 'en-US'
-        utterance.rate = 0.6
+    const getPreferredVoice = (langPrefix: string, preferredNameKeywords: string[]) => {
+      const voices = window.speechSynthesis.getVoices()
+
+      if (!voices.length) {
+        return null
+      }
+
+      const targetVoices = voices.filter((voice) =>
+        voice.lang.toLowerCase().startsWith(langPrefix.toLowerCase()),
+      )
+
+      if (!targetVoices.length) {
+        return null
+      }
+
+      const preferredVoice =
+        targetVoices.find((voice) =>
+          preferredNameKeywords.some((keyword) =>
+            voice.name.toLowerCase().includes(keyword.toLowerCase()),
+          ),
+        ) || targetVoices[0]
+
+      return preferredVoice
+    }
+
+    const speakText = (
+      text: string,
+      lang: string,
+      preferredNameKeywords: string[],
+      rate = 0.6,
+    ) => {
+      if (!text) return
+
+      window.speechSynthesis.cancel()
+      const utterance = new SpeechSynthesisUtterance(text)
+      utterance.lang = lang
+      utterance.rate = rate
+
+      const setVoiceAndSpeak = () => {
+        const voice = getPreferredVoice(lang, preferredNameKeywords)
+        if (voice) {
+          utterance.voice = voice
+          utterance.lang = voice.lang
+        }
         window.speechSynthesis.speak(utterance)
       }
+
+      if (window.speechSynthesis.getVoices().length > 0) {
+        setVoiceAndSpeak()
+        return
+      }
+
+      // 某些瀏覽器初次載入時 voices 尚未就緒，等待 voiceschanged 再播放。
+      const handleVoicesChanged = () => {
+        window.speechSynthesis.removeEventListener('voiceschanged', handleVoicesChanged)
+        setVoiceAndSpeak()
+      }
+      window.speechSynthesis.addEventListener('voiceschanged', handleVoicesChanged)
+    }
+
+    const playZhAudio = () => {
+      const zhTwPreferredKeywords = ['taiwan', 'zh-tw', '國語', '臺灣', '台湾', 'hanhan', 'hsiaochen']
+      speakText(resultZh.value, 'zh-TW', zhTwPreferredKeywords, 0.72)
+    }
+
+    const playEnAudio = () => {
+      const enPreferredKeywords = ['google', 'microsoft', 'natural', 'en-us']
+      speakText(resultEn.value, 'en-US', enPreferredKeywords)
     }
 
     const openCamera = async () => {
@@ -420,9 +448,11 @@ export default defineComponent({
       imageFile,
       imagePreview,
       loading,
-      result,
+      resultEn,
+      resultZh,
       handleImageUpload,
-      playAudio,
+      playZhAudio,
+      playEnAudio,
       videoRef,
       showCamera,
       openCamera,
@@ -468,6 +498,7 @@ export default defineComponent({
 .image-preview {
   display: flex;
   justify-content: center;
+
   img {
     border-radius: 8px;
   }
