@@ -348,7 +348,7 @@ export default defineComponent({
 .card-image {
   width: 100%;
   max-height: 110px;
-  object-fit: cover;
+  object-fit: contain;
   border-radius: 8px;
 }
 </style>
