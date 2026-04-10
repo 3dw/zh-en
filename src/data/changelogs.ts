@@ -1,5 +1,14 @@
 export const changelogs = [
   {
+    version: '1.2.3',
+    date: '2026-04-10',
+    changes: [
+      { text: '情緒字卡新增圖片顯示', route: '/emotion', type: 'improvement' },
+      { text: '看圖選單字遊戲升級：改善合成發音品質、新增50張情緒圖卡', route: '/game3', type: 'improvement' },
+      { text: '看圖選單字遊戲加入側欄與首頁「詞」分類', route: '/game3', type: 'improvement' },
+    ],
+  },
+  {
     version: '1.2.2',
     date: '2026-02-20',
     changes: [

@@ -55,7 +55,7 @@
 <script lang="ts">
 import { defineComponent, ref, onMounted } from 'vue'
 
-// 匯入圖片
+// 匯入水果圖片
 import apple from '../assets/Vocabulary/apple.jpg'
 import banana from '../assets/Vocabulary/banana.jpg'
 import orange from '../assets/Vocabulary/orange.jpg'
@@ -81,16 +81,97 @@ export default defineComponent({
 
     // 定義詞彙和圖片的對應關係
     const vocabulary: VocabularyItem[] = [
+      // 水果
       { word: 'apple', image: apple },
       { word: 'banana', image: banana },
       { word: 'orange', image: orange },
       { word: 'pineapple', image: pineapple },
+      // 基本情緒
+      { word: 'happy', image: '/images/emotions/happy.webp' },
+      { word: 'sad', image: '/images/emotions/sad.webp' },
+      { word: 'angry', image: '/images/emotions/angry.webp' },
+      { word: 'nervous', image: '/images/emotions/nervous.webp' },
+      { word: 'excited', image: '/images/emotions/excited.webp' },
+      // 生理狀態
+      { word: 'tired', image: '/images/emotions/tired.webp' },
+      { word: 'sleepy', image: '/images/emotions/sleepy.webp' },
+      { word: 'hungry', image: '/images/emotions/hungry.webp' },
+      { word: 'thirsty', image: '/images/emotions/thirsty.webp' },
+      { word: 'sick', image: '/images/emotions/not_feeling_well.webp' },
+      { word: 'headache', image: '/images/emotions/headache.webp' },
+      { word: 'cold', image: '/images/emotions/cold.webp' },
+      { word: 'hot', image: '/images/emotions/hot.webp' },
+      { word: 'in pain', image: '/images/emotions/in_pain.webp' },
+      { word: 'dizzy', image: '/images/emotions/dizzy.webp' },
+      { word: 'nauseous', image: '/images/emotions/nauseous.webp' },
+      { word: 'sore throat', image: '/images/emotions/sore_throat.webp' },
+      { word: 'fever', image: '/images/emotions/fever.webp' },
+      { word: 'coughing', image: '/images/emotions/coughing.webp' },
+      { word: 'runny nose', image: '/images/emotions/runny_nose.webp' },
+      // 心理狀態
+      { word: 'focused', image: '/images/emotions/focused.webp' },
+      { word: 'distracted', image: '/images/emotions/distracted.webp' },
+      { word: 'motivated', image: '/images/emotions/motivated.webp' },
+      { word: 'no energy', image: '/images/emotions/no_energy.webp' },
+      { word: 'relieved', image: '/images/emotions/relieved.webp' },
+      { word: 'hesitant', image: '/images/emotions/hesitant.webp' },
+      { word: 'looking forward', image: '/images/emotions/looking_forward.webp' },
+      { word: 'impatient', image: '/images/emotions/impatient.webp' },
+      { word: 'calm', image: '/images/emotions/calm.webp' },
+      { word: 'irritated', image: '/images/emotions/irritated.webp' },
+      // 複雜情緒
+      { word: 'worried', image: '/images/emotions/worried.webp' },
+      { word: 'scared', image: '/images/emotions/scared.webp' },
+      { word: 'troubled', image: '/images/emotions/troubled.webp' },
+      { word: 'surprised', image: '/images/emotions/surprised.webp' },
+      { word: 'disappointed', image: '/images/emotions/disappointed.webp' },
+      { word: 'touched', image: '/images/emotions/touched.webp' },
+      { word: 'satisfied', image: '/images/emotions/satisfied.webp' },
+      { word: 'confused', image: '/images/emotions/confused.webp' },
+      { word: 'envious', image: '/images/emotions/envious.webp' },
+      { word: 'grateful', image: '/images/emotions/grateful.webp' },
+      { word: 'regretful', image: '/images/emotions/regretful.webp' },
+      { word: 'bored', image: '/images/emotions/bored.webp' },
+      { word: 'anxious', image: '/images/emotions/anxious.webp' },
+      { word: 'depressed', image: '/images/emotions/depressed.webp' },
+      { word: 'proud', image: '/images/emotions/proud.webp' },
+      { word: 'ashamed', image: '/images/emotions/ashamed.webp' },
+      { word: 'jealous', image: '/images/emotions/jealous.webp' },
+      { word: 'embarrassed', image: '/images/emotions/embarrassed.webp' },
+      { word: 'lonely', image: '/images/emotions/lonely.webp' },
+      { word: 'relaxed', image: '/images/emotions/relaxed.webp' },
     ]
 
     // 從 localStorage 讀取已保存的 level
     const savedLevel = localStorage.getItem('game3Level')
     if (savedLevel) {
       level.value = parseInt(savedLevel)
+    }
+
+    // 選擇高品質英文語音（避免金屬音）
+    function pickEnVoice(voices: SpeechSynthesisVoice[]): SpeechSynthesisVoice | null {
+      try {
+        let en = voices.filter(
+          (v) => v && v.lang && String(v.lang).toLowerCase().indexOf('en') === 0,
+        )
+        en = en.filter((v) => {
+          const nm = (v.name || '').toLowerCase()
+          return nm.indexOf('compact') < 0 && nm !== 'fred'
+        })
+        const prefName =
+          en.find((v) => (v.name || '').toLowerCase().indexOf('samantha') >= 0) ||
+          en.find((v) => (v.name || '').toLowerCase().indexOf('alex') >= 0)
+        if (prefName) return prefName
+        return (
+          en.find((v) => String(v.lang).toLowerCase() === 'en-us') ||
+          en.find((v) => String(v.lang).toLowerCase() === 'en-gb') ||
+          en.find((v) => String(v.lang).toLowerCase() === 'en-au') ||
+          en[0] ||
+          null
+        )
+      } catch {
+        return null
+      }
     }
 
     // 生成隨機單字和圖片
@@ -129,13 +210,30 @@ export default defineComponent({
       speakCurrentWord()
     }
 
-    // 發音當前單字
+    // 發音當前單字（高品質語音）
     function speakCurrentWord() {
-      if (currentWord.value) {
-        const utterance = new SpeechSynthesisUtterance(currentWord.value)
-        utterance.lang = 'en-US'
-        utterance.rate = 0.8
-        speechSynthesis.speak(utterance)
+      if (!currentWord.value) return
+      window.speechSynthesis.cancel()
+      const utterance = new SpeechSynthesisUtterance(currentWord.value)
+      utterance.lang = 'en-US'
+      utterance.rate = 0.9
+      utterance.pitch = 1.0
+      utterance.volume = 1.0
+
+      const doSpeak = () => {
+        const voices = window.speechSynthesis.getVoices()
+        if (voices.length > 0) {
+          const voice = pickEnVoice(voices)
+          if (voice) utterance.voice = voice
+        }
+        window.speechSynthesis.speak(utterance)
+      }
+
+      const voices = window.speechSynthesis.getVoices()
+      if (voices.length === 0) {
+        window.speechSynthesis.onvoiceschanged = doSpeak
+      } else {
+        doSpeak()
       }
     }
 
@@ -168,12 +266,8 @@ export default defineComponent({
     // 取得按鈕顏色
     function getButtonColor(word: string): string {
       if (!showingResult.value) return 'primary'
-      if (word === currentWord.value && word === selectedOption.value) {
-        return 'positive'
-      }
-      if (word === selectedOption.value) {
-        return 'negative'
-      }
+      if (word === currentWord.value && word === selectedOption.value) return 'positive'
+      if (word === selectedOption.value) return 'negative'
       return 'primary'
     }
 

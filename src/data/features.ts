@@ -176,6 +176,15 @@ export const features: Feature[] = [
     category: '其他',
   },
   {
+    id: 'game3',
+    title: '看圖選單字',
+    description: '看圖片選出正確的英文單字，涵蓋情緒、生理狀態與日常詞彙，答對升級，練習字詞認讀。',
+    keywords: ['看圖', '單字', '選擇題', '情緒', '詞彙', '遊戲', '字卡'],
+    route: '/game3',
+    icon: 'image_search',
+    category: '詞',
+  },
+  {
     id: 'ball-direction',
     title: '英文方向學習',
     description: '透過互動遊戲學習英文方向詞彙，幫助您掌握空間和方向的英文表達。',
