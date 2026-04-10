@@ -1,9 +1,0 @@
-import{X as f,r as _,b as g,o as w,_ as S,Z as m,$ as v,a0 as x,a4 as c,ae as y,a1 as B,a5 as k}from"./index-C21RpCOO.js";import{Q as C}from"./QPage-MZ07ClW_.js";import{g as E,Z as T}from"./speechVoice-DJ2LMbK9.js";const l=`人之初，性本善，性相近，習相遠。
-苟不教，性乃遷，教之道，貴以專。
-昔孟母，擇鄰處，子不學，斷機杼。
-竇燕山，有義方，教五子，名俱揚。
-養不教，父之過，教不嚴，師之惰。
-子不學，非所宜，幼不學，老何為。
-玉不琢，不成器，人不學，不知義。
-為人子，方少時，親師友，習禮儀。
-首孝悌，次見聞。`,b=f({__name:"ThreeCharacterPage",setup(u,{expose:n}){n();const s={教:"叫",為人子:"危人子",擇鄰處:"擇鄰杵",方少時:"方哨時"},t=_(!1),r=e=>e.replace(/[.*+?^${}()|[\]\\]/g,"\\$&"),o=g(()=>{let e=l;return Object.entries(s).forEach(([a,h])=>{e=e.replace(new RegExp(r(a),"g"),h)}),e}),i=()=>{const e=new SpeechSynthesisUtterance(o.value);e.lang="zh-TW",e.rate=.9;const a=E("zh-TW",T);return a&&(e.voice=a,e.lang=a.lang),e.onend=()=>{t.value=!1},e.onerror=()=>{t.value=!1},e},d=()=>{if(!(typeof window>"u"||!window.speechSynthesis)){if(t.value){window.speechSynthesis.cancel(),t.value=!1;return}window.speechSynthesis.cancel(),window.speechSynthesis.speak(i()),t.value=!0}};w(()=>{typeof window>"u"||!window.speechSynthesis||window.speechSynthesis.cancel()});const p={text:l,homophoneMap:s,isSpeaking:t,escapeRegExp:r,speechText:o,createUtterance:i,toggleSpeech:d};return Object.defineProperty(p,"__isScriptSetup",{enumerable:!1,value:!0}),p}}),P={class:"sanzijing-container"};function R(u,n,s,t,r,o){return m(),v(C,{class:"three-character-page q-pa-md"},{default:x(()=>[c("div",P,[n[0]||(n[0]=c("h1",{class:"title"},"三字經節選",-1)),c("div",{class:"content"},y(t.text)),B(k,{label:t.isSpeaking?"暫停":"朗讀",icon:t.isSpeaking?"stop_circle":"volume_up",color:"primary","text-color":"white",class:"speak-btn",onClick:t.toggleSpeech},null,8,["label","icon"])])]),_:1})}const j=S(b,[["render",R],["__scopeId","data-v-1da72956"],["__file","ThreeCharacterPage.vue"]]);export{j as default};
