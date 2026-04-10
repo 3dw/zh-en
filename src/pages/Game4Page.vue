@@ -188,13 +188,35 @@ export default defineComponent({
       speakCurrentDialogue()
     }
 
+    // 選擇音質最佳的語音（避免金屬音）
+    function getBestVoice(): SpeechSynthesisVoice | null {
+      const voices = speechSynthesis.getVoices()
+      const preferred = ['Samantha', 'Google US English', 'Karen', 'Moira', 'Alex']
+      for (const name of preferred) {
+        const voice = voices.find((v) => v.name === name)
+        if (voice) return voice
+      }
+      return voices.find((v) => v.lang === 'en-US' && v.localService) || voices.find((v) => v.lang === 'en-US') || null
+    }
+
     // 發音當前對白
     function speakCurrentDialogue() {
-      if (currentDialogue.value) {
+      if (!currentDialogue.value) return
+      speechSynthesis.cancel()
+
+      const doSpeak = () => {
         const utterance = new SpeechSynthesisUtterance(currentDialogue.value)
         utterance.lang = 'en-US'
-        utterance.rate = 0.8
+        utterance.rate = 0.85
+        const voice = getBestVoice()
+        if (voice) utterance.voice = voice
         speechSynthesis.speak(utterance)
+      }
+
+      if (speechSynthesis.getVoices().length > 0) {
+        doSpeak()
+      } else {
+        speechSynthesis.addEventListener('voiceschanged', doSpeak, { once: true })
       }
     }
 

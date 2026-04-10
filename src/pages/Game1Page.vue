@@ -92,13 +92,35 @@ export default defineComponent({
       speakCurrentLetter()
     }
 
+    // 選擇音質最佳的語音（避免金屬音）
+    function getBestVoice(): SpeechSynthesisVoice | null {
+      const voices = speechSynthesis.getVoices()
+      const preferred = ['Samantha', 'Google US English', 'Karen', 'Moira', 'Alex']
+      for (const name of preferred) {
+        const voice = voices.find((v) => v.name === name)
+        if (voice) return voice
+      }
+      return voices.find((v) => v.lang === 'en-US' && v.localService) || voices.find((v) => v.lang === 'en-US') || null
+    }
+
     // 發音當前字母
     function speakCurrentLetter() {
-      if (currentLetter.value) {
+      if (!currentLetter.value) return
+      speechSynthesis.cancel()
+
+      const doSpeak = () => {
         const utterance = new SpeechSynthesisUtterance(currentLetter.value.toLowerCase())
         utterance.lang = 'en-US'
-        utterance.rate = 0.4
+        utterance.rate = 0.5
+        const voice = getBestVoice()
+        if (voice) utterance.voice = voice
         speechSynthesis.speak(utterance)
+      }
+
+      if (speechSynthesis.getVoices().length > 0) {
+        doSpeak()
+      } else {
+        speechSynthesis.addEventListener('voiceschanged', doSpeak, { once: true })
       }
     }
 
@@ -160,9 +182,9 @@ export default defineComponent({
 
 <style scoped>
 .option-btn {
-  width: 80px;
-  height: 80px;
-  font-size: 2rem;
+  width: 90px;
+  height: 90px;
+  font-size: 2.5rem;
   margin: 8px;
   transition: all 0.3s ease;
 }
@@ -173,9 +195,9 @@ export default defineComponent({
 
 @media (max-width: 600px) {
   .option-btn {
-    width: 60px;
-    height: 60px;
-    font-size: 1.5rem;
+    width: 70px;
+    height: 70px;
+    font-size: 2rem;
   }
 }
 </style>

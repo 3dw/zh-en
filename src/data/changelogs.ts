@@ -1,5 +1,14 @@
 export const changelogs = [
   {
+    version: '1.2.4',
+    date: '2026-04-11',
+    changes: [
+      { text: '大寫/小寫字母發音選字遊戲優化：改善合成發音品質（減少金屬音）', route: '/game1', type: 'improvement' },
+      { text: '大寫/小寫字母選字按鈕字體放大', route: '/game2', type: 'improvement' },
+      { text: '大寫/小寫字母發音選字遊戲加入側欄與首頁「字」分類', route: '/game1', type: 'improvement' },
+    ],
+  },
+  {
     version: '1.2.3',
     date: '2026-04-10',
     changes: [
