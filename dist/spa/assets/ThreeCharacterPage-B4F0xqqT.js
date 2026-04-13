@@ -1,9 +1,0 @@
-import{B as e,G as t,T as n,c as r,g as i,h as a,j as o,l as s,mt as c,u as l}from"./runtime-core.esm-bundler-BDdBCHcA.js";import{t as u}from"./_plugin-vue_export-helper-B7aGp3iI.js";import{t as d}from"./QBtn-BAxokoUc.js";import{n as f,r as p}from"./speechVoice-DOOVQ4SO.js";import{t as m}from"./QPage-C9dMEsnG.js";var h={class:`sanzijing-container`},g=`人之初，性本善，性相近，習相遠。
-苟不教，性乃遷，教之道，貴以專。
-昔孟母，擇鄰處，子不學，斷機杼。
-竇燕山，有義方，教五子，名俱揚。
-養不教，父之過，教不嚴，師之惰。
-子不學，非所宜，幼不學，老何為。
-玉不琢，不成器，人不學，不知義。
-為人子，方少時，親師友，習禮儀。
-首孝悌，次見聞。`,_=u(i({__name:`ThreeCharacterPage`,setup(i){let u={教:`叫`,為人子:`危人子`,擇鄰處:`擇鄰杵`,方少時:`方哨時`},_=t(!1),v=e=>e.replace(/[.*+?^${}()|[\]\\]/g,`\\$&`),y=r(()=>{let e=g;return Object.entries(u).forEach(([t,n])=>{e=e.replace(new RegExp(v(t),`g`),n)}),e}),b=()=>{let e=new SpeechSynthesisUtterance(y.value);e.lang=`zh-TW`,e.rate=.9;let t=p(`zh-TW`,f);return t&&(e.voice=t,e.lang=t.lang),e.onend=()=>{_.value=!1},e.onerror=()=>{_.value=!1},e},x=()=>{if(!(typeof window>`u`||!window.speechSynthesis)){if(_.value){window.speechSynthesis.cancel(),_.value=!1;return}window.speechSynthesis.cancel(),window.speechSynthesis.speak(b()),_.value=!0}};return n(()=>{typeof window>`u`||!window.speechSynthesis||window.speechSynthesis.cancel()}),(t,n)=>(o(),l(m,{class:`three-character-page q-pa-md`},{default:e(()=>[s(`div`,h,[n[0]||=s(`h1`,{class:`title`},`三字經節選`,-1),s(`div`,{class:`content`},c(g)),a(d,{label:_.value?`暫停`:`朗讀`,icon:_.value?`stop_circle`:`volume_up`,color:`primary`,"text-color":`white`,class:`speak-btn`,onClick:x},null,8,[`label`,`icon`])])]),_:1}))}}),[[`__scopeId`,`data-v-5c32aa16`]]);export{_ as default};
