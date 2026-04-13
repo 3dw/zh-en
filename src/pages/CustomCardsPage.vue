@@ -2,6 +2,7 @@
   <q-page class="q-pa-md">
     <div class="word-card-list">
       <h1 class="page-title">自訂字卡</h1>
+      <VoiceInstallGuideCard v-if="voicePlaybackBlocked" :platform="detectedPlatform" />
 
       <q-tabs v-model="activeTab" class="text-primary q-mb-lg">
         <q-tab name="create" label="新增字卡" icon="add_circle" />
@@ -134,8 +135,15 @@
 <script lang="ts">
 import { defineComponent, ref, onMounted, watch } from 'vue'
 import FlashCard from '../components/FlashCard.vue'
+import VoiceInstallGuideCard from 'src/components/VoiceInstallGuideCard.vue'
+import { useSpeechAvailability } from 'src/composables/useSpeechAvailability'
 import { getAuth, onAuthStateChanged } from 'firebase/auth'
 import { getDatabase, ref as dbRef, get, set } from 'firebase/database'
+import {
+  EN_US_PREFERRED_KEYWORDS,
+  ZH_TW_PREFERRED_KEYWORDS,
+  speakTextWithPreferredVoice,
+} from 'src/utils/speechVoice'
 
 interface Card {
   english: string
@@ -147,8 +155,10 @@ export default defineComponent({
   name: 'CustomCardsPage',
   components: {
     FlashCard,
+    VoiceInstallGuideCard,
   },
   setup() {
+    const { voicePlaybackBlocked, detectedPlatform } = useSpeechAvailability()
     const activeTab = ref('create')
     const customCards = ref<Card[]>([])
     const flippedCards = ref<boolean[]>([])
@@ -314,13 +324,21 @@ export default defineComponent({
     }
 
     // 發音功能
-    const speakText = (text: string, lang = 'en-US') => {
-      if (text) {
-        const utterance = new SpeechSynthesisUtterance(text)
-        utterance.lang = lang
-        utterance.rate = 0.8
-        window.speechSynthesis.speak(utterance)
+    const speakText = async (text: string, lang = 'en-US') => {
+      if (!text) return
+
+      const normalizedLang = lang.toLowerCase()
+      if (normalizedLang.startsWith('zh')) {
+        await speakTextWithPreferredVoice(text, 'zh-TW', ZH_TW_PREFERRED_KEYWORDS, 0.8)
+        return
       }
+
+      if (normalizedLang.startsWith('en')) {
+        await speakTextWithPreferredVoice(text, 'en-US', EN_US_PREFERRED_KEYWORDS, 0.8)
+        return
+      }
+
+      await speakTextWithPreferredVoice(text, lang, [], 0.8)
     }
 
     // 自動英翻中
@@ -375,6 +393,8 @@ export default defineComponent({
       currentUser,
       isLoading,
       synced,
+      voicePlaybackBlocked,
+      detectedPlatform,
       createCard,
       flipCard,
       confirmDelete,

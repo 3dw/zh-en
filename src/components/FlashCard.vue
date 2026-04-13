@@ -1,5 +1,7 @@
 <template>
-  <div class="cards-container">
+  <div class="cards-wrapper">
+    <VoiceInstallGuideCard v-if="voicePlaybackBlocked" :platform="detectedPlatform" />
+    <div class="cards-container">
     <router-link
       to="/fav/view"
       v-if="!$route.path.startsWith('/fav') && $route.path !== '/favorite'"
@@ -76,12 +78,15 @@
         </div>
       </div>
     </div>
+    </div>
   </div>
 </template>
 
 <script lang="ts">
 import { defineComponent, computed, nextTick, ref } from 'vue'
-import { ZH_TW_PREFERRED_KEYWORDS, getPreferredVoice } from 'src/utils/speechVoice'
+import VoiceInstallGuideCard from 'src/components/VoiceInstallGuideCard.vue'
+import { useSpeechAvailability } from 'src/composables/useSpeechAvailability'
+import { ZH_TW_PREFERRED_KEYWORDS, getPreferredVoice, getVoicesAsync } from 'src/utils/speechVoice'
 
 interface Sentence {
   chinese: string
@@ -93,6 +98,9 @@ interface Sentence {
 
 export default defineComponent({
   name: 'FlashCard',
+  components: {
+    VoiceInstallGuideCard,
+  },
   props: {
     sentences: {
       type: Array as () => Sentence[],
@@ -109,6 +117,8 @@ export default defineComponent({
   },
 
   setup(props) {
+    const { voicePlaybackBlocked, detectedPlatform } = useSpeechAvailability()
+
     const filteredSentences = computed(() => {
       let filtered = props.sentences
 
@@ -197,9 +207,13 @@ export default defineComponent({
       }
     }
 
-    const speak = (text: string, lang: string) => {
+    const speak = async (text: string, lang: string) => {
+      if (!text || typeof window === 'undefined' || !window.speechSynthesis) return
+
+      const synth = window.speechSynthesis
       // 停止之前的語音，避免重疊
-      window.speechSynthesis.cancel()
+      synth.cancel()
+      synth.resume()
 
       const utterance = new SpeechSynthesisUtterance(text)
       utterance.lang = lang
@@ -210,8 +224,7 @@ export default defineComponent({
       utterance.volume = 1.0
 
       // 選擇高品質語音
-      const selectAndSpeak = () => {
-        const voices = window.speechSynthesis.getVoices()
+      const selectAndSpeak = (voices: SpeechSynthesisVoice[]) => {
 
         if (voices.length > 0) {
           let selectedVoice: SpeechSynthesisVoice | null = null
@@ -233,19 +246,11 @@ export default defineComponent({
         }
 
         // 播放語音
-        window.speechSynthesis.speak(utterance)
+        synth.speak(utterance)
       }
 
-      // 如果語音列表尚未載入，等待載入完成
-      const voices = window.speechSynthesis.getVoices()
-      if (voices.length === 0) {
-        window.speechSynthesis.onvoiceschanged = () => {
-          selectAndSpeak()
-        }
-      } else {
-        selectAndSpeak()
-      }
-
+      const voices = await getVoicesAsync()
+      selectAndSpeak(voices)
     }
 
     const getFavorites = () => {
@@ -284,6 +289,8 @@ export default defineComponent({
       filteredSentences,
       toggleCard,
       speak,
+      voicePlaybackBlocked,
+      detectedPlatform,
       isInFavorites,
       toggleFavorite,
     }
@@ -292,6 +299,10 @@ export default defineComponent({
 </script>
 
 <style scoped>
+.cards-wrapper {
+  width: 100%;
+}
+
 .cards-container {
   display: flex;
   flex-wrap: wrap;
