@@ -101,6 +101,30 @@
         <!-- 管理字卡頁面 -->
         <q-tab-panel name="manage">
           <div class="text-h6 q-mb-md">管理自訂字卡</div>
+          <div class="row q-gutter-sm q-mb-md">
+            <q-btn
+              class="little-margin"
+              icon="download"
+              color="primary"
+              label="匯出 JSON"
+              @click="exportCardsAsJson"
+              :disable="customCards.length === 0"
+            />
+            <q-btn
+              class="little-margin"
+              icon="upload"
+              color="secondary"
+              label="匯入 JSON"
+              @click="triggerImportJson"
+            />
+            <input
+              ref="importJsonInput"
+              type="file"
+              accept="application/json,.json"
+              class="hidden-file-input"
+              @change="handleImportJson"
+            />
+          </div>
           <q-list bordered>
             <q-item v-for="(card, index) in customCards" :key="index" clickable>
               <q-item-section>
@@ -134,6 +158,7 @@
 
 <script lang="ts">
 import { defineComponent, ref, onMounted, watch } from 'vue'
+import { useQuasar } from 'quasar'
 import FlashCard from '../components/FlashCard.vue'
 import VoiceInstallGuideCard from 'src/components/VoiceInstallGuideCard.vue'
 import { useSpeechAvailability } from 'src/composables/useSpeechAvailability'
@@ -168,8 +193,11 @@ export default defineComponent({
     const auth = getAuth()
     const db = getDatabase()
     const currentUser = ref(auth.currentUser)
+    const importJsonInput = ref<HTMLInputElement | null>(null)
     const isLoading = ref(false)
     const synced = ref(false)
+    const $q = useQuasar()
+    const buildCardKey = (card: Pick<Card, 'english' | 'chinese'>) => `${card.english}\u0000${card.chinese}`
     // 監聽用戶登入狀態
     onMounted(() => {
       isLoading.value = true
@@ -384,6 +412,98 @@ export default defineComponent({
       }
     }
 
+    const exportCardsAsJson = () => {
+      if (customCards.value.length === 0) {
+        $q.notify({ type: 'warning', message: '目前沒有可匯出的自訂字卡。' })
+        return
+      }
+
+      const exportData = customCards.value.map(({ english, chinese }) => ({ english, chinese }))
+      const blob = new Blob([JSON.stringify(exportData, null, 2)], {
+        type: 'application/json;charset=utf-8',
+      })
+      const url = URL.createObjectURL(blob)
+      const timestamp = new Date().toISOString().replace(/[:.]/g, '-')
+      const link = document.createElement('a')
+      link.href = url
+      link.download = `custom-cards-${timestamp}.json`
+      document.body.appendChild(link)
+      link.click()
+      link.remove()
+      URL.revokeObjectURL(url)
+    }
+
+    const triggerImportJson = () => {
+      importJsonInput.value?.click()
+    }
+
+    const handleImportJson = async (event: Event) => {
+      const input = event.target as HTMLInputElement
+      const file = input.files?.[0]
+      if (!file) return
+
+      try {
+        const content = await file.text()
+        const parsed = JSON.parse(content)
+
+        if (!Array.isArray(parsed)) {
+          throw new Error('JSON 格式必須為陣列。')
+        }
+
+        const existingKeys = new Set(customCards.value.map((card) => buildCardKey(card)))
+        let addedCount = 0
+        let skippedCount = 0
+        let invalidCount = 0
+
+        for (const item of parsed) {
+          if (!item || typeof item !== 'object') {
+            invalidCount++
+            continue
+          }
+
+          const englishRaw = (item as { english?: unknown }).english
+          const chineseRaw = (item as { chinese?: unknown }).chinese
+
+          if (typeof englishRaw !== 'string' || typeof chineseRaw !== 'string') {
+            invalidCount++
+            continue
+          }
+
+          const english = englishRaw.trim()
+          const chinese = chineseRaw.trim()
+          if (!english || !chinese) {
+            invalidCount++
+            continue
+          }
+
+          const key = buildCardKey({ english, chinese })
+          if (existingKeys.has(key)) {
+            skippedCount++
+            continue
+          }
+
+          existingKeys.add(key)
+          customCards.value.push({ english, chinese, flipped: false })
+          flippedCards.value.push(false)
+          addedCount++
+        }
+
+        if (addedCount > 0) {
+          await saveCards()
+        }
+
+        $q.notify({
+          type: addedCount > 0 ? 'positive' : 'info',
+          message: `匯入完成：新增 ${addedCount} 筆，略過重複 ${skippedCount} 筆，格式不符 ${invalidCount} 筆。`,
+        })
+      } catch (error) {
+        console.error('匯入 JSON 失敗:', error)
+        $q.notify({ type: 'negative', message: '匯入失敗，請確認 JSON 格式是否正確。' })
+      } finally {
+        input.value = ''
+      }
+    }
+
     return {
       activeTab,
       customCards,
@@ -402,6 +522,10 @@ export default defineComponent({
       speakText,
       autoTranslateZhToEn,
       autoTranslateEnToZh,
+      exportCardsAsJson,
+      triggerImportJson,
+      handleImportJson,
+      importJsonInput,
     }
   },
 })
@@ -436,6 +560,10 @@ export default defineComponent({
 
 .little-margin {
   margin: 1em;
+}
+
+.hidden-file-input {
+  display: none;
 }
 
 .q-tab-centered {
