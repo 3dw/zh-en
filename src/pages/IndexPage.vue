@@ -154,7 +154,7 @@ export default defineComponent({
       searchQuery: '',
       selectedCategory: '',
       categories: getAllCategories(),
-      mainCategories: ['字', '詞', '句', '文', '個人管理'],
+      mainCategories: ['字', '詞', '句', '個人管理'],
     }
   },
   computed: {
@@ -194,7 +194,6 @@ export default defineComponent({
         字: 'text_fields',
         詞: 'library_books',
         句: 'chat_bubble',
-        文: 'menu_book',
         個人管理: 'person',
       }
       return iconMap[category] || 'apps'
@@ -204,7 +203,6 @@ export default defineComponent({
         字: '學習字母、音標等基礎元素',
         詞: '學習單詞、詞彙和詞性',
         句: '學習完整的句子和句型結構',
-        文: '透過短文與經典段落培養語感與朗讀',
         個人管理: '管理個人學習進度和收藏',
       }
       return descMap[category] || ''
@@ -214,7 +212,6 @@ export default defineComponent({
         字: 'breathing-card',
         詞: 'quotes-card',
         句: 'movement-card',
-        文: 'literature-card',
         個人管理: 'mindfulness-card',
         其他: 'emotions-card',
       }
