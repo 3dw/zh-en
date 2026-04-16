@@ -1,0 +1,1 @@
+var e=`/assets/menbody-D3NVletM.jpg`;export{e as t};

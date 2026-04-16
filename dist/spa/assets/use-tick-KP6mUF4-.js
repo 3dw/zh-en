@@ -1,0 +1,1 @@
+import{D as e,S as t,T as n,_ as r}from"./runtime-core.esm-bundler-BDdBCHcA.js";import{i}from"./vm-DSplBe2f.js";function a(){let a,o=r();function s(){a=void 0}return e(s),n(s),{removeTick:s,registerTick(e){a=e,t(()=>{a===e&&(i(o)===!1&&a(),a=void 0)})}}}export{a as t};
