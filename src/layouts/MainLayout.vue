@@ -32,6 +32,36 @@
           @click="toggleLeftDrawer"
         />
 
+        <q-btn
+          flat
+          dense
+          round
+          icon="settings"
+          aria-label="偏好設定"
+          class="op-settings-btn q-ml-xs"
+          @click="preferencesMenuOpen = !preferencesMenuOpen"
+        >
+          <q-menu
+            v-model="preferencesMenuOpen"
+            anchor="bottom left"
+            self="top left"
+            no-parent-event
+          >
+            <div class="op-preferences-menu q-pa-md">
+              <div class="text-subtitle2 q-mb-sm">偏好設定</div>
+              <q-select
+                v-model="speechRate"
+                :options="speechRateOptions"
+                label="語音播放倍速"
+                dense
+                outlined
+                emit-value
+                map-options
+              />
+            </div>
+          </q-menu>
+        </q-btn>
+
         <!-- 左側：Logo + 主標題 -->
         <div class="row items-center op-title-container">
           <!-- 您可自訂放置自己的 Logo 圖檔 -->
@@ -40,7 +70,7 @@
             alt="OpenParliament Logo"
             class="op-logo q-mr-sm"
           /> -->
-          <q-toolbar-title class="op-title"> Learn English 學英文 </q-toolbar-title>
+          <q-toolbar-title class="op-title"> 學英文 </q-toolbar-title>
         </div>
 
         <!-- 右側：連結 -->
@@ -231,6 +261,7 @@
         :user="user"
         :users="users"
         :uid="uid"
+        :speech-rate="speechRate"
         @toggle-drawer="toggleLeftDrawer"
         @close-drawer="closeLeftDrawer"
         @toggleLogin="toggleLogin"
@@ -240,13 +271,18 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, computed, onMounted } from 'vue'
+import { defineComponent, ref, computed, onMounted, watch } from 'vue'
 import type { User, UserInfo } from 'firebase/auth'
 import { GoogleAuthProvider, signInWithPopup, signOut } from 'firebase/auth'
 import { getAuth, setPersistence, browserLocalPersistence } from 'firebase/auth'
 import { ref as dbRef, onValue, get, set } from 'firebase/database'
 import { getDatabase } from 'firebase/database'
 import { getFeaturesByCategory, getAllCategories } from '../data/features'
+import {
+  SPEECH_RATE_OPTIONS,
+  getSpeechRatePreference,
+  setSpeechRatePreference,
+} from 'src/utils/speechVoice'
 
 // 建立 Google 驗證提供者
 const googleAuthProvider = new GoogleAuthProvider()
@@ -257,7 +293,13 @@ export default defineComponent({
 
   setup() {
     const leftDrawerOpen = ref(false)
+    const preferencesMenuOpen = ref(false)
     const rememberMe = ref(false)
+    const speechRate = ref(getSpeechRatePreference())
+    const speechRateOptions = SPEECH_RATE_OPTIONS.map((rate) => ({
+      label: `${rate} 倍`,
+      value: rate,
+    }))
 
     const uid = ref('')
     const email = ref('')
@@ -268,6 +310,10 @@ export default defineComponent({
     const users = ref([])
 
     const cards = ref([])
+
+    watch(speechRate, (rate) => {
+      speechRate.value = setSpeechRatePreference(rate)
+    })
 
     const links = ref([
       {
@@ -499,9 +545,12 @@ export default defineComponent({
       fetchUserData,
       logout,
       leftDrawerOpen,
+      preferencesMenuOpen,
       toggleLeftDrawer,
       closeLeftDrawer,
       devMode,
+      speechRate,
+      speechRateOptions,
       links,
       sidebarCategories,
       getSortedFeaturesByCategory,
@@ -539,10 +588,23 @@ export default defineComponent({
   display: flex;
   align-items: center;
   justify-content: space-between;
+  position: relative;
 }
 
 .op-menu-btn {
   color: #fff;
+}
+
+.op-settings-btn {
+  color: #fff;
+  position: absolute;
+  left: 48px;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.op-preferences-menu {
+  min-width: 220px;
 }
 
 .op-title-container {

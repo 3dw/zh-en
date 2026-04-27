@@ -35,6 +35,45 @@ export const ZH_TW_PREFERRED_KEYWORDS = [
 
 export const EN_US_PREFERRED_KEYWORDS = ['google', 'microsoft', 'natural', 'en-us']
 
+export const SPEECH_RATE_STORAGE_KEY = 'zh-en-speech-rate'
+export const SPEECH_RATE_OPTIONS = [0.1, 0.25, 0.5, 0.75, 1, 1.25, 1.5] as const
+export type SpeechRatePreference = (typeof SPEECH_RATE_OPTIONS)[number]
+
+const DEFAULT_SPEECH_RATE: SpeechRatePreference = 1
+
+const normalizeSpeechRate = (rate: unknown): SpeechRatePreference => {
+  const numericRate = typeof rate === 'number' ? rate : Number(rate)
+  const matchedRate = SPEECH_RATE_OPTIONS.find((option) => option === numericRate)
+
+  return matchedRate ?? DEFAULT_SPEECH_RATE
+}
+
+export const getSpeechRatePreference = (): SpeechRatePreference => {
+  if (typeof window !== 'undefined' && typeof window.__zhEnSpeechRate === 'number') {
+    return normalizeSpeechRate(window.__zhEnSpeechRate)
+  }
+
+  if (typeof localStorage === 'undefined') {
+    return DEFAULT_SPEECH_RATE
+  }
+
+  return normalizeSpeechRate(localStorage.getItem(SPEECH_RATE_STORAGE_KEY))
+}
+
+export const setSpeechRatePreference = (rate: unknown): SpeechRatePreference => {
+  const normalizedRate = normalizeSpeechRate(rate)
+
+  if (typeof window !== 'undefined') {
+    window.__zhEnSpeechRate = normalizedRate
+  }
+
+  if (typeof localStorage !== 'undefined') {
+    localStorage.setItem(SPEECH_RATE_STORAGE_KEY, String(normalizedRate))
+  }
+
+  return normalizedRate
+}
+
 export type ClientPlatform =
   | 'windows'
   | 'macos'

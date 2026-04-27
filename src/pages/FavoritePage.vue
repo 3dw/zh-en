@@ -36,7 +36,7 @@
             <p class="text-grey-7">在學習時點擊愛心圖示來收藏字卡</p>
           </div>
           <div v-else>
-            <FlashCard :sentences="favoriteCards" />
+            <FlashCard :sentences="favoriteCards" :speech-rate="speechRate" />
           </div>
         </q-tab-panel>
 
@@ -229,7 +229,13 @@ export default defineComponent({
   components: {
     FlashCard,
   },
-  setup() {
+  props: {
+    speechRate: {
+      type: Number,
+      default: 1,
+    },
+  },
+  setup(props) {
     const $q = useQuasar()
     const favoriteCards = ref<Sentence[]>([])
     const isRecording = ref(false)
@@ -408,12 +414,16 @@ export default defineComponent({
     function playAudio() {
       // 用speechSynthesis發音
       const utterance = new SpeechSynthesisUtterance(currentClozeCard.value?.english)
+      utterance.rate = props.speechRate
+      utterance.__zhEnSpeechRateApplied = true
       window.speechSynthesis.speak(utterance)
     }
 
     function playSpeakoutAudio() {
       // 用speechSynthesis發音
       const utterance = new SpeechSynthesisUtterance(currentCard.value?.english)
+      utterance.rate = props.speechRate
+      utterance.__zhEnSpeechRateApplied = true
       window.speechSynthesis.speak(utterance)
     }
 
@@ -511,6 +521,8 @@ export default defineComponent({
     function playMultipleChoiceAudio() {
       // 用speechSynthesis發音
       const utterance = new SpeechSynthesisUtterance(currentMultipleChoiceCard.value?.english)
+      utterance.rate = props.speechRate
+      utterance.__zhEnSpeechRateApplied = true
       window.speechSynthesis.speak(utterance)
     }
 
@@ -518,6 +530,8 @@ export default defineComponent({
     watch(selectedOption, (newVal) => {
       if (newVal) {
         const utterance = new SpeechSynthesisUtterance(newVal)
+        utterance.rate = props.speechRate
+        utterance.__zhEnSpeechRateApplied = true
         window.speechSynthesis.speak(utterance)
       }
     })

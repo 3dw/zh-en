@@ -20,6 +20,7 @@
         :sentences="sentences"
         :searchQuery="searchQuery"
         :selectedStructure="selectedStructure"
+        :speech-rate="speechRate"
       />
     </div>
   </q-page>
@@ -34,6 +35,12 @@ export default defineComponent({
   name: 'BeginnerPage',
   components: {
     FlashCard,
+  },
+  props: {
+    speechRate: {
+      type: Number,
+      default: 1,
+    },
   },
   setup() {
     const searchQuery = ref('')

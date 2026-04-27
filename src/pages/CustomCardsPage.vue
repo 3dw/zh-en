@@ -94,7 +94,7 @@
 
           <div v-else>
             <!-- 使用 FlashCard 組件 -->
-            <FlashCard :sentences="customCards" />
+            <FlashCard :sentences="customCards" :speech-rate="speechRate" />
           </div>
         </q-tab-panel>
 
@@ -181,6 +181,12 @@ export default defineComponent({
   components: {
     FlashCard,
     VoiceInstallGuideCard,
+  },
+  props: {
+    speechRate: {
+      type: Number,
+      default: 1,
+    },
   },
   setup() {
     const { voicePlaybackBlocked, detectedPlatform } = useSpeechAvailability()

@@ -114,6 +114,10 @@ export default defineComponent({
       type: String,
       default: '',
     },
+    speechRate: {
+      type: Number,
+      default: 1,
+    },
   },
 
   setup(props) {
@@ -219,7 +223,8 @@ export default defineComponent({
       utterance.lang = lang
 
       // 調整語音參數以改善音質
-      utterance.rate = 1.0
+      utterance.rate = props.speechRate
+      utterance.__zhEnSpeechRateApplied = true
       utterance.pitch = 1.0
       utterance.volume = 1.0
 

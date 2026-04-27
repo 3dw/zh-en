@@ -1,5 +1,9 @@
 import { boot } from 'quasar/wrappers'
-import { ZH_TW_PREFERRED_KEYWORDS, getPreferredVoice } from 'src/utils/speechVoice'
+import {
+  ZH_TW_PREFERRED_KEYWORDS,
+  getPreferredVoice,
+  getSpeechRatePreference,
+} from 'src/utils/speechVoice'
 
 export default boot(() => {
   if (typeof window === 'undefined' || !window.speechSynthesis) return
@@ -24,8 +28,13 @@ export default boot(() => {
           utterance.lang = 'zh-TW'
         }
       }
+
+      if (!utterance.__zhEnSpeechRateApplied) {
+        const baseRate = Number(utterance?.rate) || 1
+        utterance.rate = Math.min(10, Math.max(0.1, baseRate * getSpeechRatePreference()))
+      }
     } catch (error) {
-      console.error('套用台灣口音失敗:', error)
+      console.error('套用語音偏好設定失敗:', error)
     }
 
     originalSpeak(utterance)
