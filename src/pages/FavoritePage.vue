@@ -209,6 +209,7 @@ import { useQuasar } from 'quasar'
 import FlashCard from 'src/components/FlashCard.vue'
 import axios from 'axios'
 import { useRoute } from 'vue-router'
+import { getVoicesAsync } from 'src/utils/speechVoice'
 
 interface Card {
   english: string
@@ -410,21 +411,72 @@ export default defineComponent({
       loadNewClozeCard()
     }
 
-    // 發音
-    function playAudio() {
-      // 用speechSynthesis發音
-      const utterance = new SpeechSynthesisUtterance(currentClozeCard.value?.english)
+    const pickEnVoice = (voices: SpeechSynthesisVoice[]): SpeechSynthesisVoice | null => {
+      try {
+        voices = voices || []
+        let en = voices.filter((v) => v && v.lang && String(v.lang).toLowerCase().indexOf('en') === 0)
+
+        // 避免較差音色的候選（如 Compact/Fred 等）
+        en = en.filter((v) => {
+          const nm = (v.name || '').toLowerCase()
+          return nm.indexOf('compact') < 0 && nm !== 'fred'
+        })
+
+        // 優先序（iOS/macOS 常見）：Samantha, Alex，其次 en-US，再退 en-GB / en-AU / 其他 en*
+        const prefName =
+          en.find((v) => (v.name || '').toLowerCase().includes('samantha')) ||
+          en.find((v) => (v.name || '').toLowerCase().includes('alex'))
+        if (prefName) return prefName
+
+        const enus = en.find((v) => String(v.lang).toLowerCase() === 'en-us')
+        if (enus) return enus
+
+        const engb = en.find((v) => String(v.lang).toLowerCase() === 'en-gb')
+        if (engb) return engb
+
+        const enau = en.find((v) => String(v.lang).toLowerCase() === 'en-au')
+        if (enau) return enau
+
+        return en[0] || null
+      } catch {
+        return null
+      }
+    }
+
+    const speakEnglish = async (text?: string | null) => {
+      if (!text || typeof window === 'undefined' || !window.speechSynthesis) return
+
+      const synth = window.speechSynthesis
+      // 停止之前的語音，避免重疊；iOS Safari 有時需要先 resume，否則 speak 會被靜默忽略。
+      synth.cancel()
+      synth.resume()
+
+      const utterance = new SpeechSynthesisUtterance(text)
+      utterance.lang = 'en-US'
       utterance.rate = props.speechRate
       utterance.__zhEnSpeechRateApplied = true
-      window.speechSynthesis.speak(utterance)
+      utterance.pitch = 1.0
+      utterance.volume = 1.0
+      utterance.onerror = (event) => {
+        console.error('語音合成錯誤:', event)
+      }
+
+      const voices = await getVoicesAsync()
+      if (voices.length > 0) {
+        const selected = pickEnVoice(voices)
+        if (selected) utterance.voice = selected
+      }
+
+      synth.speak(utterance)
+    }
+
+    // 發音（對齊 FlashCard 的發音設定）
+    function playAudio() {
+      void speakEnglish(currentClozeCard.value?.english)
     }
 
     function playSpeakoutAudio() {
-      // 用speechSynthesis發音
-      const utterance = new SpeechSynthesisUtterance(currentCard.value?.english)
-      utterance.rate = props.speechRate
-      utterance.__zhEnSpeechRateApplied = true
-      window.speechSynthesis.speak(utterance)
+      void speakEnglish(currentCard.value?.english)
     }
 
     // 當切換到「克漏字」分頁時，自動載入新的題目
@@ -519,20 +571,13 @@ export default defineComponent({
 
     // 新增發音功能
     function playMultipleChoiceAudio() {
-      // 用speechSynthesis發音
-      const utterance = new SpeechSynthesisUtterance(currentMultipleChoiceCard.value?.english)
-      utterance.rate = props.speechRate
-      utterance.__zhEnSpeechRateApplied = true
-      window.speechSynthesis.speak(utterance)
+      void speakEnglish(currentMultipleChoiceCard.value?.english)
     }
 
     // 監聽 selectedOption 的變化，並播放選項的英文聲音
     watch(selectedOption, (newVal) => {
       if (newVal) {
-        const utterance = new SpeechSynthesisUtterance(newVal)
-        utterance.rate = props.speechRate
-        utterance.__zhEnSpeechRateApplied = true
-        window.speechSynthesis.speak(utterance)
+        void speakEnglish(newVal)
       }
     })
 
