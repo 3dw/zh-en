@@ -1,1 +1,0 @@
-import{c as e}from"./runtime-core.esm-bundler-BDdBCHcA.js";var t={ratio:[String,Number]};function n(t,n){return e(()=>{let e=Number(t.ratio||(n===void 0?void 0:n.value));return isNaN(e)!==!0&&e>0?{paddingBottom:`${100/e}%`}:null})}export{t as n,n as t};
