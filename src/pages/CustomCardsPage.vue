@@ -132,7 +132,10 @@
                 <q-item-label caption>{{ card.chinese }}</q-item-label>
               </q-item-section>
               <q-item-section side>
-                <q-btn flat icon="delete" color="negative" @click="confirmDelete(index)" />
+                <div class="row q-gutter-sm">
+                  <q-btn flat icon="edit" color="primary" @click="openEditDialog(index)" />
+                  <q-btn flat icon="delete" color="negative" @click="confirmDelete(index)" />
+                </div>
               </q-item-section>
             </q-item>
           </q-list>
@@ -150,6 +153,41 @@
         <q-card-actions align="right">
           <q-btn flat label="取消" color="primary" v-close-popup />
           <q-btn flat label="刪除" color="negative" @click="deleteCard" v-close-popup />
+        </q-card-actions>
+      </q-card>
+    </q-dialog>
+
+    <!-- 編輯字卡對話框 -->
+    <q-dialog v-model="showEditDialog">
+      <q-card class="edit-card">
+        <q-card-section>
+          <div class="text-h6">編輯字卡</div>
+        </q-card-section>
+        <q-card-section class="q-gutter-md">
+          <q-input
+            v-model="editingCard.english"
+            label="英文單字或句子"
+            outlined
+            type="textarea"
+            autogrow
+          />
+          <q-input
+            v-model="editingCard.chinese"
+            label="中文翻譯"
+            outlined
+            type="textarea"
+            autogrow
+          />
+          <img
+            v-if="editingCard.image"
+            :src="editingCard.image"
+            alt="字卡圖片"
+            class="edit-card-image"
+          />
+        </q-card-section>
+        <q-card-actions align="right">
+          <q-btn flat label="取消" color="grey-8" v-close-popup />
+          <q-btn flat label="存檔" color="primary" @click="saveEdit" />
         </q-card-actions>
       </q-card>
     </q-dialog>
@@ -174,6 +212,7 @@ interface Card {
   english: string
   chinese: string
   flipped: boolean
+  image?: string
 }
 
 export default defineComponent({
@@ -196,6 +235,9 @@ export default defineComponent({
     const newCard = ref<Card>({ english: '', chinese: '', flipped: false })
     const showDeleteDialog = ref(false)
     const cardToDeleteIndex = ref(-1)
+    const showEditDialog = ref(false)
+    const cardToEditIndex = ref(-1)
+    const editingCard = ref<Card>({ english: '', chinese: '', flipped: false })
     const auth = getAuth()
     const db = getDatabase()
     const currentUser = ref(auth.currentUser)
@@ -355,6 +397,40 @@ export default defineComponent({
           saveCards()
         }
       }
+    }
+
+    // 開啟編輯對話框
+    const openEditDialog = (index: number) => {
+      const card = customCards.value[index]
+      if (!card) return
+      cardToEditIndex.value = index
+      editingCard.value = {
+        english: card.english,
+        chinese: card.chinese,
+        flipped: card.flipped,
+        ...(card.image ? { image: card.image } : {}),
+      }
+      showEditDialog.value = true
+    }
+
+    // 存檔編輯
+    const saveEdit = async () => {
+      if (cardToEditIndex.value === -1) return
+      const card = customCards.value[cardToEditIndex.value]
+      if (!card) return
+
+      const trimmedEnglish = editingCard.value.english.trim()
+      const trimmedChinese = editingCard.value.chinese.trim()
+      if (!trimmedEnglish || !trimmedChinese) {
+        $q.notify({ type: 'warning', message: '英文與中文都不能為空。' })
+        return
+      }
+
+      card.english = trimmedEnglish
+      card.chinese = trimmedChinese
+      await saveCards()
+      showEditDialog.value = false
+      cardToEditIndex.value = -1
     }
 
     // 發音功能
@@ -532,6 +608,10 @@ export default defineComponent({
       triggerImportJson,
       handleImportJson,
       importJsonInput,
+      showEditDialog,
+      editingCard,
+      openEditDialog,
+      saveEdit,
     }
   },
 })
@@ -576,5 +656,25 @@ export default defineComponent({
   display: flex;
   justify-content: center;
   align-items: center;
+}
+
+.edit-card {
+  width: 90vw;
+  max-width: 480px;
+}
+
+.edit-card-image {
+  display: block;
+  max-width: 100%;
+  max-height: 220px;
+  object-fit: contain;
+  border-radius: 8px;
+  margin: 0 auto;
+}
+
+@media (max-width: 400px) {
+  .edit-card-image {
+    max-height: 160px;
+  }
 }
 </style>
