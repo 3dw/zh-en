@@ -37,7 +37,7 @@
             alt="字卡圖片"
             class="card-image q-mb-sm"
           />
-          <p>{{ sentence.chinese }}</p>
+          <p :class="textSizeClass(sentence.chinese)">{{ sentence.chinese }}</p>
           <q-btn
             @click.stop="speak(sentence.chinese, 'zh-TW')"
             icon="volume_up"
@@ -67,7 +67,7 @@
             alt="字卡圖片"
             class="card-image q-mb-sm"
           />
-          <p>{{ sentence.english }}</p>
+          <p :class="textSizeClass(sentence.english)">{{ sentence.english }}</p>
           <q-btn
             @click.stop="speak(sentence.english, 'en-US')"
             icon="volume_up"
@@ -290,6 +290,13 @@ export default defineComponent({
       await nextTick()
     }
 
+    const textSizeClass = (text: string) => {
+      const len = text?.length ?? 0
+      if (len >= 60) return 'card-text-tiny'
+      if (len >= 30) return 'card-text-small'
+      return ''
+    }
+
     return {
       filteredSentences,
       toggleCard,
@@ -298,6 +305,7 @@ export default defineComponent({
       detectedPlatform,
       isInFavorites,
       toggleFavorite,
+      textSizeClass,
     }
   },
 })
@@ -330,6 +338,16 @@ export default defineComponent({
 
 .card-inner {
   font-size: 20px;
+}
+
+.card p.card-text-small {
+  font-size: 15px;
+  line-height: 1.4;
+}
+
+.card p.card-text-tiny {
+  font-size: 12px;
+  line-height: 1.35;
 }
 
 .card-front,
