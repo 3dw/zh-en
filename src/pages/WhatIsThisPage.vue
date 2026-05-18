@@ -308,6 +308,41 @@ export default defineComponent({
       return blobToDataUrl(compressedBlob)
     }
 
+    const saveToCustomCards = (image: string) => {
+      try {
+        const stored = localStorage.getItem('customCards')
+        const customCards: Array<{
+          english: string
+          chinese: string
+          flipped: boolean
+          image?: string
+        }> = stored ? JSON.parse(stored) : []
+
+        const existingIndex = customCards.findIndex(
+          (card) => card.english === resultEn.value && card.chinese === resultZh.value,
+        )
+
+        const cardData = {
+          english: resultEn.value,
+          chinese: resultZh.value,
+          flipped: false,
+          ...(image ? { image } : {}),
+        }
+
+        if (existingIndex >= 0) {
+          customCards[existingIndex] = {
+            ...customCards[existingIndex],
+            ...cardData,
+          }
+        } else {
+          customCards.push(cardData)
+        }
+        localStorage.setItem('customCards', JSON.stringify(customCards))
+      } catch (error) {
+        console.error('儲存自訂字卡失敗:', error)
+      }
+    }
+
     const saveToFavorites = async () => {
       if (!resultEn.value || !resultZh.value) {
         window.alert('請先拍照或上傳圖片，產生中英文內容後再收藏')
@@ -340,6 +375,7 @@ export default defineComponent({
         }
 
         localStorage.setItem(FAVORITES_KEY, JSON.stringify(favorites))
+        saveToCustomCards(image)
       } catch (error) {
         console.error('儲存最愛失敗:', error)
         window.alert('儲存最愛失敗，請稍後再試')

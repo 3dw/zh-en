@@ -294,7 +294,7 @@ export const features: Feature[] = [
     keywords: ['拍照', '識別', '物品', '實用', '生活', '相機', 'AI', '識別'],
     route: '/what_is_this',
     icon: 'camera_alt',
-    category: '句',
+    category: '個人管理',
   },
   {
     id: 'gallery',
