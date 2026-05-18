@@ -3,6 +3,24 @@
     <div class="q-pa-md full-width">
       <h2>我的最愛字卡</h2>
 
+      <div class="row q-gutter-sm q-mb-md">
+        <q-btn
+          icon="download"
+          color="primary"
+          label="匯出 JSON"
+          @click="exportFavoritesAsJson"
+          :disable="favoriteCards.length === 0"
+        />
+        <q-btn icon="upload" color="secondary" label="匯入 JSON" @click="triggerImportJson" />
+        <input
+          ref="importJsonInput"
+          type="file"
+          accept="application/json,.json"
+          class="hidden-file-input"
+          @change="handleImportJson"
+        />
+      </div>
+
       <div v-if="favoriteCards.length === 0">
         <div class="text-center q-pa-lg">
           <p class="text-grey-7">還沒有收藏的字卡</p>
@@ -216,6 +234,7 @@ interface Card {
   chinese: string
   category?: string
   image?: string
+  flipped?: boolean
 }
 
 interface Sentence {
@@ -243,6 +262,11 @@ export default defineComponent({
     const audioChunks = ref<Blob[]>([])
     const audioPlayer = ref<HTMLAudioElement | null>(null)
     const hasRecorded = ref(false)
+    const importJsonInput = ref<HTMLInputElement | null>(null)
+
+    const buildCardKey = (card: { english: string; chinese: string }) =>
+      `${card.english}\u0000${card.chinese}`
+
     // 讀取 localStorage 中收藏的字卡資料
     onMounted(() => {
       const savedFavorites = localStorage.getItem('en_love_arr')
@@ -654,6 +678,138 @@ export default defineComponent({
       }
     }
 
+    const exportFavoritesAsJson = () => {
+      if (favoriteCards.value.length === 0) {
+        $q.notify({ type: 'warning', message: '目前沒有可匯出的最愛字卡。' })
+        return
+      }
+
+      const exportData = favoriteCards.value.map((card) => ({
+        english: card.english,
+        chinese: card.chinese,
+        ...(card.image ? { image: card.image } : {}),
+        isFavorite: true,
+      }))
+      const blob = new Blob([JSON.stringify(exportData, null, 2)], {
+        type: 'application/json;charset=utf-8',
+      })
+      const url = URL.createObjectURL(blob)
+      const timestamp = new Date().toISOString().replace(/[:.]/g, '-')
+      const link = document.createElement('a')
+      link.href = url
+      link.download = `favorite-cards-${timestamp}.json`
+      document.body.appendChild(link)
+      link.click()
+      link.remove()
+      URL.revokeObjectURL(url)
+    }
+
+    const triggerImportJson = () => {
+      importJsonInput.value?.click()
+    }
+
+    const handleImportJson = async (event: Event) => {
+      const input = event.target as HTMLInputElement
+      const file = input.files?.[0]
+      if (!file) return
+
+      try {
+        const content = await file.text()
+        const parsed = JSON.parse(content)
+
+        if (!Array.isArray(parsed)) {
+          throw new Error('JSON 格式必須為陣列。')
+        }
+
+        const customStored = localStorage.getItem('customCards')
+        const customCards: Card[] = customStored ? JSON.parse(customStored) : []
+        const favoritesStored = localStorage.getItem('en_love_arr')
+        const favorites: Card[] = favoritesStored ? JSON.parse(favoritesStored) : []
+
+        const customKeys = new Set(customCards.map((card) => buildCardKey(card)))
+        const favoriteKeys = new Set(favorites.map((card) => buildCardKey(card)))
+
+        let addedCustomCount = 0
+        let addedFavoriteCount = 0
+        let skippedCount = 0
+        let invalidCount = 0
+
+        for (const item of parsed) {
+          if (!item || typeof item !== 'object') {
+            invalidCount++
+            continue
+          }
+
+          const englishRaw = (item as { english?: unknown }).english
+          const chineseRaw = (item as { chinese?: unknown }).chinese
+          const imageRaw = (item as { image?: unknown }).image
+          const isFavoriteRaw = (item as { isFavorite?: unknown }).isFavorite
+
+          if (typeof englishRaw !== 'string' || typeof chineseRaw !== 'string') {
+            invalidCount++
+            continue
+          }
+
+          const english = englishRaw.trim()
+          const chinese = chineseRaw.trim()
+          if (!english || !chinese) {
+            invalidCount++
+            continue
+          }
+
+          const image = typeof imageRaw === 'string' && imageRaw.trim() ? imageRaw : undefined
+          const key = buildCardKey({ english, chinese })
+
+          let wasAdded = false
+          if (!customKeys.has(key)) {
+            customKeys.add(key)
+            customCards.push({ english, chinese, flipped: false })
+            addedCustomCount++
+            wasAdded = true
+          }
+
+          if (isFavoriteRaw === true && !favoriteKeys.has(key)) {
+            favoriteKeys.add(key)
+            favorites.push({
+              english,
+              chinese,
+              ...(image ? { image } : {}),
+            })
+            addedFavoriteCount++
+            wasAdded = true
+          }
+
+          if (!wasAdded) {
+            skippedCount++
+          }
+        }
+
+        if (addedCustomCount > 0) {
+          localStorage.setItem('customCards', JSON.stringify(customCards))
+        }
+
+        if (addedFavoriteCount > 0) {
+          localStorage.setItem('en_love_arr', JSON.stringify(favorites))
+          favoriteCards.value = favorites.map((item) => ({
+            chinese: item.chinese,
+            english: item.english,
+            flipped: false,
+            ...(item.image ? { image: item.image } : {}),
+          }))
+        }
+
+        $q.notify({
+          type: addedCustomCount > 0 || addedFavoriteCount > 0 ? 'positive' : 'info',
+          message: `匯入完成：新增自訂字卡 ${addedCustomCount} 筆，新增最愛 ${addedFavoriteCount} 筆，略過重複 ${skippedCount} 筆，格式不符 ${invalidCount} 筆。`,
+        })
+      } catch (error) {
+        console.error('匯入 JSON 失敗:', error)
+        $q.notify({ type: 'negative', message: '匯入失敗，請確認 JSON 格式是否正確。' })
+      } finally {
+        input.value = ''
+      }
+    }
+
     return {
       favoriteCards,
       removeFromFavorites,
@@ -686,6 +842,10 @@ export default defineComponent({
       audioPlayer,
       checkAnswerSpeakoutAnswer,
       resetAudio,
+      importJsonInput,
+      exportFavoritesAsJson,
+      triggerImportJson,
+      handleImportJson,
     }
   },
 })
@@ -735,5 +895,9 @@ export default defineComponent({
   max-height: 220px;
   object-fit: cover;
   border-radius: 8px;
+}
+
+.hidden-file-input {
+  display: none;
 }
 </style>
