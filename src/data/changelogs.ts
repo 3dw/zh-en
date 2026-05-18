@@ -1,5 +1,53 @@
 export const changelogs = [
   {
+    version: '1.2.8',
+    date: '2026-05-18',
+    changes: [
+      {
+        text: '我的最愛新增匯出 / 匯入 JSON 功能（含 isFavorite 標記）',
+        route: '/favorites',
+        type: 'improvement',
+      },
+      {
+        text: '自訂字卡管理新增「編輯字卡」功能（可改中英文，圖片唯讀）',
+        route: '/custom_cards',
+        type: 'improvement',
+      },
+      {
+        text: '拍照分析「存到最愛」同時寫入自訂字卡（含圖片），並移至「個人管理」分類',
+        route: '/what_is_this',
+        type: 'improvement',
+      },
+      {
+        text: '允許手機與平板上以雙指縮放放大頁面',
+        route: '/',
+        type: 'improvement',
+      },
+    ],
+  },
+  {
+    version: '1.2.7',
+    date: '2026-05-07',
+    changes: [
+      {
+        text: '修正我的最愛發音：對齊字卡語音設定',
+        route: '/favorites',
+        type: 'improvement',
+      },
+    ],
+  },
+  {
+    version: '1.2.6',
+    date: '2026-04-27',
+    changes: [
+      {
+        text: '新增字卡播放速度偏好設定',
+        route: '/favorites',
+        type: 'improvement',
+      },
+    ],
+  },
+  {
     version: '1.2.5',
     date: '2026-04-13',
     changes: [
