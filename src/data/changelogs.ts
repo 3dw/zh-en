@@ -1,5 +1,28 @@
 export const changelogs = [
   {
+    version: '1.3.0',
+    date: '2026-06-08',
+    changes: [
+      {
+        text: '自主學英文需要您捐款，以支持本站運作和更新',
+        href: 'https://github.com/3dw/zh-en/wiki/%E5%B0%8F%E9%A1%8D%E6%8D%90%E6%AC%BE%E9%82%80%E7%B4%84',
+        target: '_blank',
+        rel: 'noopener noreferrer',
+        type: 'improvement',
+      },
+      {
+        text: '修復圖片小測驗之發音',
+        route: '/gallery',
+        type: 'improvement',
+      },
+      {
+        text: '修復英文睡前故事生成功能',
+        route: '/story_backend',
+        type: 'improvement',
+      },
+    ],
+  },
+  {
     version: '1.2.8',
     date: '2026-05-18',
     changes: [
@@ -91,9 +114,7 @@ export const changelogs = [
   {
     version: '1.2.2',
     date: '2026-02-20',
-    changes: [
-      { text: '新增正確發音讀詩詞與讀經功能', route: '/changelogs', type: 'improvement' },
-    ],
+    changes: [{ text: '新增正確發音讀詩詞與讀經功能', route: '/changelogs', type: 'improvement' }],
   },
   {
     version: '1.2.1',

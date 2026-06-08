@@ -49,7 +49,21 @@
         </h2>
         <ul>
           <li v-for="changelog in new_changelogs?.changes" :key="changelog.text">
-            <router-link :to="changelog.route">
+            <a
+              v-if="changelog.href"
+              :href="changelog.href"
+              :target="changelog.target"
+              :rel="changelog.rel"
+            >
+              {{ changelog.text }}
+              <q-icon
+                :name="getIconForChangeType(changelog.type)"
+                :color="getColorForChangeType(changelog.type)"
+                size="sm"
+                class="q-mr-sm"
+              />
+            </a>
+            <router-link v-else :to="changelog.route || '/'">
               {{ changelog.text }}
               <q-icon
                 :name="getIconForChangeType(changelog.type)"
