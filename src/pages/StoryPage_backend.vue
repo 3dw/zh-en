@@ -114,7 +114,6 @@
         >
           <!-- 段落文字 -->
           <div class="story-content col-12 col-md-7">
-            <p class="text-body1">{{ translatedParagraphs[index] }}</p>
             <p class="text-body1">{{ paragraph }}</p>
           </div>
 
@@ -205,9 +204,29 @@ export default defineComponent({
     const generatedStory = ref<{ content: string; audioUrl: string } | null>(null)
     const storyParagraphs = ref<string[]>([])
     const paragraphImages = ref<string[]>([])
-    const translatedParagraphs = ref<string[]>([])
     const audioPlayer = ref<HTMLAudioElement | null>(null)
     const storySection = ref<HTMLElement | null>(null)
+
+    const splitStoryContent = (content: string) =>
+      content
+        .split(/\n\s*\n/)
+        .map((paragraph) => paragraph.trim())
+        .filter((p) => {
+          // 過濾掉 包含---的段落
+          return (
+            !(p.split(' ').length <= 3) &&
+            !p.includes('---') &&
+            !p.startsWith("Ok, let's") &&
+            !p.startsWith('Make sure') &&
+            !p.startsWith("Let's") &&
+            !p.startsWith('Let us') &&
+            !p.startsWith('We') &&
+            !p.startsWith('Will') &&
+            !p.startsWith('Should') &&
+            !p.startsWith('Constraints:') &&
+            !(p.includes(':') && !p.includes('"') && !p.includes('`'))
+          )
+        })
 
     // 修改 printStory 函數
     const printStory = () => {
@@ -234,10 +253,9 @@ export default defineComponent({
         // 清空之前的內容
         storyParagraphs.value = []
         paragraphImages.value = []
-        translatedParagraphs.value = []
         generatedStory.value = null
 
-        // 步驟 1: 生成故事內容
+        // 步驟 1: 生成英文故事內容
         progressMessage.value = '正在創作故事...'
         const storyResponse = await fetch(
           'https://zh-en-backend.alearn13994229.workers.dev/StoryGeneration',
@@ -264,55 +282,37 @@ export default defineComponent({
           throw new Error(storyData.error || '故事生成失敗')
         }
 
-        // 將故事分段
-        storyParagraphs.value = storyData.content.split('\n\n').filter((p: string) => p.trim())
+        const storyContent = storyData.content.trim()
+        storyParagraphs.value = splitStoryContent(storyContent)
 
-        // 步驟 2: 翻譯成英文
-        for (let i = 0; i < storyParagraphs.value.length; i++) {
-          progressMessage.value = `正在翻譯...${i + 1}/${storyParagraphs.value.length}`
-          const paragraph = storyParagraphs.value[i]
-          const translatedParagraph = await fetch(
-            'https://zh-en-backend.alearn13994229.workers.dev/translate-zh-to-en',
-            {
-              method: 'POST',
-              headers: {
-                'Content-Type': 'application/json',
-              },
-              body: JSON.stringify({ content: paragraph }),
+        // 步驟 2: 用英文故事內容生成配圖
+        progressMessage.value = '正在生成配圖...請稍等3分鐘...'
+        const imagesResponse = await fetch(
+          'https://zh-en-backend.alearn13994229.workers.dev/StoryGeneration',
+          {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
             },
-          )
-          const translatedText = await translatedParagraph.text()
-          translatedParagraphs.value.push(translatedText)
+            body: JSON.stringify({
+              step: 2,
+              content: splitStoryContent(storyContent).join('\n\n'),
+            }),
+          },
+        )
+
+        if (!imagesResponse.ok) {
+          throw new Error('圖片生成失敗')
         }
 
-        // 步驟 3: 生成圖片
-        for (let i = 0; i < translatedParagraphs.value.length; i++) {
-          const paragraph = translatedParagraphs.value[i]
-
-          progressMessage.value = `正在生成配圖...${i + 1}/${translatedParagraphs.value.length}`
-          const imagesResponse = await fetch(
-            'https://zh-en-backend.alearn13994229.workers.dev/generate-image-by-single-paragraph',
-            {
-              method: 'POST',
-              headers: {
-                'Content-Type': 'application/json',
-              },
-              body: JSON.stringify({
-                storyParagraph: paragraph,
-              }),
-            },
-          )
-
-          if (!imagesResponse.ok) {
-            throw new Error('圖片生成失敗')
-          }
-
-          const imagesData = await imagesResponse.json()
-          paragraphImages.value.push(imagesData.image)
+        const imagesData = await imagesResponse.json()
+        if (!imagesData.success) {
+          throw new Error(imagesData.error || '圖片生成失敗')
         }
+        paragraphImages.value = imagesData.images
 
-        // 步驟 4: 生成語音
-        progressMessage.value = '正在生成語音...'
+        // 步驟 3: 用英文故事內容生成語音
+        progressMessage.value = '正在生成語音...請稍等3分鐘...'
         const voiceResponse = await fetch(
           'https://zh-en-backend.alearn13994229.workers.dev/StoryGeneration',
           {
@@ -322,7 +322,7 @@ export default defineComponent({
             },
             body: JSON.stringify({
               step: 3,
-              content: translatedParagraphs.value.join(),
+              content: splitStoryContent(storyContent).join('\n'),
             }),
           },
         )
@@ -338,7 +338,7 @@ export default defineComponent({
 
         // 保存生成的內容
         generatedStory.value = {
-          content: storyData.content,
+          content: storyContent,
           audioUrl: voiceData.audioUrl,
         }
 
@@ -470,7 +470,6 @@ export default defineComponent({
       generatedStory,
       storyParagraphs,
       paragraphImages,
-      translatedParagraphs,
       audioPlayer,
       storySection,
       printStory,
