@@ -135,6 +135,7 @@ import { defineComponent, ref, computed } from 'vue'
 import type { PropType } from 'vue'
 import { set, ref as dbRef, getDatabase } from 'firebase/database'
 import { useQuasar } from 'quasar'
+import { EN_US_PREFERRED_KEYWORDS, speakTextWithPreferredVoice } from 'src/utils/speechVoice'
 
 const database = getDatabase()
 
@@ -194,12 +195,7 @@ export default defineComponent({
     })
 
     const playCardAudio = (text: string) => {
-      if (text) {
-        const utterance = new SpeechSynthesisUtterance(text)
-        utterance.lang = 'en-US'
-        utterance.rate = 0.6
-        window.speechSynthesis.speak(utterance)
-      }
+      speakTextWithPreferredVoice(text, 'en-US', EN_US_PREFERRED_KEYWORDS, 0.85)
     }
 
     const deleteCard = (index: number) => {
