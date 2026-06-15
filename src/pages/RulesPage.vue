@@ -132,6 +132,7 @@
 <script lang="ts">
 import { defineComponent, ref } from 'vue'
 import { useQuasar } from 'quasar'
+import { speakEnglish } from 'src/utils/speechVoice'
 
 // 導入圖片
 // import badmintonImg from '../assets/sports/badminton.jpg'

@@ -31,6 +31,7 @@
 
 <script lang="ts">
 import { defineComponent, ref, onMounted } from 'vue'
+import { speakEnglish } from 'src/utils/speechVoice'
 
 interface ImageModule {
   default: string

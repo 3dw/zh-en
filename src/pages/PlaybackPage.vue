@@ -107,6 +107,7 @@
 
 <script lang="ts">
 import { defineComponent, ref } from 'vue'
+import { speakEnglish } from 'src/utils/speechVoice'
 
 interface EmotionImageResult {
   images: string[]

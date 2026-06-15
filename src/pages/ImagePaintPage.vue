@@ -73,6 +73,7 @@
 <script lang="ts">
 import { defineComponent, ref } from 'vue'
 import type { CSSProperties } from 'vue'
+import { speakEnglish } from 'src/utils/speechVoice'
 
 interface Point {
   x: number
