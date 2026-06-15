@@ -36,8 +36,8 @@
         />
       </div>
 
-      <!-- 虛擬按鈕控制區 -->
-      <div class="virtual-controls">
+      <!-- 虛擬按鈕控制區（只要是觸控裝置就顯示，見 issue #110） -->
+      <div v-show="isMobile" class="virtual-controls">
         <div class="movement-buttons">
           <q-btn
             round
@@ -751,11 +751,14 @@ export default defineComponent({
       window.addEventListener('keydown', handleKeyDown)
       window.addEventListener('keyup', handleKeyUp)
 
-      // 檢測是否為手機設備
+      // 只要是觸控裝置就顯示虛擬按鈕（不再用螢幕寬度判斷）。
+      // iPadOS 13+ 的 Safari 會回報桌面版 UA，須改用 maxTouchPoints 偵測，見 issue #110。
+      const isTouchDevice =
+        (typeof navigator !== 'undefined' && navigator.maxTouchPoints > 0) ||
+        (typeof window !== 'undefined' && 'ontouchstart' in window)
       isMobile.value =
-        /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
-          navigator.userAgent,
-        ) || window.innerWidth <= 768
+        isTouchDevice ||
+        /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)
     })
 
     onUnmounted(() => {
@@ -859,7 +862,7 @@ canvas {
 }
 
 .virtual-controls {
-  display: none; /* 預設隱藏，在手機上顯示 */
+  /* 顯示與否改由 v-show（觸控裝置偵測）控制，不再用螢幕寬度，見 issue #110 */
   width: 100%;
   max-width: 400px;
   margin: 20px auto;
@@ -924,12 +927,7 @@ canvas {
   margin-left: -1em;
 }
 
-/* 在手機上顯示虛擬按鈕 */
 @media (max-width: 768px) {
-  .virtual-controls {
-    display: block;
-  }
-
   .game-container {
     margin-bottom: 0;
   }
