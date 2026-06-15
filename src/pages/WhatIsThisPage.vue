@@ -192,7 +192,7 @@ export default defineComponent({
           // 初始縮放比例
           let scale = 0.8
           const canvas = document.createElement('canvas')
-          const pica = new Pica()
+          const pica = Pica()
           let compressedBlob
 
           do {
@@ -443,7 +443,7 @@ export default defineComponent({
           let scale = 0.8
 
           const canvas = document.createElement('canvas')
-          const pica = new Pica({
+          const pica = Pica({
             features: ['js', 'wasm', 'cib'],
           })
 
