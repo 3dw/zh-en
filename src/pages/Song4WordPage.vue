@@ -113,6 +113,7 @@
 
 <script lang="ts">
 import { defineComponent, ref, onMounted } from 'vue'
+import { speakText } from 'src/utils/speechVoice'
 
 interface LyricWord {
   text: string
@@ -134,12 +135,8 @@ export default defineComponent({
     const lyricsLines = ref<LyricWord[][]>([])
 
     const speakInstruction = (lang: 'zh' | 'en') => {
-      const utterance = new SpeechSynthesisUtterance(
-        lang === 'zh' ? gameInstruction.value.zh : gameInstruction.value.en,
-      )
-      utterance.lang = lang === 'zh' ? 'zh-TW' : 'en-US'
-      utterance.rate = 0.9 // 稍微放慢語速
-      speechSynthesis.speak(utterance)
+      const text = lang === 'zh' ? gameInstruction.value.zh : gameInstruction.value.en
+      speakText(text, lang === 'zh' ? 'zh-TW' : 'en-US', { rate: 0.9 })
     }
 
     function initializeLyrics() {

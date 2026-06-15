@@ -113,6 +113,7 @@
 
 <script lang="ts">
 import { defineComponent, ref, onMounted, onUnmounted } from 'vue'
+import { speakEnglish } from 'src/utils/speechVoice'
 
 export default defineComponent({
   name: 'DrawGuessPage',
@@ -315,10 +316,7 @@ export default defineComponent({
     // 發音當前單字
     function speakCurrentWord() {
       if (currentWord.value) {
-        const utterance = new SpeechSynthesisUtterance(currentWord.value)
-        utterance.lang = 'en-US'
-        utterance.rate = 0.8
-        speechSynthesis.speak(utterance)
+        speakEnglish(currentWord.value, { rate: 0.8 })
       }
     }
 

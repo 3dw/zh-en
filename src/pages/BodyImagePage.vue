@@ -23,6 +23,7 @@
 
 <script lang="ts">
 import { defineComponent, ref } from 'vue'
+import { speakEnglish } from 'src/utils/speechVoice'
 // 請確認 body.jpg 的匯入路徑無誤
 import bodyImage from '../assets/body.jpg'
 
@@ -63,15 +64,6 @@ export default defineComponent({
       { english: 'Toe', position: 'toe-pos' },
       { english: 'Ball', position: 'ball-pos' },
     ])
-
-    /**
-     * 文字點選後，使用瀏覽器語音合成朗讀英文
-     */
-    function speakEnglish(text: string) {
-      const utterance = new SpeechSynthesisUtterance(text)
-      // 若需調整語速 / 語言，可在這裡設定
-      speechSynthesis.speak(utterance)
-    }
 
     return {
       bodyParts,

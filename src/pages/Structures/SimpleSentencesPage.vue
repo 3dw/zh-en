@@ -148,6 +148,7 @@
 
 <script lang="ts">
 import { defineComponent, ref, computed } from 'vue'
+import { speakEnglish } from 'src/utils/speechVoice'
 
 interface BeVerb {
   id: number
@@ -1032,8 +1033,7 @@ export default defineComponent({
   methods: {
     speakSentence(sentence: string) {
       if ('speechSynthesis' in window) {
-        const utterance = new SpeechSynthesisUtterance(sentence)
-        window.speechSynthesis.speak(utterance)
+        speakEnglish(sentence)
       } else {
         console.warn('您的瀏覽器不支援語音合成功能。')
       }

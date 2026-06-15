@@ -23,6 +23,7 @@
 
 <script lang="ts">
 import { defineComponent, ref } from 'vue'
+import { speakEnglish } from 'src/utils/speechVoice'
 import cookingImage from '../assets/cooking.jpg'
 
 export default defineComponent({
@@ -43,12 +44,6 @@ export default defineComponent({
       { english: 'marinate', position: 'marinate-pos' },
       { english: 'blanch', position: 'blanch-pos' },
     ])
-
-    // 點選文字後，使用瀏覽器語音合成朗讀對應英文
-    function speakEnglish(text: string) {
-      const utterance = new SpeechSynthesisUtterance(text)
-      speechSynthesis.speak(utterance)
-    }
 
     return {
       cookingMethods,

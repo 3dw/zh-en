@@ -114,6 +114,7 @@
 
 <script lang="ts">
 import { defineComponent, ref, computed } from 'vue'
+import { speakEnglish } from 'src/utils/speechVoice'
 
 interface PhrasePair {
   leftPhrase: string
@@ -203,10 +204,7 @@ export default defineComponent({
 
     // 修改播放語音函數
     const speakPhrase = (text: string) => {
-      const utterance = new SpeechSynthesisUtterance(text)
-      utterance.lang = 'en-US'
-      utterance.rate = 0.8
-      speechSynthesis.speak(utterance)
+      speakEnglish(text, { rate: 0.8 })
 
       // 移動拔河點
       isMoving.value = true

@@ -154,24 +154,52 @@ export const getVoicesAsync = (timeoutMs = 1500): Promise<SpeechSynthesisVoice[]
   })
 }
 
-export const speakTextWithPreferredVoice = (
+export interface SpeakOptions {
+  /** 語速倍率，預設依語言而定（中文 0.9、英文 0.85）。 */
+  rate?: number
+  /** 音高，1 為預設。 */
+  pitch?: number
+  /** 音量，1 為預設。 */
+  volume?: number
+  /** 播放結束時的 callback。 */
+  onend?: () => void
+  /** 播放發生錯誤時的 callback。 */
+  onerror?: (event: SpeechSynthesisErrorEvent) => void
+  /** 是否在播放前取消前一段語音，預設 true。需要連續播放時可設為 false。 */
+  cancelPrevious?: boolean
+}
+
+const DEFAULT_EN_RATE = 0.85
+const DEFAULT_ZH_RATE = 0.9
+
+/**
+ * 共用的語音播放核心：挑選偏好的高品質語音後播放，避免各頁面各自實作而出現
+ * 「金屬音」等品質不一致的問題（見 issue #109）。
+ */
+const speakWithPreferredVoice = (
   text: string,
   lang: string,
   preferredNameKeywords: string[],
-  rate = 0.6,
+  options: SpeakOptions = {},
 ) => {
   if (!text) return
 
   if (typeof window === 'undefined' || !window.speechSynthesis) return
 
+  const { rate = 0.6, pitch, volume, onend, onerror, cancelPrevious = true } = options
+
   const synth = window.speechSynthesis
-  synth.cancel()
+  if (cancelPrevious) synth.cancel()
   // iOS Safari 有時需要先 resume，否則 speak 會被靜默忽略。
   synth.resume()
 
   const utterance = new SpeechSynthesisUtterance(text)
   utterance.lang = lang
   utterance.rate = rate
+  if (typeof pitch === 'number') utterance.pitch = pitch
+  if (typeof volume === 'number') utterance.volume = volume
+  if (onend) utterance.onend = onend
+  if (onerror) utterance.onerror = onerror
 
   const setVoiceAndSpeak = () => {
     const voice = getPreferredVoice(lang, preferredNameKeywords)
@@ -202,3 +230,30 @@ export const speakTextWithPreferredVoice = (
     }, 900)
   }
 }
+
+export const speakTextWithPreferredVoice = (
+  text: string,
+  lang: string,
+  preferredNameKeywords: string[],
+  rate = 0.6,
+) => speakWithPreferredVoice(text, lang, preferredNameKeywords, { rate })
+
+/** 朗讀英文，永遠挑選偏好的高品質英文語音。各頁面請統一使用此函式。 */
+export const speakEnglish = (text: string, options: SpeakOptions = {}) =>
+  speakWithPreferredVoice(text, 'en-US', EN_US_PREFERRED_KEYWORDS, {
+    rate: DEFAULT_EN_RATE,
+    ...options,
+  })
+
+/** 朗讀中文（繁體台灣），永遠挑選偏好的台灣國語語音。各頁面請統一使用此函式。 */
+export const speakChinese = (text: string, options: SpeakOptions = {}) =>
+  speakWithPreferredVoice(text, 'zh-TW', ZH_TW_PREFERRED_KEYWORDS, {
+    rate: DEFAULT_ZH_RATE,
+    ...options,
+  })
+
+/** 依語言代碼自動選擇中文或英文語音的便利函式。 */
+export const speakText = (text: string, lang = 'en-US', options: SpeakOptions = {}) =>
+  lang.toLowerCase().startsWith('zh')
+    ? speakChinese(text, options)
+    : speakEnglish(text, options)

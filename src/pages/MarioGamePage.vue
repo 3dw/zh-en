@@ -151,6 +151,7 @@
 
 <script lang="ts">
 import { defineComponent, ref, onMounted, onUnmounted } from 'vue'
+import { speakEnglish } from 'src/utils/speechVoice'
 import { wordPairs } from '../data/wordPairs'
 
 interface GameObject {
@@ -270,11 +271,7 @@ export default defineComponent({
     // 播放題目發音
     const speakTargetWord = () => {
       if (gameState.value.targetWord) {
-        const utterance = new SpeechSynthesisUtterance(gameState.value.targetWord)
-        utterance.lang = 'en-US'
-        utterance.rate = 0.8
-        utterance.volume = 0.8
-        window.speechSynthesis.speak(utterance)
+        speakEnglish(gameState.value.targetWord, { rate: 0.8, volume: 0.8 })
       }
     }
 
@@ -536,11 +533,7 @@ export default defineComponent({
           mario.x < mushroom.x + mushroom.width
         ) {
           // 播放該答案的發音
-          const utterance = new SpeechSynthesisUtterance(mushroom.word || '')
-          utterance.lang = 'en-US'
-          utterance.rate = 0.8
-          utterance.volume = 0.8
-          window.speechSynthesis.speak(utterance)
+          speakEnglish(mushroom.word || '', { rate: 0.8, volume: 0.8 })
 
           if (mushroom.isCorrect) {
             // 連續答對次數增加

@@ -170,19 +170,13 @@ export default defineComponent({
     }
 
     const speakText = (text: string) => {
-      const utterance = new SpeechSynthesisUtterance(text)
-      utterance.lang = 'en-US'
-      utterance.rate = 0.9
-      speechSynthesis.speak(utterance)
+      speakEnglish(text, { rate: 0.9 })
     }
 
     const selectColor = (color: string, index: number) => {
       selectedColor.value = color
       const colorName = colorNames[index] || 'unknown'
-      const utterance = new SpeechSynthesisUtterance(`This is ${colorName} color`)
-      utterance.lang = 'en-US'
-      utterance.rate = 0.9
-      speechSynthesis.speak(utterance)
+      speakEnglish(`This is ${colorName} color`, { rate: 0.9 })
     }
 
     const colorPart = (part: ElephantPart) => {

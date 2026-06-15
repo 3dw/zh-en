@@ -192,10 +192,7 @@ export default defineComponent({
 
     // 發音遊戲說明
     function speakInstruction() {
-      const utterance = new SpeechSynthesisUtterance(gameInstruction.value)
-      utterance.lang = 'en-US'
-      utterance.rate = 0.8
-      speechSynthesis.speak(utterance)
+      speakEnglish(gameInstruction.value, { rate: 0.8 })
     }
 
     // 檢查答案

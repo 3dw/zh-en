@@ -132,6 +132,7 @@
 
 <script lang="ts">
 import { defineComponent, ref } from 'vue'
+import { speakEnglish } from 'src/utils/speechVoice'
 
 export default defineComponent({
   name: 'BallDirectionPage',
@@ -175,14 +176,11 @@ export default defineComponent({
       // 依序播放每個方向的指令
       for (const dir of directions) {
         if (dir.value > 0) {
-          await new Promise((resolve) => {
-            const utterance = new SpeechSynthesisUtterance(
-              `Move ${dir.value} step${dir.value > 1 ? 's' : ''} ${dir.name}`,
-            )
-            utterance.lang = 'en-US'
-            utterance.rate = 0.9
-            utterance.onend = resolve
-            speechSynthesis.speak(utterance)
+          await new Promise<void>((resolve) => {
+            speakEnglish(`Move ${dir.value} step${dir.value > 1 ? 's' : ''} ${dir.name}`, {
+              rate: 0.9,
+              onend: () => resolve(),
+            })
           })
           // 等待一小段時間再播放下一個指令
           await new Promise((resolve) => setTimeout(resolve, 500))
@@ -204,11 +202,7 @@ export default defineComponent({
       if (newRow === basketPosition.row && newCol === basketPosition.col) {
         showSuccess.value = true
         // 播放成功提示音
-        const successUtterance = new SpeechSynthesisUtterance(
-          'Great job! The ball is in the basket!',
-        )
-        successUtterance.lang = 'en-US'
-        speechSynthesis.speak(successUtterance)
+        speakEnglish('Great job! The ball is in the basket!')
       }
 
       // 重置指令

@@ -90,6 +90,7 @@
 <script lang="ts">
 import { defineComponent, ref, onMounted } from 'vue'
 import axios from 'axios'
+import { speakEnglish } from 'src/utils/speechVoice'
 
 export default defineComponent({
   name: 'HandWrittenPage',
@@ -129,17 +130,13 @@ export default defineComponent({
 
     const sayPleaseWrite = () => {
       console.log('currentLetter.value:', currentLetter.value)
-      const speech = new SpeechSynthesisUtterance(
+      speakEnglish(
         'Please write the letter: ' +
           detectLetterCase(currentLetter.value) +
           ' ' +
           currentLetter.value,
+        { rate: 1.2, pitch: 1.1, volume: 0.8 },
       )
-      speech.lang = 'en'
-      speech.rate = 1.2
-      speech.pitch = 1.1
-      speech.volume = 0.8
-      speechSynthesis.speak(speech)
     }
 
     const initCanvas = () => {

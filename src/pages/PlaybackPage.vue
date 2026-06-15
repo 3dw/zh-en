@@ -220,11 +220,7 @@ export default defineComponent({
     }
 
     const speakEmotion = (emotion: EmotionWithAnimation) => {
-      speechSynthesis.cancel()
-      const utterance = new SpeechSynthesisUtterance(emotion.enName)
-      utterance.lang = 'en-US'
-      utterance.rate = 0.8
-      speechSynthesis.speak(utterance)
+      speakEnglish(emotion.enName, { rate: 0.8 })
     }
 
     // 顯示分析結果(無額外動畫)

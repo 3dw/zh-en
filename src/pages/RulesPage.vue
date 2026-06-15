@@ -259,10 +259,7 @@ export default defineComponent({
     }
 
     const speak = (text: string) => {
-      const utterance = new SpeechSynthesisUtterance(text)
-      utterance.lang = 'en-US'
-      utterance.rate = 0.8
-      speechSynthesis.speak(utterance)
+      speakEnglish(text, { rate: 0.8 })
     }
 
     const speakContent = () => {

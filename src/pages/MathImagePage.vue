@@ -72,10 +72,7 @@ export default defineComponent({
 
     const handleCardClick = (symbol: MathSymbol) => {
       // 播放英文語音
-      const utterance = new SpeechSynthesisUtterance(symbol.name)
-      utterance.lang = 'en-US'
-      utterance.rate = 0.9
-      speechSynthesis.speak(utterance)
+      speakEnglish(symbol.name, { rate: 0.9 })
 
       // 設置高亮效果
       symbol.isActive = true

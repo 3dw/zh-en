@@ -83,6 +83,7 @@
 
 <script lang="ts">
 import { defineComponent, ref, onMounted } from 'vue'
+import { speakChinese } from 'src/utils/speechVoice'
 
 interface LyricWord {
   text: string
@@ -146,9 +147,7 @@ export default defineComponent({
     }
 
     function speakInstruction() {
-      const utterance = new SpeechSynthesisUtterance(gameInstruction.value)
-      utterance.lang = 'zh-TW'
-      speechSynthesis.speak(utterance)
+      speakChinese(gameInstruction.value)
     }
 
     function checkAnswer() {
