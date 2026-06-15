@@ -61,7 +61,7 @@ export async function generateImage(storyContent: string): Promise<string> {
     style: 'natural'
   })
 
-  const imageUrl = response.data[0]?.url
+  const imageUrl = response.data?.[0]?.url
   if (!imageUrl) {
     throw new Error('Failed to generate image')
   }
