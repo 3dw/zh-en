@@ -1,5 +1,28 @@
 export const changelogs = [
   {
+    version: '1.3.1',
+    date: '2026-06-15',
+    changes: [
+      {
+        text: '修正英文發音金屬音：統一語音播放函式並改用高品質偏好語音',
+        route: '/',
+        type: 'improvement',
+      },
+      {
+        text: '修正 iPad 跳跳人遊戲無法移動：改用觸控偵測顯示虛擬按鈕',
+        route: '/mario-game',
+        type: 'improvement',
+      },
+      {
+        text: '新增GitHub維護與回報問題功能',
+        href: 'https://github.com/3dw/zh-en/issues',
+        target: '_blank',
+        rel: 'noopener noreferrer',
+        type: 'improvement',
+      },
+    ],
+  },
+  {
     version: '1.3.0',
     date: '2026-06-08',
     changes: [
