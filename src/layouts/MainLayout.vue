@@ -182,19 +182,6 @@
         <q-item
           clickable
           tag="a"
-          href="https://github.com/3dw/zh-en"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <q-item-section avatar>
-            <q-icon name="open_in_new" />
-          </q-item-section>
-          <q-item-section>本站原始碼</q-item-section>
-        </q-item>
-
-        <q-item
-          clickable
-          tag="a"
           href="https://github.com/3dw/zh-en/wiki/%E5%BF%97%E5%B7%A5%E6%8B%9B%E5%8B%9F"
           target="_blank"
           rel="noopener noreferrer"
@@ -216,6 +203,26 @@
             <q-icon name="thumb_up" />
           </q-item-section>
           <q-item-section>捐款支持</q-item-section>
+        </q-item>
+
+        <q-item
+          clickable
+          tag="a"
+          href="https://github.com/3dw/zh-en/issues"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          <q-item-section avatar>
+            <q-icon name="open_in_new" />
+          </q-item-section>
+          <q-item-section>GitHub回報問題</q-item-section>
+        </q-item>
+
+        <q-item clickable tag="a" href="mailto:bestian@gmail.com">
+          <q-item-section avatar>
+            <q-icon name="mail" />
+          </q-item-section>
+          <q-item-section>Email回報問題</q-item-section>
         </q-item>
 
         <!--
