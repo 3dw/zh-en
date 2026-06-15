@@ -2,6 +2,9 @@
 .thumbs.db
 node_modules
 
+# Yarn local state
+.yarn/install-state.gz
+
 # Quasar core related directories
 .quasar
 /dist
