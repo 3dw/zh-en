@@ -44,7 +44,7 @@
           icon="play_arrow"
           label="Start Game"
           @click="startGame"
-          :disable="isGameRunning"
+          :disable="isGameRunning || customWordsInsufficient"
         />
         <q-btn
           color="secondary"
@@ -54,6 +54,20 @@
           class="q-ml-sm"
         />
       </div>
+
+      <!-- 「自訂」字組單詞不足提示，引導前往自訂字卡頁面新增（見 issue #135） -->
+      <q-banner
+        v-if="customWordsInsufficient"
+        rounded
+        class="custom-insufficient-banner bg-orange-1 text-orange-9"
+      >
+        <template #avatar>
+          <q-icon name="info" color="orange-8" />
+        </template>
+        目前自訂單詞數不足（需至少 3 個），請至
+        <router-link to="/custom_cards" class="custom-cards-link">自訂字卡</router-link>
+        頁面新增單一字詞的字卡。
+      </q-banner>
 
       <!-- 虛擬按鈕控制區（只要是觸控裝置就顯示，見 issue #110） -->
       <div v-show="isMobile" class="virtual-controls">
@@ -199,7 +213,15 @@
 <script lang="ts">
 import { defineComponent, ref, computed, onMounted, onUnmounted } from 'vue'
 import { speakEnglish } from 'src/utils/speechVoice'
-import { wordPairs, wordCategories, ALL_CATEGORY, WINNING_SCORE } from '../data/wordPairs'
+import {
+  wordPairs,
+  wordCategories,
+  ALL_CATEGORY,
+  CUSTOM_CATEGORY,
+  WINNING_SCORE,
+  getCustomWordPairs,
+} from '../data/wordPairs'
+import type { WordPair } from '../data/wordPairs'
 
 interface GameObject {
   x: number
@@ -242,7 +264,24 @@ export default defineComponent({
 
     // 字組選單：預設「全部」沿用分數難度篩選，選特定字組則只出該組的字，見 issue #128
     const selectedCategory = ref<string>(ALL_CATEGORY)
-    const categoryOptions = computed(() => [ALL_CATEGORY, ...wordCategories])
+
+    // 「自訂」字組：來自使用者自訂字卡中的單一字詞，見 issue #135。
+    // 需湊滿三個（一正解、兩誤答）才能出題；不足時仍可選取，但會提示前往新增。
+    const MIN_CUSTOM_WORDS = 3
+    const customWordPairs = ref<WordPair[]>([])
+    const loadCustomWordPairs = () => {
+      customWordPairs.value = getCustomWordPairs()
+    }
+
+    // 「自訂」永遠列入選單，方便引導使用者；字數不足時於下方顯示提示
+    const categoryOptions = computed(() => [ALL_CATEGORY, ...wordCategories, CUSTOM_CATEGORY])
+
+    // 選了「自訂」但單詞數不足三個：需提示使用者前往自訂字卡頁面新增
+    const customWordsInsufficient = computed(
+      () =>
+        selectedCategory.value === CUSTOM_CATEGORY &&
+        customWordPairs.value.length < MIN_CUSTOM_WORDS,
+    )
 
     // 克漏字母模式：隨機單字中挖掉一個字母以 "_" 顯示，三個香菇為候選字母
     // （一個正確、兩個同類型的錯誤字母：子音配子音、母音配母音）
@@ -376,8 +415,13 @@ export default defineComponent({
 
     // 依「字組選單 / 分數難度」取得可用單字庫
     // - 「全部」：依當前分數的難度範圍篩選（原本行為）
+    // - 「自訂」：使用者自訂字卡中的單一字詞，不受分數限制（見 issue #135）
     // - 特定字組：只取該字組的單字，不受分數限制（見 issue #128）
     const getWordPool = () => {
+      if (selectedCategory.value === CUSTOM_CATEGORY) {
+        // 自訂字組不足三個時退回全部單字，避免無法出題
+        return customWordPairs.value.length >= 3 ? customWordPairs.value : wordPairs
+      }
       const availableWords =
         selectedCategory.value === ALL_CATEGORY
           ? wordPairs.filter((word) => score.value >= word.minScore && score.value <= word.maxScore)
@@ -732,6 +776,8 @@ export default defineComponent({
 
     const startGame = () => {
       if (isGameRunning.value) return
+      // 「自訂」字組單詞不足時不開始，改由畫面提示前往新增（見 issue #135）
+      if (customWordsInsufficient.value) return
       isGameRunning.value = true
       score.value = 0
       generateMushrooms()
@@ -819,6 +865,15 @@ export default defineComponent({
 
     // 切換字組後，若遊戲進行中則立即換成新字組的題目（見 issue #128）
     const onCategoryChange = () => {
+      // 切到「自訂」時重新讀取自訂字卡，確保是最新內容（見 issue #135）
+      if (selectedCategory.value === CUSTOM_CATEGORY) {
+        loadCustomWordPairs()
+      }
+      // 自訂單詞不足時不出題，停止遊戲並由畫面提示前往新增
+      if (customWordsInsufficient.value) {
+        stopGame()
+        return
+      }
       newQuestion()
     }
 
@@ -925,6 +980,7 @@ export default defineComponent({
     onMounted(() => {
       initCanvas()
       preloadSounds() // 預載入音效
+      loadCustomWordPairs() // 載入自訂字卡中的單詞，供「自訂」字組使用
       window.addEventListener('keydown', handleKeyDown)
       window.addEventListener('keyup', handleKeyUp)
 
@@ -957,6 +1013,7 @@ export default defineComponent({
       isMobile,
       selectedCategory,
       categoryOptions,
+      customWordsInsufficient,
       onCategoryChange,
       isClozeMode,
       onClozeModeChange,
@@ -1084,6 +1141,18 @@ canvas {
   -webkit-tap-highlight-color: transparent;
   user-select: none;
   touch-action: manipulation;
+}
+
+.custom-insufficient-banner {
+  max-width: 600px;
+  margin: 0 auto;
+  border: 1px solid #ffcc80;
+}
+
+.custom-cards-link {
+  color: #e65100;
+  font-weight: bold;
+  text-decoration: underline;
 }
 
 .instructions {

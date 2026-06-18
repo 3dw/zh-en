@@ -15,6 +15,14 @@
         <q-tab-panel name="create">
           <div class="text-h6 q-mb-md">新增自訂字卡</div>
 
+          <!-- 提示：單一字詞的字卡會自動加入「跳跳人」遊戲的「自訂」字組（見 issue #135） -->
+          <q-banner rounded class="jump-game-hint bg-blue-1 text-blue-9 q-mb-md">
+            <template #avatar>
+              <q-icon name="sports_esports" color="primary" />
+            </template>
+            提示：若英文只有「單一字詞」（不含空白、標點不計，例如 <b>apple</b>），這張字卡會自動加入「跳跳人」遊戲的「自訂」字組。累積至少 3 張單詞字卡即可在遊戲中選用。
+          </q-banner>
+
           <q-form @submit="createCard" class="q-gutter-md">
             <q-input
               v-model="newCard.english"
@@ -646,6 +654,12 @@ export default defineComponent({
 
 .little-margin {
   margin: 1em;
+}
+
+.jump-game-hint {
+  border: 1px solid #90caf9;
+  font-size: 0.95rem;
+  line-height: 1.5;
 }
 
 .hidden-file-input {

@@ -4,6 +4,16 @@ export const changelogs = [
     date: '2026-06-19',
     changes: [
       {
+        text: '跳跳人遊戲新增「自訂」字組：自動讀入自訂字卡中的單一字詞（標點不計）',
+        route: '/mario-game',
+        type: 'new',
+      },
+      {
+        text: '自訂字卡頁面新增提示：單一字詞的字卡會自動加入跳跳人遊戲的「自訂」字組',
+        route: '/custom_cards',
+        type: 'new',
+      },
+      {
         text: '跳跳人遊戲新增克漏字母模式：挖掉單字中一個字母，選出正確的候選字母',
         route: '/mario-game',
         type: 'new',
