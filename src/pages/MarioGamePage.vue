@@ -20,6 +20,17 @@
     <!-- 遊戲控制區 -->
     <div class="game-controls">
       <div class="control-panel">
+        <!-- 字組選單：切換不同字的組合（情緒、身體、動物…），見 issue #128 -->
+        <q-select
+          v-model="selectedCategory"
+          :options="categoryOptions"
+          label="字組"
+          dense
+          outlined
+          class="category-select q-ml-sm"
+          @update:model-value="onCategoryChange"
+        />
+
         <q-btn
           color="primary"
           icon="play_arrow"
@@ -33,16 +44,6 @@
           label="Reset"
           @click="resetGame"
           class="q-ml-sm"
-        />
-        <!-- 字組選單：切換不同字的組合（情緒、身體、動物…），見 issue #128 -->
-        <q-select
-          v-model="selectedCategory"
-          :options="categoryOptions"
-          label="字組"
-          dense
-          outlined
-          class="category-select q-ml-sm"
-          @update:model-value="onCategoryChange"
         />
       </div>
 
@@ -327,9 +328,7 @@ export default defineComponent({
       // - 特定字組：只取該字組的單字，不受分數限制（見 issue #128）
       const availableWords =
         selectedCategory.value === ALL_CATEGORY
-          ? wordPairs.filter(
-              (word) => score.value >= word.minScore && score.value <= word.maxScore,
-            )
+          ? wordPairs.filter((word) => score.value >= word.minScore && score.value <= word.maxScore)
           : wordPairs.filter((word) => word.category === selectedCategory.value)
 
       // 如果可用單字不足，則使用所有單字
