@@ -34,6 +34,16 @@
           @click="resetGame"
           class="q-ml-sm"
         />
+        <!-- 字組選單：切換不同字的組合（情緒、身體、動物…），見 issue #128 -->
+        <q-select
+          v-model="selectedCategory"
+          :options="categoryOptions"
+          label="字組"
+          dense
+          outlined
+          class="category-select q-ml-sm"
+          @update:model-value="onCategoryChange"
+        />
       </div>
 
       <!-- 虛擬按鈕控制區（只要是觸控裝置就顯示，見 issue #110） -->
@@ -146,13 +156,31 @@
         </q-card-actions>
       </q-card>
     </q-dialog>
+
+    <!-- 通關勝利提示 -->
+    <q-dialog v-model="showVictory" persistent>
+      <q-card class="victory-card">
+        <q-card-section class="row items-center justify-center">
+          <q-avatar icon="emoji_events" color="amber" text-color="white" size="lg" />
+          <span class="q-ml-sm text-h5">恭喜通關！</span>
+        </q-card-section>
+        <q-card-section>
+          <div class="text-h6 text-center q-mb-md">你已征服所有難度的單字！</div>
+          <div class="text-h5 text-center q-mb-sm">最終得分：{{ score }}</div>
+          <div class="text-subtitle1 text-center">等級：{{ getDifficultyLevel() }}</div>
+        </q-card-section>
+        <q-card-actions align="center">
+          <q-btn flat label="再玩一次" color="primary" @click="resetGame" v-close-popup />
+        </q-card-actions>
+      </q-card>
+    </q-dialog>
   </q-page>
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, onMounted, onUnmounted } from 'vue'
+import { defineComponent, ref, computed, onMounted, onUnmounted } from 'vue'
 import { speakEnglish } from 'src/utils/speechVoice'
-import { wordPairs } from '../data/wordPairs'
+import { wordPairs, wordCategories, ALL_CATEGORY, WINNING_SCORE } from '../data/wordPairs'
 
 interface GameObject {
   x: number
@@ -184,9 +212,14 @@ export default defineComponent({
     const showCorrectAnswer = ref(false)
     const gameLoop = ref<number | null>(null)
     const showWrongAnswer = ref(false)
+    const showVictory = ref(false) // 達到通關分數時顯示勝利畫面
 
     // 檢測是否為手機設備
     const isMobile = ref(false)
+
+    // 字組選單：預設「全部」沿用分數難度篩選，選特定字組則只出該組的字，見 issue #128
+    const selectedCategory = ref<string>(ALL_CATEGORY)
+    const categoryOptions = computed(() => [ALL_CATEGORY, ...wordCategories])
 
     // 遊戲狀態
     const gameState = ref<GameState>({
@@ -289,10 +322,15 @@ export default defineComponent({
     const generateMushrooms = () => {
       const mushrooms: GameObject[] = []
 
-      // 根據當前分數篩選可用的單字
-      const availableWords = wordPairs.filter(
-        (word) => score.value >= word.minScore && score.value <= word.maxScore,
-      )
+      // 篩選可用的單字：
+      // - 「全部」：依當前分數的難度範圍篩選（原本行為）
+      // - 特定字組：只取該字組的單字，不受分數限制（見 issue #128）
+      const availableWords =
+        selectedCategory.value === ALL_CATEGORY
+          ? wordPairs.filter(
+              (word) => score.value >= word.minScore && score.value <= word.maxScore,
+            )
+          : wordPairs.filter((word) => word.category === selectedCategory.value)
 
       // 如果可用單字不足，則使用所有單字
       const wordsToUse = availableWords.length >= 3 ? availableWords : wordPairs
@@ -545,10 +583,16 @@ export default defineComponent({
             score.value += earnedScore
 
             // 答對時不播放音效，避免與單字語音互相干擾（見 issue #80）
-            // 顯示得分提示
-            showCorrectAnswer.value = true
-            // 暫停遊戲
-            isGameRunning.value = false
+            if (score.value >= WINNING_SCORE) {
+              // 達到最高難度分數，通關！顯示勝利畫面
+              showVictory.value = true
+              stopGame()
+            } else {
+              // 顯示得分提示
+              showCorrectAnswer.value = true
+              // 暫停遊戲
+              isGameRunning.value = false
+            }
           } else {
             // 答錯時扣分並重置連續答對次數
             score.value = Math.max(0, score.value - 1000)
@@ -602,6 +646,7 @@ export default defineComponent({
       showGameOver.value = false
       showCorrectAnswer.value = false
       showWrongAnswer.value = false
+      showVictory.value = false
       startGame()
     }
 
@@ -652,6 +697,19 @@ export default defineComponent({
       }
     }
 
+    const onCategoryChange = () => {
+      // 切換字組後，若遊戲進行中則立即換成新字組的題目（見 issue #128）
+      if (!isGameRunning.value) return
+      gameState.value.mario.x = 100
+      gameState.value.mario.y = 400
+      marioState.value.velocityY = 0
+      marioState.value.isJumping = false
+      generateMushrooms()
+      if (gameCanvas.value) {
+        gameCanvas.value.focus()
+      }
+    }
+
     const handleKeyDown = (event: KeyboardEvent) => {
       if (!isGameRunning.value) {
         // 當遊戲暫停時，檢查是否在對話框中
@@ -659,6 +717,9 @@ export default defineComponent({
           if (showCorrectAnswer.value) {
             continueGame()
             showCorrectAnswer.value = false
+          } else if (showVictory.value) {
+            resetGame()
+            showVictory.value = false
           } else if (showGameOver.value) {
             resetGame()
             showGameOver.value = false
@@ -774,8 +835,12 @@ export default defineComponent({
       showGameOver,
       showCorrectAnswer,
       showWrongAnswer,
+      showVictory,
       gameState,
       isMobile,
+      selectedCategory,
+      categoryOptions,
+      onCategoryChange,
       startGame,
       resetGame,
       continueGame,
@@ -858,6 +923,13 @@ canvas {
 .control-panel {
   display: flex;
   gap: 10px;
+  align-items: center;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.category-select {
+  min-width: 140px;
 }
 
 .virtual-controls {
@@ -1001,6 +1073,24 @@ canvas {
 }
 
 .wrong-answer-card .text-subtitle1 {
+  color: #666;
+}
+
+.victory-card {
+  min-width: 320px;
+  text-align: center;
+}
+
+.victory-card .q-card-section {
+  padding: 20px;
+}
+
+.victory-card .text-h5 {
+  color: #ff9800;
+  font-weight: bold;
+}
+
+.victory-card .text-subtitle1 {
   color: #666;
 }
 </style>
