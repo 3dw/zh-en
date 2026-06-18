@@ -544,8 +544,7 @@ export default defineComponent({
             const earnedScore = baseScore * consecutiveCorrect.value
             score.value += earnedScore
 
-            // 播放收集音效
-            playSound(sounds.coin)
+            // 答對時不播放音效，避免與單字語音互相干擾（見 issue #80）
             // 顯示得分提示
             showCorrectAnswer.value = true
             // 暫停遊戲
