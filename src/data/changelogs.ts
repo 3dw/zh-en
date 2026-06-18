@@ -1,5 +1,26 @@
 export const changelogs = [
   {
+    version: '1.4.0',
+    date: '2026-06-19',
+    changes: [
+      {
+        text: '跳跳人遊戲新增字組功能：可切換情緒、身體、動物、工具、數學、科學、學校、代名詞（主格／所有格／受格）等多種字組',
+        route: '/mario-game',
+        type: 'new',
+      },
+      {
+        text: '跳跳人遊戲新增通關勝利畫面：總分達 15000 分即過關',
+        route: '/mario-game',
+        type: 'new',
+      },
+      {
+        text: '跳跳人遊戲答對時不再播放音效，避免與單字發音互相干擾',
+        route: '/mario-game',
+        type: 'improvement',
+      },
+    ],
+  },
+  {
     version: '1.3.1',
     date: '2026-06-15',
     changes: [
