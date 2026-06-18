@@ -768,16 +768,10 @@ export default defineComponent({
       if (score.value < 2000) return 'Easy(簡單)'
       if (score.value < 3000) return 'Medium(中等)'
       if (score.value < 4000) return 'Hard(困難)'
-      if (score.value < 5000) return 'Expert(專家)'
-      if (score.value < 6000) return 'Master(大師)'
-      if (score.value < 7000) return 'Grand Master(傳奇)'
-      if (score.value < 8000) return 'Legend(傳說)'
-      if (score.value < 9000) return 'Mythic(神話)'
-      if (score.value < 10000) return 'Divine(神)'
-      if (score.value < 12000) return 'Technical(技術)'
-      if (score.value < 14000) return 'Professional(專業)'
-      if (score.value < 15000) return 'Academic(學術)'
-      return 'Elite'
+      if (score.value < 6000) return 'Expert(專家)'
+      if (score.value < 12000) return 'Master(大師)'
+      if (score.value < 15000) return 'Grand Master(傳奇)'
+      return 'Mythic(神話)'
     }
 
     const continueGame = () => {
