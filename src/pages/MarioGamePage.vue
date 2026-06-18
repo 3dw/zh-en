@@ -168,19 +168,28 @@
     </q-dialog>
 
     <!-- 通關勝利提示 -->
-    <q-dialog v-model="showVictory" persistent>
+    <!-- no-focus：避免勝利當下放開跳躍鍵（空白鍵）時，誤觸自動聚焦的「再玩一次」按鈕而直接重來 -->
+    <q-dialog v-model="showVictory" persistent no-focus>
       <q-card class="victory-card">
-        <q-card-section class="row items-center justify-center">
-          <q-avatar icon="emoji_events" color="amber" text-color="white" size="lg" />
-          <span class="q-ml-sm text-h5">恭喜通關！</span>
+        <q-card-section class="column items-center q-gutter-sm">
+          <q-avatar icon="emoji_events" color="amber" text-color="white" size="96px" />
+          <div class="text-h4 text-weight-bold victory-title">🎉 恭喜通關！ 🎉</div>
         </q-card-section>
         <q-card-section>
           <div class="text-h6 text-center q-mb-md">你已征服所有難度的單字！</div>
-          <div class="text-h5 text-center q-mb-sm">最終得分：{{ score }}</div>
+          <div class="text-h4 text-center q-mb-sm victory-score">最終得分：{{ score }}</div>
           <div class="text-subtitle1 text-center">等級：{{ getDifficultyLevel() }}</div>
         </q-card-section>
         <q-card-actions align="center">
-          <q-btn flat label="再玩一次" color="primary" @click="resetGame" v-close-popup />
+          <q-btn
+            unelevated
+            size="lg"
+            label="再玩一次"
+            color="amber-8"
+            text-color="white"
+            @click="resetGame"
+            v-close-popup
+          />
         </q-card-actions>
       </q-card>
     </q-dialog>
@@ -1194,20 +1203,28 @@ canvas {
 }
 
 .victory-card {
-  min-width: 320px;
+  min-width: 360px;
   text-align: center;
+  background: linear-gradient(160deg, #fff8e1 0%, #ffe082 100%);
+  border: 4px solid #ffb300;
+  border-radius: 16px;
+  box-shadow: 0 10px 30px rgba(255, 160, 0, 0.45);
 }
 
 .victory-card .q-card-section {
   padding: 20px;
 }
 
-.victory-card .text-h5 {
-  color: #ff9800;
+.victory-title {
+  color: #e65100;
+}
+
+.victory-score {
+  color: #ff6f00;
   font-weight: bold;
 }
 
 .victory-card .text-subtitle1 {
-  color: #666;
+  color: #6d4c00;
 }
 </style>
