@@ -101,8 +101,8 @@
           </div>
 
           <div v-else>
-            <!-- 使用 FlashCard 組件 -->
-            <FlashCard :sentences="customCards" :speech-rate="speechRate" />
+            <!-- 使用 FlashCard 組件（自訂字卡頁顯示「前往跳跳人」捷徑，見 issue #135） -->
+            <FlashCard :sentences="customCards" :speech-rate="speechRate" show-jump-game-link />
           </div>
         </q-tab-panel>
 

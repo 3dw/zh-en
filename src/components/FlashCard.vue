@@ -2,13 +2,18 @@
   <div class="cards-wrapper">
     <VoiceInstallGuideCard v-if="voicePlaybackBlocked" :platform="detectedPlatform" />
     <div class="cards-container">
-    <router-link
-      to="/fav/view"
+    <div
       v-if="!$route.path.startsWith('/fav') && $route.path !== '/favorite'"
-      class="fixed-bottom-right z-top"
+      class="fixed-bottom-right z-top floating-links"
     >
-      <q-btn icon="favorite" size="lg" color="pink" label="前往最愛" />
-    </router-link>
+      <!-- 前往跳跳人：僅在需要時顯示（如自訂字卡頁），用不同顏色與最愛區隔，見 issue #135 -->
+      <router-link v-if="showJumpGameLink" to="/mario-game" class="floating-link">
+        <q-btn icon="sports_esports" size="md" color="deep-purple" label="前往跳跳人" />
+      </router-link>
+      <router-link to="/fav/view" class="floating-link">
+        <q-btn icon="favorite" :size="showJumpGameLink ? 'md' : 'lg'" color="pink" label="前往最愛" />
+      </router-link>
+    </div>
     <div
       class="card"
       v-for="(sentence, index) in filteredSentences"
@@ -117,6 +122,11 @@ export default defineComponent({
     speechRate: {
       type: Number,
       default: 1,
+    },
+    // 是否在右下角顯示「前往跳跳人」捷徑（自訂字卡頁專用），見 issue #135
+    showJumpGameLink: {
+      type: Boolean,
+      default: false,
     },
   },
 
@@ -384,5 +394,16 @@ export default defineComponent({
   max-height: 110px;
   object-fit: contain;
   border-radius: 8px;
+}
+
+.floating-links {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px;
+}
+
+.floating-link {
+  text-decoration: none;
 }
 </style>

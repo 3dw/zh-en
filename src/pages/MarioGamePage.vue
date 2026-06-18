@@ -274,7 +274,7 @@ export default defineComponent({
     }
 
     // 「自訂」永遠列入選單，方便引導使用者；字數不足時於下方顯示提示
-    const categoryOptions = computed(() => [ALL_CATEGORY, ...wordCategories, CUSTOM_CATEGORY])
+    const categoryOptions = computed(() => [ALL_CATEGORY, CUSTOM_CATEGORY, ...wordCategories])
 
     // 選了「自訂」但單詞數不足三個：需提示使用者前往自訂字卡頁面新增
     const customWordsInsufficient = computed(
