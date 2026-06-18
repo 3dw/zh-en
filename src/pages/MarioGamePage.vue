@@ -31,6 +31,14 @@
           @update:model-value="onCategoryChange"
         />
 
+        <!-- 克漏字母模式切換：挖掉單字中一個字母，選出正確的候選字母 -->
+        <q-toggle
+          v-model="isClozeMode"
+          label="克漏字母"
+          color="primary"
+          @update:model-value="onClozeModeChange"
+        />
+
         <q-btn
           color="primary"
           icon="play_arrow"
@@ -93,7 +101,8 @@
           <li v-if="!isMobile">使用方向鍵 ← → 移動跳跳人</li>
           <li v-if="!isMobile">使用空白鍵跳躍</li>
           <li v-if="isMobile">使用下方按鈕控制跳跳人</li>
-          <li>頭頂對應的英文單字香菇獲得分數</li>
+          <li v-if="!isClozeMode">頭頂對應的英文單字香菇獲得分數</li>
+          <li v-if="isClozeMode">用頭頂出正確的「缺少字母」香菇獲得分數</li>
           <li>撞到錯誤的香菇會失去生命值</li>
         </ul>
       </div>
@@ -107,7 +116,7 @@
           <span class="q-ml-sm">Game Over!</span>
         </q-card-section>
         <q-card-section>
-          <div class="text-h6 text-center q-mb-md">正確答案是：{{ gameState.targetWord }}</div>
+          <div class="text-h6 text-center q-mb-md">正確答案是：{{ correctAnswerText }}</div>
           <div class="text-subtitle1 text-center q-mb-sm">中文：{{ gameState.currentWord }}</div>
           <div class="text-h5 text-center">最終得分：{{ score }}</div>
         </q-card-section>
@@ -150,7 +159,7 @@
         <q-card-section>
           <div class="text-h5 text-center q-mb-md">扣分：-1000</div>
           <div class="text-subtitle1 text-center">當前分數：{{ score }}</div>
-          <div class="text-subtitle1 text-center">正確答案是：{{ gameState.targetWord }}</div>
+          <div class="text-subtitle1 text-center">正確答案是：{{ correctAnswerText }}</div>
         </q-card-section>
         <q-card-actions align="center">
           <q-btn flat label="繼續" color="primary" @click="continueAfterWrong" v-close-popup />
@@ -199,6 +208,10 @@ interface GameState {
   platforms: GameObject[]
   currentWord: string
   targetWord: string
+  /** 克漏字母模式：完整單字（小寫） */
+  clozeWord?: string
+  /** 克漏字母模式：含底線的顯示，如 "c _ t" */
+  clozeDisplay?: string
 }
 
 export default defineComponent({
@@ -221,6 +234,30 @@ export default defineComponent({
     // 字組選單：預設「全部」沿用分數難度篩選，選特定字組則只出該組的字，見 issue #128
     const selectedCategory = ref<string>(ALL_CATEGORY)
     const categoryOptions = computed(() => [ALL_CATEGORY, ...wordCategories])
+
+    // 克漏字母模式：隨機單字中挖掉一個字母以 "_" 顯示，三個香菇為候選字母
+    // （一個正確、兩個同類型的錯誤字母：子音配子音、母音配母音）
+    const isClozeMode = ref(false)
+    const VOWELS = ['a', 'e', 'i', 'o', 'u']
+    // 注意：y 在此一律視為子音
+    const CONSONANTS = 'bcdfghjklmnpqrstvwxyz'.split('')
+
+    // 從同類型（母音/子音）字母中挑出 count 個不重覆、且不等於正確字母的錯誤字母
+    const pickDistractorLetters = (correct: string, count: number): string[] => {
+      const lower = correct.toLowerCase()
+      const samePool = VOWELS.includes(lower) ? VOWELS : CONSONANTS
+      const candidates = samePool.filter((c) => c !== lower)
+      const shuffled = [...candidates].sort(() => Math.random() - 0.5)
+      return shuffled.slice(0, count)
+    }
+
+    // 對話框顯示的正確答案：克漏字母模式顯示完整單字（標出缺少的字母），否則顯示英文單字
+    const correctAnswerText = computed(() => {
+      if (isClozeMode.value && gameState.value.clozeWord) {
+        return `${gameState.value.clozeWord}（${gameState.value.targetWord}）`
+      }
+      return gameState.value.targetWord
+    })
 
     // 遊戲狀態
     const gameState = ref<GameState>({
@@ -302,10 +339,11 @@ export default defineComponent({
       }
     }
 
-    // 播放題目發音
+    // 播放題目發音：克漏字母模式念完整單字（提示），一般模式念目標單字
     const speakTargetWord = () => {
-      if (gameState.value.targetWord) {
-        speakEnglish(gameState.value.targetWord, { rate: 0.8, volume: 0.8 })
+      const text = isClozeMode.value ? gameState.value.clozeWord : gameState.value.targetWord
+      if (text) {
+        speakEnglish(text, { rate: 0.8, volume: 0.8 })
       }
     }
 
@@ -320,19 +358,34 @@ export default defineComponent({
       ctx.value.imageSmoothingEnabled = false
     }
 
-    const generateMushrooms = () => {
-      const mushrooms: GameObject[] = []
+    // 三個香菇的位置（一般模式與克漏字母模式共用）
+    const mushroomPositions = [
+      { x: 180, y: 300 }, // 左側香菇，可以從左側水管跳上去
+      { x: 400, y: 300 }, // 中間香菇
+      { x: 620, y: 300 }, // 右側香菇
+    ] as const
 
-      // 篩選可用的單字：
-      // - 「全部」：依當前分數的難度範圍篩選（原本行為）
-      // - 特定字組：只取該字組的單字，不受分數限制（見 issue #128）
+    // 依「字組選單 / 分數難度」取得可用單字庫
+    // - 「全部」：依當前分數的難度範圍篩選（原本行為）
+    // - 特定字組：只取該字組的單字，不受分數限制（見 issue #128）
+    const getWordPool = () => {
       const availableWords =
         selectedCategory.value === ALL_CATEGORY
           ? wordPairs.filter((word) => score.value >= word.minScore && score.value <= word.maxScore)
           : wordPairs.filter((word) => word.category === selectedCategory.value)
-
       // 如果可用單字不足，則使用所有單字
-      const wordsToUse = availableWords.length >= 3 ? availableWords : wordPairs
+      return availableWords.length >= 3 ? availableWords : wordPairs
+    }
+
+    const generateMushrooms = () => {
+      // 克漏字母模式走另一套出題邏輯
+      if (isClozeMode.value) {
+        generateClozeMushrooms()
+        return
+      }
+
+      const mushrooms: GameObject[] = []
+      const wordsToUse = getWordPool()
 
       // 複製並打亂單字庫
       const shuffledWords = [...wordsToUse].sort(() => Math.random() - 0.5)
@@ -346,14 +399,7 @@ export default defineComponent({
       gameState.value.targetWord = targetPair.word
       gameState.value.currentWord = targetPair.translation
 
-      // 生成3個香菇，一個正確，兩個錯誤，位置調整到更合理的高度
-      const mushroomPositions = [
-        { x: 180, y: 300 }, // 左側香菇，可以從左側水管跳上去
-        { x: 400, y: 300 }, // 中間香菇
-        { x: 620, y: 300 }, // 右側香菇
-      ] as const
-
-      // 使用選出的三個不同單字生成香菇
+      // 使用選出的三個不同單字生成香菇（一個正確，兩個錯誤）
       for (let i = 0; i < 3; i++) {
         const position = mushroomPositions[i]
         if (!position) continue
@@ -378,6 +424,56 @@ export default defineComponent({
       setTimeout(() => {
         speakTargetWord()
       }, 500) // 延遲500ms播放，讓玩家有時間準備
+    }
+
+    // 克漏字母模式出題：隨機挑一個單字，挖掉一個字母，三個香菇放候選字母
+    const generateClozeMushrooms = () => {
+      const pool = getWordPool()
+      // 只挑長度 >= 2 的單字（才有字母可挖，避免如 "I" 這種單字母過於瑣碎）
+      const candidates = pool.filter((w) => w.word.replace(/[^a-zA-Z]/g, '').length >= 2)
+      const wordsToUse = candidates.length > 0 ? candidates : pool
+      const chosen = [...wordsToUse].sort(() => Math.random() - 0.5)[0]
+      if (!chosen) return
+
+      const fullWord = chosen.word.toLowerCase()
+      const blankIndex = Math.floor(Math.random() * fullWord.length)
+      const correctLetter = fullWord[blankIndex]
+      if (!correctLetter) return
+
+      // 含底線的顯示，字母間留空白以利辨識，如 "c _ t"
+      const display = fullWord
+        .split('')
+        .map((c, i) => (i === blankIndex ? '_' : c))
+        .join(' ')
+
+      gameState.value.clozeWord = fullWord
+      gameState.value.clozeDisplay = display
+      gameState.value.currentWord = chosen.translation // 中文提示
+      gameState.value.targetWord = correctLetter
+
+      // 一個正確字母 + 兩個同類型（母音/子音）不重覆的錯誤字母
+      const distractors = pickDistractorLetters(correctLetter, 2)
+      const correctIndex = Math.floor(Math.random() * 3)
+      const remaining = [...distractors]
+      const letters: string[] = []
+      for (let i = 0; i < 3; i++) {
+        letters[i] = i === correctIndex ? correctLetter : (remaining.shift() ?? '')
+      }
+
+      gameState.value.mushrooms = mushroomPositions.map((position, i) => ({
+        x: position.x,
+        y: position.y,
+        width: 32,
+        height: 32,
+        type: 'mushroom',
+        word: letters[i] ?? '',
+        isCorrect: i === correctIndex,
+      }))
+
+      // 播放完整單字發音（提示）
+      setTimeout(() => {
+        speakTargetWord()
+      }, 500)
     }
 
     const drawMushrooms = () => {
@@ -463,7 +559,16 @@ export default defineComponent({
       const fontSize = window.innerWidth <= 768 ? '32px' : '24px'
       ctx.value.font = `bold ${fontSize} Arial`
       ctx.value.textAlign = 'center'
-      ctx.value.fillText(`找出 "${gameState.value.currentWord}" 的英文`, 400, 50)
+
+      if (isClozeMode.value) {
+        // 克漏字母模式：上方顯示挖空的單字，下方顯示中文提示
+        ctx.value.fillText(gameState.value.clozeDisplay || '', 400, 45)
+        const hintSize = window.innerWidth <= 768 ? '24px' : '18px'
+        ctx.value.font = `${hintSize} Arial`
+        ctx.value.fillText(`（${gameState.value.currentWord}）填入缺少的字母`, 400, 78)
+      } else {
+        ctx.value.fillText(`找出 "${gameState.value.currentWord}" 的英文`, 400, 50)
+      }
     }
 
     const drawGame = () => {
@@ -696,8 +801,8 @@ export default defineComponent({
       }
     }
 
-    const onCategoryChange = () => {
-      // 切換字組後，若遊戲進行中則立即換成新字組的題目（見 issue #128）
+    // 重置跳跳人位置並立即出新題目（供切換字組／模式時使用）
+    const newQuestion = () => {
       if (!isGameRunning.value) return
       gameState.value.mario.x = 100
       gameState.value.mario.y = 400
@@ -707,6 +812,16 @@ export default defineComponent({
       if (gameCanvas.value) {
         gameCanvas.value.focus()
       }
+    }
+
+    // 切換字組後，若遊戲進行中則立即換成新字組的題目（見 issue #128）
+    const onCategoryChange = () => {
+      newQuestion()
+    }
+
+    // 切換「克漏字母」模式後，若遊戲進行中則立即依新模式出題
+    const onClozeModeChange = () => {
+      newQuestion()
     }
 
     const handleKeyDown = (event: KeyboardEvent) => {
@@ -840,6 +955,9 @@ export default defineComponent({
       selectedCategory,
       categoryOptions,
       onCategoryChange,
+      isClozeMode,
+      onClozeModeChange,
+      correctAnswerText,
       startGame,
       resetGame,
       continueGame,
