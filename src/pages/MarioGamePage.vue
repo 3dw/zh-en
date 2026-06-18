@@ -103,7 +103,7 @@
           <li v-if="isMobile">使用下方按鈕控制跳跳人</li>
           <li v-if="!isClozeMode">頭頂對應的英文單字香菇獲得分數</li>
           <li v-if="isClozeMode">用頭頂出正確的「缺少字母」香菇獲得分數</li>
-          <li>撞到錯誤的香菇會失去生命值</li>
+          <li>撞到錯誤的香菇則會扣分</li>
         </ul>
       </div>
     </div>
