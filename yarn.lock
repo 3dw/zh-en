@@ -11415,9 +11415,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"vite-plugin-checker@npm:^0.14.3":
-  version: 0.14.3
-  resolution: "vite-plugin-checker@npm:0.14.3"
+"vite-plugin-checker@npm:^0.14.4":
+  version: 0.14.4
+  resolution: "vite-plugin-checker@npm:0.14.4"
   dependencies:
     "@babel/code-frame": "npm:^7.29.0"
     chokidar: "npm:^5.0.0"
@@ -11453,7 +11453,7 @@ __metadata:
       optional: true
     vue-tsc:
       optional: true
-  checksum: 10c0/4e0e7b21c0e64fa18ee716c60223a4272eac78614597c436b1352c3c47c2e0d6e9d774259e7c7b7a4d8bebeea549b2d37a82cabd05c3f5e200e945267405b33f
+  checksum: 10c0/9973732c1a197fb8891dd074dd796f4b6dc4cc89f1821b055ed422ed994ddbfc8a42a442fedb41a869f26806ccfe10c0ce8727f25c79a48a485850f71521d91c
   languageName: node
   linkType: hard
 
@@ -12180,7 +12180,7 @@ __metadata:
     register-service-worker: "npm:^1.7.2"
     string-width: "npm:8"
     typescript: "npm:~6.0.3"
-    vite-plugin-checker: "npm:^0.14.3"
+    vite-plugin-checker: "npm:^0.14.4"
     vue: "npm:^3.5.38"
     vue-gtag: "npm:^3.7.1"
     vue-router: "npm:^5.1.0"
