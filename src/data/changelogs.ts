@@ -1,15 +1,10 @@
 export const changelogs = [
   {
-    version: '1.4.0',
+    version: '1.4.1',
     date: '2026-06-19',
     changes: [
       {
-        text: '跳跳人遊戲新增「自訂」字組：自動讀入自訂字卡中的單一字詞（標點不計）',
-        route: '/mario-game',
-        type: 'new',
-      },
-      {
-        text: '自訂字卡頁面新增提示：單一字詞的字卡會自動加入跳跳人遊戲的「自訂」字組',
+        text: '跳跳人和自訂字卡整合：自動讀入自訂字卡中的單一字詞（標點不計）',
         route: '/custom_cards',
         type: 'new',
       },
