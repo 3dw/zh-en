@@ -141,7 +141,13 @@ export const wordPairs: WordPair[] = [
   { word: 'research', translation: '研究', minScore: 13000, maxScore: 15000, category: '研究' },
   { word: 'analysis', translation: '分析', minScore: 13000, maxScore: 15000, category: '研究' },
   { word: 'theory', translation: '理論', minScore: 13000, maxScore: 15000, category: '研究' },
-  { word: 'methodology', translation: '方法論', minScore: 13000, maxScore: 15000, category: '研究' },
+  {
+    word: 'methodology',
+    translation: '方法論',
+    minScore: 13000,
+    maxScore: 15000,
+    category: '研究',
+  },
   { word: 'hypothesis', translation: '假設', minScore: 13000, maxScore: 15000, category: '研究' },
   { word: 'conclusion', translation: '結論', minScore: 13000, maxScore: 15000, category: '研究' },
   { word: 'evidence', translation: '證據', minScore: 13000, maxScore: 15000, category: '研究' },
@@ -154,9 +160,27 @@ export const wordPairs: WordPair[] = [
   { word: 'environment', translation: '環境', minScore: 14000, maxScore: 15000, category: '社會' },
   { word: 'technology', translation: '科技', minScore: 14000, maxScore: 15000, category: '社會' },
   { word: 'innovation', translation: '創新', minScore: 14000, maxScore: 15000, category: '社會' },
-  { word: 'sustainability', translation: '永續性', minScore: 14000, maxScore: 15000, category: '社會' },
-  { word: 'collaboration', translation: '合作', minScore: 14000, maxScore: 15000, category: '社會' },
-  { word: 'communication', translation: '溝通', minScore: 14000, maxScore: 15000, category: '社會' },
+  {
+    word: 'sustainability',
+    translation: '永續性',
+    minScore: 14000,
+    maxScore: 15000,
+    category: '社會',
+  },
+  {
+    word: 'collaboration',
+    translation: '合作',
+    minScore: 14000,
+    maxScore: 15000,
+    category: '社會',
+  },
+  {
+    word: 'communication',
+    translation: '溝通',
+    minScore: 14000,
+    maxScore: 15000,
+    category: '社會',
+  },
   { word: 'conflict', translation: '衝突', minScore: 14000, maxScore: 15000, category: '社會' },
   { word: 'cooperation', translation: '合作', minScore: 14000, maxScore: 15000, category: '社會' },
   { word: 'competition', translation: '競爭', minScore: 14000, maxScore: 15000, category: '社會' },
@@ -297,6 +321,51 @@ export const wordPairs: WordPair[] = [
   { word: 'her', translation: '她', minScore: 0, maxScore: 15000, category: '受格' },
   { word: 'them', translation: '他們', minScore: 0, maxScore: 15000, category: '受格' },
   { word: 'us', translation: '我們', minScore: 0, maxScore: 15000, category: '受格' },
+
+  // MTG 魔法風雲會 (Magic: The Gathering)
+  { word: 'card', translation: '卡片', minScore: 0, maxScore: 15000, category: 'MTG' },
+  { word: 'deck', translation: '牌組', minScore: 0, maxScore: 15000, category: 'MTG' },
+  { word: 'draw', translation: '抽牌', minScore: 0, maxScore: 15000, category: 'MTG' },
+  { word: 'discard', translation: '棄牌', minScore: 0, maxScore: 15000, category: 'MTG' },
+  { word: 'attack', translation: '攻擊', minScore: 0, maxScore: 15000, category: 'MTG' },
+  { word: 'block', translation: '阻擋', minScore: 0, maxScore: 15000, category: 'MTG' },
+  { word: 'mana', translation: '法力', minScore: 0, maxScore: 15000, category: 'MTG' },
+  { word: 'land', translation: '地', minScore: 0, maxScore: 15000, category: 'MTG' },
+  { word: 'forest', translation: '樹林', minScore: 0, maxScore: 15000, category: 'MTG' },
+  { word: 'island', translation: '海島', minScore: 0, maxScore: 15000, category: 'MTG' },
+  { word: 'mountain', translation: '山脈', minScore: 0, maxScore: 15000, category: 'MTG' },
+  { word: 'plains', translation: '平原', minScore: 0, maxScore: 15000, category: 'MTG' },
+  { word: 'swamp', translation: '沼澤', minScore: 0, maxScore: 15000, category: 'MTG' },
+  { word: 'red', translation: '紅色', minScore: 0, maxScore: 15000, category: 'MTG' },
+  { word: 'green', translation: '綠色', minScore: 0, maxScore: 15000, category: 'MTG' },
+  { word: 'blue', translation: '藍色', minScore: 0, maxScore: 15000, category: 'MTG' },
+  { word: 'black', translation: '黑色', minScore: 0, maxScore: 15000, category: 'MTG' },
+  { word: 'white', translation: '白色', minScore: 0, maxScore: 15000, category: 'MTG' },
+  { word: 'colorless', translation: '無色', minScore: 0, maxScore: 15000, category: 'MTG' },
+  { word: 'multicolored', translation: '多色', minScore: 0, maxScore: 15000, category: 'MTG' },
+  {
+    word: 'counter',
+    translation: '指示物(名詞)/反擊(動詞)',
+    minScore: 0,
+    maxScore: 15000,
+    category: 'MTG',
+  },
+  { word: 'destroy', translation: '消滅', minScore: 0, maxScore: 15000, category: 'MTG' },
+  { word: 'return', translation: '移回', minScore: 0, maxScore: 15000, category: 'MTG' },
+  { word: 'library', translation: '牌庫(圖書館)', minScore: 0, maxScore: 15000, category: 'MTG' },
+  { word: 'graveyard', translation: '墳場', minScore: 0, maxScore: 15000, category: 'MTG' },
+  { word: 'hand', translation: '手牌', minScore: 0, maxScore: 15000, category: 'MTG' },
+  { word: 'battlefield', translation: '戰場', minScore: 0, maxScore: 15000, category: 'MTG' },
+  { word: 'target', translation: '目標', minScore: 0, maxScore: 15000, category: 'MTG' },
+  { word: 'damage', translation: '傷害', minScore: 0, maxScore: 15000, category: 'MTG' },
+  { word: 'life', translation: '生命', minScore: 0, maxScore: 15000, category: 'MTG' },
+  { word: 'spell', translation: '咒語', minScore: 0, maxScore: 15000, category: 'MTG' },
+  { word: 'creature', translation: '生物', minScore: 0, maxScore: 15000, category: 'MTG' },
+  { word: 'artifact', translation: '神器', minScore: 0, maxScore: 15000, category: 'MTG' },
+  { word: 'enchantment', translation: '結界', minScore: 0, maxScore: 15000, category: 'MTG' },
+  { word: 'instant', translation: '瞬間', minScore: 0, maxScore: 15000, category: 'MTG' },
+  { word: 'sorcery', translation: '巫術', minScore: 0, maxScore: 15000, category: 'MTG' },
+  { word: 'planeswalker', translation: '旅法師', minScore: 0, maxScore: 15000, category: 'MTG' },
 ]
 
 /** 跳跳人遊戲下拉選單用的「全部」選項（不限字組，沿用分數難度篩選），見 issue #128 */
@@ -350,12 +419,14 @@ export function getCustomWordPairs(): WordPair[] {
   const seen = new Set<string>()
   for (const card of cards) {
     if (!card || typeof card !== 'object') continue
-    const english = typeof (card as { english?: unknown }).english === 'string'
-      ? (card as { english: string }).english
-      : ''
-    const chinese = typeof (card as { chinese?: unknown }).chinese === 'string'
-      ? (card as { chinese: string }).chinese
-      : ''
+    const english =
+      typeof (card as { english?: unknown }).english === 'string'
+        ? (card as { english: string }).english
+        : ''
+    const chinese =
+      typeof (card as { chinese?: unknown }).chinese === 'string'
+        ? (card as { chinese: string }).chinese
+        : ''
 
     if (!isSingleWordEnglish(english)) continue
     const word = toGameWord(english)
