@@ -754,14 +754,16 @@ export default defineComponent({
             // 答錯時扣分並重置連續答對次數
             score.value = Math.max(0, score.value - 1000)
             consecutiveCorrect.value = 0 // 重置連續答對次數
-            showWrongAnswer.value = true
-            // 暫停遊戲
-            isGameRunning.value = false
 
             // 檢查是否遊戲結束
             if (score.value <= 0) {
+              showWrongAnswer.value = false
               showGameOver.value = true
               stopGame()
+            } else {
+              showWrongAnswer.value = true
+              // 暫停遊戲
+              isGameRunning.value = false
             }
           }
         }
@@ -836,6 +838,8 @@ export default defineComponent({
     }
 
     const continueAfterWrong = () => {
+      if (showGameOver.value) return
+
       // 重置跳跳人位置
       gameState.value.mario.x = 100
       gameState.value.mario.y = 400
