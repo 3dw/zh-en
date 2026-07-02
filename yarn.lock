@@ -9051,13 +9051,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"pica@npm:^10.0.1":
-  version: 10.0.1
-  resolution: "pica@npm:10.0.1"
+"pica@npm:^10.0.2":
+  version: 10.0.2
+  resolution: "pica@npm:10.0.2"
   dependencies:
     glur: "npm:^2.0.0"
     multimath: "npm:^3.0.0"
-  checksum: 10c0/c953ff047edd451fb9a53a42086c5071eda04a01347d010ed525d2cffd92d17a2c6a249462c6f9208e4f090cc1d9c0ddbb0eea40d0b133bd7a123f9fb2df7d0a
+  checksum: 10c0/06e63de147a89fdd597c27d0b563eb6d4240830e5eef50812b4a67899df5ba2cad06c4b657f7b9958175f74c55c4f42063121da9f002c47079ac12e13365e584
   languageName: node
   linkType: hard
 
@@ -9338,10 +9338,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"quasar@npm:^2.20.1":
-  version: 2.20.1
-  resolution: "quasar@npm:2.20.1"
-  checksum: 10c0/becd32821783b4e167e3b1102ea60db13b4a6bed8e6ff843a32c21a774516e738f683b4f348c6df7fa62287e873fadfc1bfaad38edf5a88fbf83b379f2652939
+"quasar@npm:^2.20.3":
+  version: 2.20.3
+  resolution: "quasar@npm:2.20.3"
+  checksum: 10c0/58bb591fd11df0298735d64f27587a5e6674cdcfad4f9c521a1da57f30adc38eea961b52d0b52ec643d013490ea3629e95e108eec6320c5c77f0d7dbc04f9e1c
   languageName: node
   linkType: hard
 
@@ -12239,10 +12239,10 @@ __metadata:
     globals: "npm:^17.6.0"
     heic2any: "npm:^0.0.4"
     openai: "npm:^6.45.0"
-    pica: "npm:^10.0.1"
+    pica: "npm:^10.0.2"
     pinia: "npm:^3.0.4"
     prettier: "npm:^3.8.4"
-    quasar: "npm:^2.20.1"
+    quasar: "npm:^2.20.3"
     register-service-worker: "npm:^1.7.2"
     string-width: "npm:8"
     typescript: "npm:~6.0.3"
