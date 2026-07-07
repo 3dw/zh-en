@@ -115,7 +115,7 @@
           <li v-if="!isMobile">使用方向鍵 ← → 移動跳跳人</li>
           <li v-if="!isMobile">使用空白鍵跳躍</li>
           <li v-if="isMobile">使用下方按鈕控制跳跳人</li>
-          <li v-if="!isClozeMode">頭頂對應的英文單字香菇獲得分數</li>
+          <li v-if="!isClozeMode">看題目（中翻英或英翻中）並聽發音，頭頂正確答案的香菇獲得分數</li>
           <li v-if="isClozeMode">用頭頂出正確的「缺少字母」香菇獲得分數</li>
           <li>撞到錯誤的香菇則會扣分</li>
         </ul>
@@ -230,8 +230,17 @@ interface GameObject {
   height: number
   type: string
   word?: string
+  /** 香菇被踩到時要念的英文（一般模式恆為英文，使 en2zh 也能聽到英文發音） */
+  speakWord?: string
   isCorrect?: boolean
 }
+
+/**
+ * 一般模式題型方向（隨機各半，見 issue）：
+ * - 'zh2en'：看中文 + 聽英文 → 選英文（香菇顯示英文）
+ * - 'en2zh'：看英文 + 聽英文 → 選中文（香菇顯示中文）
+ */
+type QuizDirection = 'zh2en' | 'en2zh'
 
 interface GameState {
   mario: GameObject
@@ -239,6 +248,8 @@ interface GameState {
   platforms: GameObject[]
   currentWord: string
   targetWord: string
+  /** 一般模式題型方向；克漏字母模式不使用 */
+  quizDirection?: QuizDirection
   /** 克漏字母模式：完整單字（小寫） */
   clozeWord?: string
   /** 克漏字母模式：含底線的顯示，如 "c _ t" */
@@ -299,10 +310,16 @@ export default defineComponent({
       return shuffled.slice(0, count)
     }
 
-    // 對話框顯示的正確答案：克漏字母模式顯示完整單字（標出缺少的字母），否則顯示英文單字
+    // 對話框顯示的正確答案：
+    // - 克漏字母模式：完整單字（標出缺少的字母）
+    // - en2zh：應選的中文（附英文）
+    // - zh2en：應選的英文
     const correctAnswerText = computed(() => {
       if (isClozeMode.value && gameState.value.clozeWord) {
         return `${gameState.value.clozeWord}（${gameState.value.targetWord}）`
+      }
+      if (gameState.value.quizDirection === 'en2zh') {
+        return `${gameState.value.currentWord}（${gameState.value.targetWord}）`
       }
       return gameState.value.targetWord
     })
@@ -440,6 +457,10 @@ export default defineComponent({
       const mushrooms: GameObject[] = []
       const wordsToUse = getWordPool()
 
+      // 隨機決定題型方向：一半看中文選英文，一半看英文選中文（兩者都會聽到英文）
+      const direction: QuizDirection = Math.random() < 0.5 ? 'zh2en' : 'en2zh'
+      gameState.value.quizDirection = direction
+
       // 複製並打亂單字庫
       const shuffledWords = [...wordsToUse].sort(() => Math.random() - 0.5)
       // 取前三個不同的單字
@@ -449,6 +470,7 @@ export default defineComponent({
 
       if (!targetPair) return
 
+      // targetWord 恆為英文（供 speakTargetWord 朗讀），currentWord 恆為中文
       gameState.value.targetWord = targetPair.word
       gameState.value.currentWord = targetPair.translation
 
@@ -457,8 +479,11 @@ export default defineComponent({
         const position = mushroomPositions[i]
         if (!position) continue
 
-        const word = selectedWords[i]?.word
-        if (!word) continue
+        const pair = selectedWords[i]
+        if (!pair?.word) continue
+
+        // en2zh：香菇顯示中文；zh2en：香菇顯示英文。speakWord 一律存英文供踩到時發音
+        const displayWord = direction === 'en2zh' ? pair.translation : pair.word
 
         mushrooms.push({
           x: position.x,
@@ -466,7 +491,8 @@ export default defineComponent({
           width: 32,
           height: 32,
           type: 'mushroom',
-          word,
+          word: displayWord,
+          speakWord: pair.word,
           isCorrect: i === correctIndex,
         })
       }
@@ -619,7 +645,11 @@ export default defineComponent({
         const hintSize = window.innerWidth <= 768 ? '24px' : '18px'
         ctx.value.font = `${hintSize} Arial`
         ctx.value.fillText(`（${gameState.value.currentWord}）填入缺少的字母`, 400, 78)
+      } else if (gameState.value.quizDirection === 'en2zh') {
+        // 看英文 + 聽英文 → 選中文
+        ctx.value.fillText(`找出 "${gameState.value.targetWord}" 的中文`, 400, 50)
       } else {
+        // 看中文 + 聽英文 → 選英文
         ctx.value.fillText(`找出 "${gameState.value.currentWord}" 的英文`, 400, 50)
       }
     }
@@ -727,8 +757,8 @@ export default defineComponent({
           mario.x + mario.width > mushroom.x &&
           mario.x < mushroom.x + mushroom.width
         ) {
-          // 播放該答案的發音
-          speakEnglish(mushroom.word || '', { rate: 0.8, volume: 0.8 })
+          // 播放該答案的英文發音（en2zh 香菇顯示中文，故優先用 speakWord 存的英文）
+          speakEnglish(mushroom.speakWord || mushroom.word || '', { rate: 0.8, volume: 0.8 })
 
           if (mushroom.isCorrect) {
             // 連續答對次數增加
