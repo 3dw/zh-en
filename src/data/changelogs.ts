@@ -1,5 +1,26 @@
 export const changelogs = [
   {
+    version: '1.5.0',
+    date: '2026-07-07',
+    changes: [
+      {
+        text: '不再需要登入即可使用完整功能',
+        route: '/',
+        type: 'improvement',
+      },
+      {
+        text: '新增小遊戲入口：置於「字、詞、句」之前，點擊直接前往遊戲總覽頁',
+        route: '/main-game',
+        type: 'new',
+      },
+      {
+        text: '強化跳跳人遊戲：一般出題增加"看英文選中文"題目',
+        route: '/mario-game',
+        type: 'improvement',
+      },
+    ],
+  },
+  {
     version: '1.4.1',
     date: '2026-06-19',
     changes: [

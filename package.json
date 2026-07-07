@@ -1,8 +1,8 @@
 {
   "name": "zh-en",
-  "version": "0.0.1",
-  "description": "Learn English With Chinese",
-  "productName": "Learn_English_With_Chinese",
+  "version": "1.5.0",
+  "description": "Learn English With Mandarin",
+  "productName": "Learn_English_With_Mandarin",
   "author": "Bestian Tang <bestian@gmail.com>",
   "type": "module",
   "private": true,
