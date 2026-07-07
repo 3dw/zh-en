@@ -134,6 +134,14 @@
           <q-item-section> 版本更新記錄 </q-item-section>
         </q-item>
 
+        <!-- 小遊戲入口：置於「字、詞、句」分類之前，方便快速進入 -->
+        <q-item clickable to="/main-game" class="op-drawer-item">
+          <q-item-section avatar>
+            <q-icon name="gamepad" />
+          </q-item-section>
+          <q-item-section>小遊戲</q-item-section>
+        </q-item>
+
         <q-expansion-item
           v-for="category in sidebarCategories"
           :key="category"

@@ -85,6 +85,19 @@
           </p>
         </div>
         <div class="category-buttons">
+          <!-- 小遊戲入口：置於「字、詞、句」之前，點擊直接前往遊戲總覽頁 -->
+          <q-card class="category-button-card game-entry-card" @click="goto('/main-game')">
+            <q-card-section class="text-center">
+              <div class="category-icon">
+                <q-icon name="gamepad" size="64px" color="white" />
+              </div>
+              <div class="text-h4 text-white q-mt-md">小遊戲</div>
+              <div class="category-description text-white q-mt-sm">
+                透過各種有趣的遊戲邊玩邊學英文
+              </div>
+            </q-card-section>
+          </q-card>
+
           <q-card
             v-for="category in mainCategories"
             :key="category"
@@ -338,6 +351,10 @@ export default defineComponent({
   display: flex;
   align-items: center;
   justify-content: center;
+}
+
+.game-entry-card {
+  background: linear-gradient(145deg, #e65100,rgb(191, 96, 0));
 }
 
 .category-button-card:hover {

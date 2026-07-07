@@ -2,9 +2,9 @@
   <q-page class="q-pa-md">
     <div class="row items-center q-mb-md">
       <h1 class="col">英文字母遊戲</h1>
-      <div class="col-auto">
+      <!-- <div class="col-auto">
         <q-badge color="primary" class="text-h6"> 總分: {{ totalLevel }} </q-badge>
-      </div>
+      </div> -->
     </div>
 
     <div class="row q-col-gutter-md">
@@ -18,7 +18,6 @@
           <q-card-section>
             <div class="text-h6">大寫字母遊戲</div>
             <div class="text-subtitle2">練習英文大寫字母的發音和辨識</div>
-            <q-badge color="primary" class="q-mt-sm"> Level: {{ upperCaseGameLevel }} </q-badge>
           </q-card-section>
         </q-card>
       </div>
@@ -33,7 +32,6 @@
           <q-card-section>
             <div class="text-h6">小寫字母遊戲</div>
             <div class="text-subtitle2">練習英文小寫字母的發音和辨識</div>
-            <q-badge color="secondary" class="q-mt-sm"> Level: {{ lowerCaseGameLevel }} </q-badge>
           </q-card-section>
         </q-card>
       </div>
@@ -48,7 +46,6 @@
           <q-card-section>
             <div class="text-h6">看圖選單字遊戲</div>
             <div class="text-subtitle2">看圖選擇正確的單字</div>
-            <q-badge color="purple" class="q-mt-sm"> Level: {{ game1Level }} </q-badge>
           </q-card-section>
         </q-card>
       </div>
@@ -63,7 +60,6 @@
           <q-card-section>
             <div class="text-h6">跳跳人遊戲</div>
             <div class="text-subtitle2">控制跳跳人來學單字</div>
-            <q-badge color="deep-orange" class="q-mt-sm"> Level: {{ game2Level }} </q-badge>
           </q-card-section>
         </q-card>
       </div>
