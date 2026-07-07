@@ -11,7 +11,7 @@
 - **State:** Pinia
 - **Routing:** Vue Router
 - **Styling:** SCSS
-- **APIs:** OpenAI, Firebase, Hugging Face Transformers
+- **APIs:** OpenAI, Hugging Face Transformers
 - **Package Manager:** Yarn
 
 ## Common Commands
@@ -33,8 +33,7 @@ src/
   stores/       # Pinia state management
   assets/       # Data files (vocabulary, conversations, structures)
   utils/        # Utility functions
-  boot/         # App initialization (Firebase, analytics, speech)
-  firebase_json/ # Firebase config
+  boot/         # App initialization (analytics, speech)
 public/
   images/       # Static assets including emotion images
 ```
@@ -50,5 +49,5 @@ public/
 ## Notes
 
 - No tests are configured
-- Firebase is used for backend/auth functionality
+- User-created cards are stored locally in the browser via localStorage
 - OpenAI API is used for AI-powered learning features

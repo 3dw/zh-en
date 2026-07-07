@@ -3,13 +3,7 @@
     class="flex flex-center column"
     style="background-color: #f5f5f7; min-height: 100vh; padding: 16px"
   >
-    <div v-if="uid === ''" class="text-center q-pa-lg login-container">
-      <q-icon name="lock" size="50px" color="grey-5" />
-      <p class="text-h6 q-mt-md" style="color: #1a1a1a">請先登入以使用拉霸機</p>
-      <q-btn color="primary" label="登入" @click="toggleLogin" style="margin-top: 16px" />
-    </div>
-
-    <template v-else>
+    <template>
       <div class="text-h4 q-mb-md page-title">🎉 每天拉一次，強化英文力！</div>
 
       <q-btn
@@ -257,8 +251,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, onMounted, onUnmounted, computed, nextTick, watch } from 'vue'
-import { getDatabase, ref as dbRef, get, set, serverTimestamp, push } from 'firebase/database'
+import { defineComponent, ref, onMounted, onUnmounted, computed, nextTick } from 'vue'
 
 // 符號類型定義
 interface Symbol {
@@ -287,13 +280,7 @@ interface Result {
 
 export default defineComponent({
   name: 'LuckySlotPage',
-  props: {
-    uid: {
-      type: String,
-      default: '',
-    },
-  },
-  setup(props, { emit }) {
+  setup() {
     // 基本參數設定
     const slotCanvas = ref<HTMLCanvasElement | null>(null)
     const ctx = ref<CanvasRenderingContext2D | null>(null)
@@ -302,6 +289,10 @@ export default defineComponent({
     const leverPulled = ref(false)
     const result = ref<Result | null>(null)
     const showRules = ref(false)
+    const DAILY_STATS_KEY = 'luckySlotDailyStats'
+    const POINTS_KEY = 'luckySlotPoints'
+    const GAME_RECORDS_KEY = 'luckySlotGameRecords'
+    const TASK_RECORDS_KEY = 'luckySlotTaskRecords'
 
     // 任務相關參數
     const textTaskAnswer = ref('')
@@ -628,7 +619,7 @@ export default defineComponent({
 
     // 拉動拉霸機
     const pullLever = () => {
-      if (spinning.value || !canPlay.value || props.uid === '') return
+      if (spinning.value || !canPlay.value) return
 
       leverPulled.value = true
       spinning.value = true
@@ -654,21 +645,11 @@ export default defineComponent({
 
     // 檢查每日限制
     const checkDailyLimit = async () => {
-      if (props.uid === '') return false
-
-      const db = getDatabase()
-      const userRef = dbRef(db, `users/${props.uid}`)
-      const snapshot = await get(userRef)
-
       const today = new Date().toDateString()
-      let playCount = 0
-      let lastPlayDate = ''
-
-      if (snapshot.exists()) {
-        const userData = snapshot.val()
-        playCount = userData.playCount || 0
-        lastPlayDate = userData.lastPlayDate || ''
-      }
+      const savedStats = localStorage.getItem(DAILY_STATS_KEY)
+      const stats = savedStats ? JSON.parse(savedStats) : {}
+      let playCount = Number(stats.playCount || 0)
+      let lastPlayDate = stats.lastPlayDate || ''
 
       if (lastPlayDate === today) {
         if (playCount >= 100) {
@@ -684,10 +665,14 @@ export default defineComponent({
         lastPlayDate = today
       }
 
-      // 更新遊戲次數和日期
-      await set(dbRef(db, `users/${props.uid}/playCount`), playCount)
-      await set(dbRef(db, `users/${props.uid}/lastPlayDate`), lastPlayDate)
-      await set(dbRef(db, `users/${props.uid}/lastPlay`), serverTimestamp())
+      localStorage.setItem(
+        DAILY_STATS_KEY,
+        JSON.stringify({
+          playCount,
+          lastPlayDate,
+          lastPlay: new Date().toISOString(),
+        }),
+      )
 
       return true
     }
@@ -824,8 +809,6 @@ export default defineComponent({
 
     // 顯示結果
     const showResult = async () => {
-      if (props.uid === '') return
-
       // 獲取最終結果
       const finalSymbols: (Symbol | undefined)[] = reels.value.map((reel) =>
         reel ? reel.symbols[reel.position] : undefined,
@@ -917,7 +900,7 @@ export default defineComponent({
         prepareTasks(finalSymbols.filter((s): s is Symbol => s !== undefined))
       }
 
-      // 儲存遊戲記錄到資料庫
+      // 儲存遊戲記錄到本機
       await saveGameRecord(
         finalSymbols.filter((s): s is Symbol => s !== undefined),
         points,
@@ -937,7 +920,7 @@ export default defineComponent({
 
         specialCombinationSentence.value = `I ${verb} the ${noun} when I see ${special}.`
       } else if (result.value.title.includes('雙七')) {
-        // 雙七問答題：從資料庫獲取一個隨機問題
+        // 雙七問答題：使用本機預設題目
         fetchBonusQuestion()
       } else if (result.value.title.includes('幸運')) {
         // 幸運小知識：準備一個英文小知識卡片
@@ -947,31 +930,7 @@ export default defineComponent({
 
     // 獲取隨機問答題
     const fetchBonusQuestion = async () => {
-      try {
-        const db = getDatabase()
-        const questionsRef = dbRef(db, 'bonusQuestions')
-        const snapshot = await get(questionsRef)
-
-        if (snapshot.exists()) {
-          const questions = snapshot.val()
-          const keys = Object.keys(questions)
-          if (keys.length > 0) {
-            const randomKey = keys[Math.floor(Math.random() * keys.length)]
-            const question = questions[randomKey as keyof typeof questions]
-
-            bonusQuestion.value = question.question
-            bonusOptions.value = question.options
-            bonusCorrectAnswer.value = question.answer
-          } else {
-            useDefaultBonusQuestion()
-          }
-        } else {
-          useDefaultBonusQuestion()
-        }
-      } catch (error) {
-        console.error('獲取問答題失敗:', error)
-        useDefaultBonusQuestion()
-      }
+      useDefaultBonusQuestion()
     }
 
     // 使用默認問答題
@@ -988,29 +947,7 @@ export default defineComponent({
 
     // 準備知識卡片
     const prepareKnowledgeCard = async () => {
-      try {
-        const db = getDatabase()
-        const cardsRef = dbRef(db, 'knowledgeCards')
-        const snapshot = await get(cardsRef)
-
-        if (snapshot.exists()) {
-          const cards = snapshot.val()
-          const keys = Object.keys(cards)
-          if (keys.length > 0) {
-            const randomKey = keys[Math.floor(Math.random() * keys.length)]
-            const card = cards[randomKey as keyof typeof cards]
-
-            knowledgeCard.value = card
-          } else {
-            useDefaultKnowledgeCard()
-          }
-        } else {
-          useDefaultKnowledgeCard()
-        }
-      } catch (error) {
-        console.error('獲取知識卡片失敗:', error)
-        useDefaultKnowledgeCard()
-      }
+      useDefaultKnowledgeCard()
     }
 
     // 使用默認知識卡片
@@ -1025,12 +962,9 @@ export default defineComponent({
 
     // 提交任務答案
     const submitTask = async () => {
-      if (props.uid === '' || !result.value || !isTaskAnswerValid.value) return
+      if (!result.value || !isTaskAnswerValid.value) return
 
       try {
-        // 儲存任務完成記錄
-        const db = getDatabase()
-
         let correct = true
         let extraPoints = 0
         let answerValue: string | boolean = ''
@@ -1063,7 +997,6 @@ export default defineComponent({
           taskFeedback.value = '感謝你完成今天的學習任務！'
         }
 
-        // 記錄任務完成 - 客戶端本地保存
         const taskData = {
           taskType: getTaskType(),
           answer: String(answerValue),
@@ -1072,47 +1005,21 @@ export default defineComponent({
           timestamp: new Date().toISOString(),
         }
 
-        // 在本地保存任務記錄，暫時避開Firebase權限問題
-        console.log('任務完成記錄:', taskData)
-
-        // 更新客戶端狀態，顯示任務已完成
-        taskCompleted.value = true
-
-        // 嘗試更新Firebase，但即使失敗也不影響用戶體驗
-        try {
-          // 僅嘗試更新用戶積分，避開寫入新文檔
-          const userRef = dbRef(db, `users/${props.uid}`)
-          const userSnapshot = await get(userRef)
-
-          if (userSnapshot.exists()) {
-            const userData = userSnapshot.val()
-            const currentPoints = userData.points || 0
-            const newPoints = currentPoints + (result.value.points + extraPoints)
-
-            // 只更新積分字段，不新增文檔
-            await set(dbRef(db, `users/${props.uid}/points`), newPoints)
-          }
-
-          // 嘗試保存任務記錄，但不影響用戶體驗
-          try {
-            const taskRecordsRef = dbRef(db, `userTasks/${props.uid}`)
-            await push(taskRecordsRef, taskData)
-          } catch (recordError) {
-            console.log('保存任務記錄失敗，但用戶體驗不受影響:', recordError)
-          }
-        } catch (pointsError) {
-          console.log('更新積分失敗，用戶體驗不受影響:', pointsError)
+        const savedRecords = localStorage.getItem(TASK_RECORDS_KEY)
+        const taskRecords = savedRecords ? JSON.parse(savedRecords) : []
+        if (Array.isArray(taskRecords)) {
+          taskRecords.push(taskData)
+          localStorage.setItem(TASK_RECORDS_KEY, JSON.stringify(taskRecords))
         }
+
+        const currentPoints = Number(localStorage.getItem(POINTS_KEY) || 0)
+        localStorage.setItem(POINTS_KEY, String(currentPoints + taskData.points))
+
+        taskCompleted.value = true
       } catch (error) {
         console.error('提交任務失敗:', error)
-        // 提供更友好的錯誤訊息，但仍然讓用戶完成任務
-        if (error instanceof Error) {
-          console.log(`提交任務錯誤: ${error.message}。但任務仍標記為完成。`)
-        }
-
-        // 即使有錯誤，也將任務標記為完成
         taskCompleted.value = true
-        taskFeedback.value = '您的答案已記錄！資料同步可能在稍後完成。'
+        taskFeedback.value = '您的答案已記錄！'
       }
     }
 
@@ -1132,15 +1039,10 @@ export default defineComponent({
 
     // 儲存遊戲記錄
     const saveGameRecord = async (symbols: Symbol[], points: number) => {
-      if (props.uid === '') return
-
-      const db = getDatabase()
-
       try {
-        // 儲存遊戲記錄
-        const gameRecordsRef = dbRef(db, `gameRecords/${props.uid}`)
-        const newRecordRef = push(gameRecordsRef)
-        await set(newRecordRef, {
+        const savedRecords = localStorage.getItem(GAME_RECORDS_KEY)
+        const gameRecords = savedRecords ? JSON.parse(savedRecords) : []
+        const record = {
           symbols: symbols.map((s) => ({
             type: s.type,
             value: s.value,
@@ -1149,26 +1051,18 @@ export default defineComponent({
             text: s.text,
           })),
           points: points,
-          timestamp: serverTimestamp(),
-        })
+          timestamp: new Date().toISOString(),
+        }
 
-        // 更新用戶積分
-        const userRef = dbRef(db, `users/${props.uid}`)
-        const userSnapshot = await get(userRef)
-        const currentPoints = userSnapshot.exists() ? userSnapshot.val().points || 0 : 0
-        await set(dbRef(db, `users/${props.uid}/points`), currentPoints + points)
+        if (Array.isArray(gameRecords)) {
+          gameRecords.push(record)
+          localStorage.setItem(GAME_RECORDS_KEY, JSON.stringify(gameRecords))
+        }
 
-        // 新增通知
-        const notificationsRef = dbRef(db, `users/${props.uid}/notifications`)
-        const newNotificationRef = push(notificationsRef)
-        await set(newNotificationRef, {
-          type: 'gameResult',
-          message: `拉霸結果：${result.value?.title}，獲得 ${points} 點！`,
-          timestamp: serverTimestamp(),
-          read: false,
-        })
+        const currentPoints = Number(localStorage.getItem(POINTS_KEY) || 0)
+        localStorage.setItem(POINTS_KEY, String(currentPoints + points))
       } catch (error) {
-        console.error('儲存遊戲記錄失敗:', error)
+        console.error('儲存本機遊戲記錄失敗:', error)
       }
     }
 
@@ -1195,10 +1089,6 @@ export default defineComponent({
       } else {
         console.error('Canvas元素不存在，無法重繪')
       }
-    }
-
-    const toggleLogin = () => {
-      emit('toggleLogin')
     }
 
     // 初始化頁面
@@ -1230,18 +1120,6 @@ export default defineComponent({
       window.removeEventListener('resize', updateCanvasSize)
     })
 
-    watch(
-      () => props.uid,
-      (newUid) => {
-        console.log('uid changed:', newUid)
-        if (newUid !== '') {
-          // 如果uid有值，則重繪畫面
-          initCanvas()
-          forceRedraw()
-        }
-      },
-    )
-
     return {
       slotCanvas,
       canPlay,
@@ -1267,7 +1145,6 @@ export default defineComponent({
       showRules,
       canvasWidth,
       canvasHeight,
-      toggleLogin,
     }
   },
 })

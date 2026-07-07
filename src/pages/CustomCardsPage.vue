@@ -203,13 +203,11 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, onMounted, watch } from 'vue'
+import { defineComponent, ref, onMounted } from 'vue'
 import { useQuasar } from 'quasar'
 import FlashCard from '../components/FlashCard.vue'
 import VoiceInstallGuideCard from 'src/components/VoiceInstallGuideCard.vue'
 import { useSpeechAvailability } from 'src/composables/useSpeechAvailability'
-import { getAuth, onAuthStateChanged } from 'firebase/auth'
-import { getDatabase, ref as dbRef, get, set } from 'firebase/database'
 import {
   EN_US_PREFERRED_KEYWORDS,
   ZH_TW_PREFERRED_KEYWORDS,
@@ -246,40 +244,16 @@ export default defineComponent({
     const showEditDialog = ref(false)
     const cardToEditIndex = ref(-1)
     const editingCard = ref<Card>({ english: '', chinese: '', flipped: false })
-    const auth = getAuth()
-    const db = getDatabase()
-    const currentUser = ref(auth.currentUser)
     const importJsonInput = ref<HTMLInputElement | null>(null)
     const isLoading = ref(false)
     const synced = ref(false)
     const $q = useQuasar()
     const buildCardKey = (card: Pick<Card, 'english' | 'chinese'>) => `${card.english}\u0000${card.chinese}`
-    // 監聽用戶登入狀態
+
     onMounted(() => {
       isLoading.value = true
-      onAuthStateChanged(auth, async (user) => {
-        currentUser.value = user
-        if (user) {
-          console.log('user', user)
-          console.log('user.uid', user.uid)
-          // 用戶已登入，進行資料同步
-          await syncUserData(user.uid)
-        } else {
-          // 用戶未登入，從localStorage讀取資料
-          loadLocalData()
-        }
-        isLoading.value = false
-      })
-    })
-
-    watch(currentUser, async (newUser) => {
-      if (newUser) {
-        console.log('newUser', newUser)
-        console.log('newUser.uid', newUser.uid)
-        await syncUserData(newUser.uid)
-      } else {
-        loadLocalData()
-      }
+      loadLocalData()
+      isLoading.value = false
     })
 
     // 從 localStorage 加載卡片
@@ -291,67 +265,9 @@ export default defineComponent({
       }
     }
 
-    // 同步用戶資料
-    const syncUserData = async (uid: string) => {
-      console.log('syncUserData', uid)
-      try {
-        // 從 localStorage 讀取資料
-        const localData = localStorage.getItem('customCards')
-        const localCards: Card[] = localData ? JSON.parse(localData) : []
-
-        // 從 Firebase 讀取資料
-        const userRef = dbRef(db, `users/${uid}/customCards`)
-        const snapshot = await get(userRef)
-        const firebaseCards: Card[] = snapshot.exists() ? snapshot.val() : []
-
-        // 同步策略：合併兩邊的資料，使用較新的資料
-        if (localCards.length > 0 && firebaseCards.length === 0) {
-          // localStorage 有資料，Firebase 無資料
-          await set(userRef, localCards)
-          customCards.value = localCards
-        } else if (localCards.length === 0 && firebaseCards.length > 0) {
-          // Firebase 有資料，localStorage 無資料
-          localStorage.setItem('customCards', JSON.stringify(firebaseCards))
-          customCards.value = firebaseCards
-        } else if (localCards.length > 0 && firebaseCards.length > 0) {
-          // 兩邊都有資料，進行合併（這裡採用簡單的合併策略，可以根據需求調整）
-          const mergedCards = [...firebaseCards]
-
-          // 尋找 localStorage 中 Firebase 沒有的卡片
-          for (const localCard of localCards) {
-            const exists = mergedCards.some(
-              (card) => card.english === localCard.english && card.chinese === localCard.chinese,
-            )
-            if (!exists) {
-              mergedCards.push(localCard)
-            }
-          }
-
-          // 更新到兩邊
-          await set(userRef, mergedCards)
-          localStorage.setItem('customCards', JSON.stringify(mergedCards))
-          customCards.value = mergedCards
-        }
-
-        flippedCards.value = Array(customCards.value.length).fill(false)
-      } catch (error) {
-        console.error('同步用戶資料失敗:', error)
-      }
-    }
-
-    // 保存卡片到 localStorage 和 Firebase（如果用戶已登入）
+    // 保存卡片到 localStorage
     const saveCards = async () => {
       localStorage.setItem('customCards', JSON.stringify(customCards.value))
-
-      // 如果用戶已登入，同時保存到 Firebase
-      if (currentUser.value) {
-        try {
-          const userRef = dbRef(db, `users/${currentUser.value.uid}/customCards`)
-          await set(userRef, customCards.value)
-        } catch (error) {
-          console.error('保存到 Firebase 失敗:', error)
-        }
-      }
     }
 
     // 創建新卡片
@@ -600,7 +516,6 @@ export default defineComponent({
       flippedCards,
       newCard,
       showDeleteDialog,
-      currentUser,
       isLoading,
       synced,
       voicePlaybackBlocked,

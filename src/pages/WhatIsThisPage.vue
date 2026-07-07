@@ -84,30 +84,9 @@
             class="q-mt-sm q-ml-sm"
             color="pink"
             icon="favorite"
-            label="存到最愛"
-            @click="saveToFavorites"
+            label="存成本機字卡"
+            @click="saveToLocalCard"
           />
-          <q-btn
-            v-if="uid"
-            class="q-mt-sm"
-            color="secondary"
-            icon="arrow_upward"
-            label="上傳至資料庫"
-            @click="uploadCard"
-          />
-
-          <div class="q-mt-sm" v-if="uid">
-            <!-- check box -->
-            <q-checkbox v-model="isChecked" label="我已閱讀並同意"></q-checkbox>
-
-            <a
-              href="https://github.com/3dw/zh-en/wiki/%E9%9A%B1%E7%A7%81%E6%AC%8A%E6%94%BF%E7%AD%96"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              隱私權政策
-            </a>
-          </div>
         </q-card>
       </div>
     </div>
@@ -119,33 +98,15 @@ import { defineComponent, ref, onUnmounted } from 'vue'
 import axios from 'axios'
 import heic2any from 'heic2any'
 import Pica from 'pica'
-import { set, ref as dbRef } from 'firebase/database'
-import { getDatabase } from 'firebase/database'
 import {
   EN_US_PREFERRED_KEYWORDS,
   ZH_TW_PREFERRED_KEYWORDS,
   speakTextWithPreferredVoice,
 } from 'src/utils/speechVoice'
 
-const database = getDatabase()
-
 export default defineComponent({
   name: 'WhatIsThisPage',
-
-  props: {
-    uid: {
-      type: String,
-      default: '',
-    },
-    cards: {
-      type: Array,
-      default: () => [],
-    },
-  },
-
-  setup(props) {
-    const FAVORITES_KEY = 'en_love_arr'
-    const isChecked = ref(false)
+  setup() {
     const imageFile = ref(null)
     const imagePreview = ref('')
     const loading = ref(false)
@@ -154,108 +115,6 @@ export default defineComponent({
     const videoRef = ref<HTMLVideoElement | null>(null)
     const showCamera = ref(false)
     let stream: MediaStream | null = null
-
-    const uploadCard = async () => {
-      if (props.cards) {
-        if (!isChecked.value) {
-          window.alert('請先閱讀並同意隱私權政策')
-          return
-        }
-
-        console.log('上傳卡片')
-
-        if (!imagePreview.value) {
-          console.error('無法取得圖片')
-          return
-        }
-
-        try {
-          // 從 blob URL 讀取圖片
-          const response = await fetch(imagePreview.value)
-          const blob = await response.blob()
-
-          // 創建 Image 物件
-          const img = new Image()
-          const imgLoadPromise = new Promise((resolve, reject) => {
-            img.onload = () => resolve(img)
-            img.onerror = reject
-          })
-          img.src = URL.createObjectURL(blob)
-          await imgLoadPromise
-
-          // 計算新的尺寸，保持原始比例
-          let width = img.width
-          let height = img.height
-          const aspectRatio = width / height
-          const MAX_FILE_SIZE = 400 * 1024 // 400KB
-
-          // 初始縮放比例
-          let scale = 0.8
-          const canvas = document.createElement('canvas')
-          const pica = Pica()
-          let compressedBlob
-
-          do {
-            width = Math.floor(img.width * scale)
-            height = Math.floor(width / aspectRatio)
-
-            canvas.width = width
-            canvas.height = height
-
-            await pica.resize(img, canvas, {
-              quality: 3,
-              unsharpAmount: 80,
-              unsharpRadius: 0.6,
-              unsharpThreshold: 2,
-            })
-
-            compressedBlob = await new Promise<Blob>((resolve) => {
-              canvas.toBlob((blob) => resolve(blob!), 'image/jpeg', 0.9)
-            })
-
-            scale *= 0.9
-          } while (compressedBlob.size > MAX_FILE_SIZE)
-
-          // 轉換為 base64
-          const base64 = await new Promise<string>((resolve) => {
-            const reader = new FileReader()
-            reader.onloadend = () => resolve(reader.result as string)
-            reader.readAsDataURL(compressedBlob)
-          })
-
-          console.log(base64)
-
-          const newCard = {
-            image: base64,
-            description: resultZh.value || resultEn.value,
-            descriptionEn: resultEn.value,
-            descriptionZh: resultZh.value,
-            createdAt: new Date().toISOString(),
-            createdBy: props.uid,
-          }
-          const newIndex = props.cards.length
-          set(dbRef(database, `cards/${newIndex}`), newCard).then(() => {
-            alert('上傳成功')
-            console.log('上傳成功')
-          })
-        } catch (error) {
-          console.error('處理圖片失敗:', error)
-          window.alert('處理圖片失敗，請重試')
-        }
-      }
-    }
-
-    const getFavorites = () => {
-      try {
-        const raw = localStorage.getItem(FAVORITES_KEY)
-        if (!raw) return []
-        const parsed = JSON.parse(raw)
-        return Array.isArray(parsed) ? parsed : []
-      } catch (error) {
-        console.error('讀取最愛失敗:', error)
-        return []
-      }
-    }
 
     const blobToDataUrl = (blob: Blob) =>
       new Promise<string>((resolve, reject) => {
@@ -343,42 +202,19 @@ export default defineComponent({
       }
     }
 
-    const saveToFavorites = async () => {
+    const saveToLocalCard = async () => {
       if (!resultEn.value || !resultZh.value) {
-        window.alert('請先拍照或上傳圖片，產生中英文內容後再收藏')
+        window.alert('請先拍照或上傳圖片，產生中英文內容後再儲存')
         return
       }
 
       try {
-        const favorites = getFavorites()
-        const existingIndex = favorites.findIndex(
-          (card: { english: string; chinese: string }) =>
-            card.english === resultEn.value && card.chinese === resultZh.value,
-        )
-
         const image = await createLowResImage()
-        const favoriteCard = {
-          english: resultEn.value,
-          chinese: resultZh.value,
-          ...(image ? { image } : {}),
-        }
-
-        if (existingIndex >= 0) {
-          favorites[existingIndex] = {
-            ...favorites[existingIndex],
-            ...favoriteCard,
-          }
-          window.alert('已更新最愛中的字卡')
-        } else {
-          favorites.push(favoriteCard)
-          window.alert('已加入最愛')
-        }
-
-        localStorage.setItem(FAVORITES_KEY, JSON.stringify(favorites))
         saveToCustomCards(image)
+        window.alert('已存成本機字卡')
       } catch (error) {
-        console.error('儲存最愛失敗:', error)
-        window.alert('儲存最愛失敗，請稍後再試')
+        console.error('儲存本機字卡失敗:', error)
+        window.alert('儲存本機字卡失敗，請稍後再試')
       }
     }
 
@@ -578,7 +414,6 @@ export default defineComponent({
     })
 
     return {
-      isChecked,
       imageFile,
       imagePreview,
       loading,
@@ -591,8 +426,7 @@ export default defineComponent({
       showCamera,
       openCamera,
       takePhoto,
-      uploadCard,
-      saveToFavorites,
+      saveToLocalCard,
     }
   },
 })
