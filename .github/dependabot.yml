@@ -5,6 +5,12 @@ updates:
     schedule:
       interval: "weekly"
     open-pull-requests-limit: 5
+    ignore:
+      # app-vite v3 drops the legacy path aliases (src/, pages/, layouts/, ...),
+      # moves the wrappers from #q-app/wrappers to #q-app, and replaces the
+      # injected process.env.* with import.meta.env.*. Upgrade deliberately.
+      - dependency-name: "@quasar/app-vite"
+        update-types: ["version-update:semver-major"]
     groups:
       production-dependencies:
         dependency-type: "production"
