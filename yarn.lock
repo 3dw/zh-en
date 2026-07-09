@@ -2790,10 +2790,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@quasar/extras@npm:^2.0.1":
-  version: 2.0.1
-  resolution: "@quasar/extras@npm:2.0.1"
-  checksum: 10c0/c4a75bb6a6fd73ba0ef8ccfade8dae3a640548ba75a133996e3bf384bdf7e4ecf74fbc13d8dff9b90b4ce45f3c40f37296f2f5c1cf1e31812de424b6f9f6d4c1
+"@quasar/extras@npm:^2.0.2":
+  version: 2.0.2
+  resolution: "@quasar/extras@npm:2.0.2"
+  checksum: 10c0/b7134e3b3febac8b1bbc40bebbb02e987d13d12eab54765beefa33bfd009d4c213485d2667f47b2a7b75a1bc322692a7390849c7b35d5a37b8369cb87236a618
   languageName: node
   linkType: hard
 
@@ -8704,10 +8704,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"quasar@npm:^2.20.3":
-  version: 2.20.3
-  resolution: "quasar@npm:2.20.3"
-  checksum: 10c0/58bb591fd11df0298735d64f27587a5e6674cdcfad4f9c521a1da57f30adc38eea961b52d0b52ec643d013490ea3629e95e108eec6320c5c77f0d7dbc04f9e1c
+"quasar@npm:^2.21.1":
+  version: 2.21.1
+  resolution: "quasar@npm:2.21.1"
+  checksum: 10c0/cd15057245ce4fd25fed4914fc8dc066b3f6fda22d85e7bc8ea2a9ab24a15e6c993b1bb90cfffb582dfb99f19858a9b761ccc3980b95f2e178857ddd944e558d
   languageName: node
   linkType: hard
 
@@ -10018,12 +10018,12 @@ __metadata:
   linkType: hard
 
 "string-width@npm:8":
-  version: 8.2.1
-  resolution: "string-width@npm:8.2.1"
+  version: 8.2.2
+  resolution: "string-width@npm:8.2.2"
   dependencies:
     get-east-asian-width: "npm:^1.5.0"
     strip-ansi: "npm:^7.1.2"
-  checksum: 10c0/d467b4eaf4c40a01bb438a2620e77badd2456ffd5131c9973abe4f3acf7c802d5b21f3b6a00a5e33a7fc28ca8f9c103226e01bac61e9f259659c6f46d78e353a
+  checksum: 10c0/895624534e4e2f229e880bbc30aa77bdeb758e1a0edce203e0a17b8b4f08b8d3c1156516efc50a35e3efd0052d938a73797692111250ac9f52ee384710a01714
   languageName: node
   linkType: hard
 
@@ -11532,7 +11532,7 @@ __metadata:
     "@eslint/js": "npm:^10.0.1"
     "@huggingface/transformers": "npm:^4.2.0"
     "@quasar/app-vite": "npm:^2.6.2"
-    "@quasar/extras": "npm:^2.0.1"
+    "@quasar/extras": "npm:^2.0.2"
     "@types/node": "npm:^26.1.0"
     "@vue/eslint-config-prettier": "npm:^10.2.0"
     "@vue/eslint-config-typescript": "npm:^14.9.0"
@@ -11546,7 +11546,7 @@ __metadata:
     pica: "npm:^10.0.2"
     pinia: "npm:^3.0.4"
     prettier: "npm:^3.9.4"
-    quasar: "npm:^2.20.3"
+    quasar: "npm:^2.21.1"
     register-service-worker: "npm:^1.7.2"
     string-width: "npm:8"
     typescript: "npm:~6.0.3"
