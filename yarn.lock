@@ -8176,9 +8176,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"openai@npm:^6.47.0":
-  version: 6.47.0
-  resolution: "openai@npm:6.47.0"
+"openai@npm:^6.48.0":
+  version: 6.48.0
+  resolution: "openai@npm:6.48.0"
   peerDependencies:
     "@aws-sdk/credential-provider-node": ">=3.972.0 <4"
     "@smithy/hash-node": ">=4.3.0 <5"
@@ -8196,7 +8196,7 @@ __metadata:
       optional: true
     zod:
       optional: true
-  checksum: 10c0/643fe51bbbd3c540dc72aa0366007a723c4a51b413cb8192f066a108429c7c0eab2d33a66c63b666da1db1fc0c8f34be76c87268db31408828d5b484928f3c23
+  checksum: 10c0/1e6b792e94af7dc22541343a395282d747cea596fa52d28ccc27410d5fdd82912bc0e12589bc68a88317ae58d3afc10f5fed6cb5deff3ba445817a56870d3719
   languageName: node
   linkType: hard
 
@@ -8668,10 +8668,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"quasar@npm:^2.21.4":
-  version: 2.21.4
-  resolution: "quasar@npm:2.21.4"
-  checksum: 10c0/bf55cec863e5fe775ca85432bfdb26ed77ead08b5778b18755ffcee56f3f272346aee738f7f9cf8699fab330f0ad55444518a6e2dd61eb1dd46162af8d93046f
+"quasar@npm:^2.22.0":
+  version: 2.22.0
+  resolution: "quasar@npm:2.22.0"
+  checksum: 10c0/8afb356a93b4bcfc3daebcd55475e71bacc7e3a267a5476b18fb63586528e65e5adf9adb2eb594171529dc25c730940ec06c1c6f9c9b1b9a9527e54fd2803394
   languageName: node
   linkType: hard
 
@@ -11523,11 +11523,11 @@ __metadata:
     eslint-plugin-vue: "npm:^10.9.2"
     globals: "npm:^17.7.0"
     heic2any: "npm:^0.0.4"
-    openai: "npm:^6.47.0"
+    openai: "npm:^6.48.0"
     pica: "npm:^10.0.2"
     pinia: "npm:^4.0.2"
     prettier: "npm:^3.9.5"
-    quasar: "npm:^2.21.4"
+    quasar: "npm:^2.22.0"
     register-service-worker: "npm:^1.7.2"
     string-width: "npm:8"
     typescript: "npm:~6.0.3"
