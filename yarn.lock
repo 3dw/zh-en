@@ -8388,13 +8388,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"pica@npm:^10.0.2":
-  version: 10.0.2
-  resolution: "pica@npm:10.0.2"
+"pica@npm:^10.0.3":
+  version: 10.0.3
+  resolution: "pica@npm:10.0.3"
   dependencies:
     glur: "npm:^2.0.0"
     multimath: "npm:^3.0.0"
-  checksum: 10c0/06e63de147a89fdd597c27d0b563eb6d4240830e5eef50812b4a67899df5ba2cad06c4b657f7b9958175f74c55c4f42063121da9f002c47079ac12e13365e584
+  checksum: 10c0/a6e678308faabaca58cddee1cfa6c1e5f6d3d7a12036cfffe38b32ecd00cc45377e2159bc1b33eeb4b15b69aff972acb87bc0c8cbb12e5d82d03cdfa45ed3a3b
   languageName: node
   linkType: hard
 
@@ -8426,9 +8426,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"pinia@npm:^4.0.2":
-  version: 4.0.2
-  resolution: "pinia@npm:4.0.2"
+"pinia@npm:^4.0.3":
+  version: 4.0.3
+  resolution: "pinia@npm:4.0.3"
   dependencies:
     nostics: "npm:^1.1.4"
   peerDependencies:
@@ -8440,7 +8440,7 @@ __metadata:
       optional: false
     typescript:
       optional: true
-  checksum: 10c0/210f76c147cadf379437abc0150763add506e0328204f4f42adb14e74967bd60f3036eae5e06b572ee6666047bbfb9158db2f0cf9b9016c1f94c724eba4b30d4
+  checksum: 10c0/6c06c872dd555cb8095a7a9cf3271449b8e88a9908d2cbc9ec6df328ace0d3256848e523c5d30653f7eff2eba7c91dd16f4a9f1cd0a78ff881c7a9dc11096464
   languageName: node
   linkType: hard
 
@@ -11550,8 +11550,8 @@ __metadata:
     globals: "npm:^17.11.0"
     heic2any: "npm:^0.0.4"
     openai: "npm:^7.4.0"
-    pica: "npm:^10.0.2"
-    pinia: "npm:^4.0.2"
+    pica: "npm:^10.0.3"
+    pinia: "npm:^4.0.3"
     prettier: "npm:^3.9.6"
     quasar: "npm:^2.24.0"
     register-service-worker: "npm:^1.7.2"
