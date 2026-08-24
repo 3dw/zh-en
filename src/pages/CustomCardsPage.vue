@@ -213,6 +213,11 @@ import {
   ZH_TW_PREFERRED_KEYWORDS,
   speakTextWithPreferredVoice,
 } from 'src/utils/speechVoice'
+import {
+  parseAiFetchError,
+  notifyAiError,
+  notifyGenericError,
+} from 'src/utils/aiError'
 
 interface Card {
   english: string
@@ -388,12 +393,23 @@ export default defineComponent({
             body: JSON.stringify({ content: newCard.value.english }),
           },
         )
+        // fetch 不對 4xx 拋例外，必須手動檢查狀態碼
+        if (!response.ok) {
+          const quotaBody = await parseAiFetchError(response)
+          if (quotaBody !== null) {
+            notifyAiError($q, quotaBody)
+          } else {
+            notifyGenericError($q, '翻譯失敗，請稍後再試')
+          }
+          return
+        }
         const data = await response.json()
         console.log(data)
         newCard.value.chinese = data || ''
         console.log('newCard.value.chinese', newCard.value.chinese)
       } catch (error) {
         console.error('翻譯失敗:', error)
+        notifyGenericError($q, '翻譯失敗，請稍後再試')
       }
     }
     // 自動中翻英
@@ -409,12 +425,23 @@ export default defineComponent({
             body: JSON.stringify({ content: newCard.value.chinese }),
           },
         )
+        // fetch 不對 4xx 拋例外，必須手動檢查狀態碼
+        if (!response.ok) {
+          const quotaBody = await parseAiFetchError(response)
+          if (quotaBody !== null) {
+            notifyAiError($q, quotaBody)
+          } else {
+            notifyGenericError($q, '翻譯失敗，請稍後再試')
+          }
+          return
+        }
         const data = await response.json()
         console.log(data)
         newCard.value.english = data || ''
         console.log('newCard.value.english', newCard.value.english)
       } catch (error) {
         console.error('翻譯失敗:', error)
+        notifyGenericError($q, '翻譯失敗，請稍後再試')
       }
     }
 

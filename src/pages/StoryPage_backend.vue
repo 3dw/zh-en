@@ -183,6 +183,11 @@
 <script lang="ts">
 import { ref, reactive, defineComponent } from 'vue'
 import { useQuasar } from 'quasar'
+import {
+  parseAiFetchError,
+  notifyAiError,
+  QuotaError,
+} from 'src/utils/aiError'
 
 export default defineComponent({
   name: 'StoryPageBackend',
@@ -273,7 +278,13 @@ export default defineComponent({
           },
         )
 
+        // 先讀 body 才能解析配額錯誤，不能先 throw
         if (!storyResponse.ok) {
+          const quotaBody = await parseAiFetchError(storyResponse)
+          if (quotaBody !== null) {
+            notifyAiError($q, quotaBody)
+            throw new QuotaError(quotaBody.error ?? '今日 AI 用量已達上限')
+          }
           throw new Error('故事生成失敗')
         }
 
@@ -301,7 +312,13 @@ export default defineComponent({
           },
         )
 
+        // 先讀 body 才能解析配額錯誤，不能先 throw
         if (!imagesResponse.ok) {
+          const quotaBody = await parseAiFetchError(imagesResponse)
+          if (quotaBody !== null) {
+            notifyAiError($q, quotaBody)
+            throw new QuotaError(quotaBody.error ?? '今日 AI 用量已達上限')
+          }
           throw new Error('圖片生成失敗')
         }
 
@@ -327,7 +344,13 @@ export default defineComponent({
           },
         )
 
+        // 先讀 body 才能解析配額錯誤，不能先 throw
         if (!voiceResponse.ok) {
+          const quotaBody = await parseAiFetchError(voiceResponse)
+          if (quotaBody !== null) {
+            notifyAiError($q, quotaBody)
+            throw new QuotaError(quotaBody.error ?? '今日 AI 用量已達上限')
+          }
           throw new Error('語音生成失敗')
         }
 
@@ -359,11 +382,14 @@ export default defineComponent({
           position: 'top',
         })
       } catch (error: unknown) {
-        $q.notify({
-          type: 'negative',
-          message: `發生錯誤：${error instanceof Error ? error.message : '請稍後重試'}`,
-          position: 'top',
-        })
+        if (!(error instanceof QuotaError)) {
+          // 配額錯誤已在拋出前 notify，此處只處理其他錯誤
+          $q.notify({
+            type: 'negative',
+            message: `發生錯誤：${error instanceof Error ? error.message : '請稍後重試'}`,
+            position: 'top',
+          })
+        }
         console.error('生成故事時發生錯誤：', error)
       } finally {
         loading.value = false

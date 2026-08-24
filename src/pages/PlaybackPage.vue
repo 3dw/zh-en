@@ -107,7 +107,14 @@
 
 <script lang="ts">
 import { defineComponent, ref } from 'vue'
+import { useQuasar } from 'quasar'
 import { speakEnglish } from 'src/utils/speechVoice'
+import {
+  parseAiFetchError,
+  notifyAiError,
+  notifyGenericError,
+  QuotaError,
+} from 'src/utils/aiError'
 
 interface EmotionImageResult {
   images: string[]
@@ -126,6 +133,7 @@ export default defineComponent({
   name: 'PlaybackPage',
 
   setup() {
+    const $q = useQuasar()
     const userStory = ref('')
     const translatedStory = ref('')
     const emotions = ref<EmotionWithAnimation[]>([])
@@ -147,7 +155,15 @@ export default defineComponent({
           body: JSON.stringify({ content: story }),
         },
       )
-      if (!translateToZhResponse.ok) throw new Error('翻譯失敗')
+      // 先讀 body 才能解析配額錯誤，不能先 throw
+      if (!translateToZhResponse.ok) {
+        const quotaBody = await parseAiFetchError(translateToZhResponse)
+        if (quotaBody !== null) {
+          notifyAiError($q, quotaBody)
+          throw new QuotaError(quotaBody.error ?? '今日 AI 用量已達上限')
+        }
+        throw new Error('翻譯失敗')
+      }
 
       const data = await translateToZhResponse.text()
       translatedStory.value = data
@@ -167,7 +183,15 @@ export default defineComponent({
           body: JSON.stringify({ content: zhText }),
         },
       )
-      if (!analyzeEmotionsResponse.ok) throw new Error('情緒分析失敗')
+      // 先讀 body 才能解析配額錯誤，不能先 throw
+      if (!analyzeEmotionsResponse.ok) {
+        const quotaBody = await parseAiFetchError(analyzeEmotionsResponse)
+        if (quotaBody !== null) {
+          notifyAiError($q, quotaBody)
+          throw new QuotaError(quotaBody.error ?? '今日 AI 用量已達上限')
+        }
+        throw new Error('情緒分析失敗')
+      }
       const data = await analyzeEmotionsResponse.json()
 
       // 添加类型检查和空值处理
@@ -197,7 +221,15 @@ export default defineComponent({
         },
       )
 
-      if (!response.ok) throw new Error('圖片生成失敗')
+      // 先讀 body 才能解析配額錯誤，不能先 throw
+      if (!response.ok) {
+        const quotaBody = await parseAiFetchError(response)
+        if (quotaBody !== null) {
+          notifyAiError($q, quotaBody)
+          throw new QuotaError(quotaBody.error ?? '今日 AI 用量已達上限')
+        }
+        throw new Error('圖片生成失敗')
+      }
       const result = await response.json()
       return result as EmotionImageResult
     }
@@ -215,7 +247,15 @@ export default defineComponent({
           body: JSON.stringify({ content: `這個情緒是${zhEmotion}` }),
         },
       )
-      if (!response.ok) throw new Error('情緒翻譯失敗')
+      // 先讀 body 才能解析配額錯誤，不能先 throw
+      if (!response.ok) {
+        const quotaBody = await parseAiFetchError(response)
+        if (quotaBody !== null) {
+          notifyAiError($q, quotaBody)
+          throw new QuotaError(quotaBody.error ?? '今日 AI 用量已達上限')
+        }
+        throw new Error('情緒翻譯失敗')
+      }
       const enText = await response.text()
       return enText
     }
@@ -268,7 +308,11 @@ export default defineComponent({
 
         await animateEmotions(emotionResults)
       } catch (err) {
+        // QuotaError 已在內層 notify，此處只設 banner 訊息；其餘錯誤照舊
         error.value = err instanceof Error ? err.message : '分析過程發生錯誤，請稍後再試'
+        if (!(err instanceof QuotaError)) {
+          notifyGenericError($q, error.value)
+        }
       } finally {
         loading.value = false
         showProgress.value = false

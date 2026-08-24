@@ -89,8 +89,10 @@
 
 <script lang="ts">
 import { defineComponent, ref, onMounted } from 'vue'
+import { useQuasar } from 'quasar'
 import axios from 'axios'
 import { speakEnglish } from 'src/utils/speechVoice'
+import { parseAxiosAiError, notifyAiError, notifyGenericError } from 'src/utils/aiError'
 
 export default defineComponent({
   name: 'HandWrittenPage',
@@ -101,6 +103,7 @@ export default defineComponent({
     },
   },
   setup() {
+    const $q = useQuasar()
     const canvas = ref<HTMLCanvasElement | null>(null)
     const ctx = ref<CanvasRenderingContext2D | null>(null)
     const isDrawing = ref(false)
@@ -313,6 +316,12 @@ export default defineComponent({
         }
       } catch (error) {
         console.error('Error checking answer:', error)
+        const quotaBody = parseAxiosAiError(error)
+        if (quotaBody !== null) {
+          notifyAiError($q, quotaBody)
+        } else {
+          notifyGenericError($q, '辨識失敗，請稍後再試')
+        }
       } finally {
         isChecking.value = false
       }
