@@ -95,6 +95,7 @@
 
 <script lang="ts">
 import { defineComponent, ref, onUnmounted } from 'vue'
+import { useQuasar } from 'quasar'
 import axios from 'axios'
 import heic2any from 'heic2any'
 import Pica from 'pica'
@@ -103,10 +104,12 @@ import {
   ZH_TW_PREFERRED_KEYWORDS,
   speakTextWithPreferredVoice,
 } from 'src/utils/speechVoice'
+import { parseAxiosAiError, notifyAiError, notifyGenericError } from 'src/utils/aiError'
 
 export default defineComponent({
   name: 'WhatIsThisPage',
   setup() {
+    const $q = useQuasar()
     const imageFile = ref(null)
     const imagePreview = ref('')
     const loading = ref(false)
@@ -344,7 +347,12 @@ export default defineComponent({
         resultZh.value = response.data.descriptionZh || response.data.description || ''
       } catch (error) {
         console.error('上傳圖片失敗:', error)
-        // 可以加入錯誤提示
+        const quotaBody = parseAxiosAiError(error)
+        if (quotaBody !== null) {
+          notifyAiError($q, quotaBody)
+        } else {
+          notifyGenericError($q, '圖片分析失敗，請稍後再試')
+        }
       } finally {
         loading.value = false
       }

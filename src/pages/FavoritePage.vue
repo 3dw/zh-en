@@ -228,6 +228,7 @@ import FlashCard from 'src/components/FlashCard.vue'
 import axios from 'axios'
 import { useRoute } from 'vue-router'
 import { getVoicesAsync } from 'src/utils/speechVoice'
+import { parseAxiosAiError, notifyAiError, notifyGenericError } from 'src/utils/aiError'
 
 interface Card {
   english: string
@@ -660,15 +661,25 @@ export default defineComponent({
         audioPlayer.value.src = audioUrl
       }
 
-      // 上傳錄音檔案
-      const response = await axios.post(
-        'https://zh-en-backend.alearn13994229.workers.dev/convert-speech-to-text',
-        formData,
-        { headers: { 'Content-Type': 'multipart/form-data' } },
-      )
-      console.log(response.data)
-      console.log(response.data.text)
-      recordedText.value = response.data.text
+      // 上傳錄音檔案；axios 對 4xx/5xx 拋例外，必須 try/catch
+      try {
+        const response = await axios.post(
+          'https://zh-en-backend.alearn13994229.workers.dev/convert-speech-to-text',
+          formData,
+          { headers: { 'Content-Type': 'multipart/form-data' } },
+        )
+        console.log(response.data)
+        console.log(response.data.text)
+        recordedText.value = response.data.text
+      } catch (error) {
+        console.error('語音辨識失敗:', error)
+        const quotaBody = parseAxiosAiError(error)
+        if (quotaBody !== null) {
+          notifyAiError($q, quotaBody)
+        } else {
+          notifyGenericError($q, '語音辨識失敗，請稍後再試')
+        }
+      }
     }
 
     function resetAudio() {
