@@ -168,7 +168,8 @@ Cloudflare Pages 自動部署：
 
 ## 陷阱
 
-- `src/pages/` 裡有多個歷史備份檔：`Game4Page_Backup20250111.vue`、`PlaybackPage_Backup20250131-2.vue`、`PlaybackPage＿Backup20250131.vue`（**全形底線**）、`PlaybackPage_Backup20250202WorkerAIOKVersion.vue`、`StoryPage_backend.vue`。做全域取代時**不要順手改到備份檔**，也不要拿它們當範本。
+- `src/pages/` 裡有多個歷史備份檔：`Game4Page_Backup20250111.vue`、`PlaybackPage_Backup20250131-2.vue`、`PlaybackPage＿Backup20250131.vue`（**全形底線**）、`PlaybackPage_Backup20250202WorkerAIOKVersion.vue`。做全域取代時**不要順手改到備份檔**，也不要拿它們當範本。
+- `StoryPage_backend.vue` 不是備份檔，而是由 `/story_backend` 路由的上線頁面；`_backend` 後綴表示它會呼叫後端，應像其他上線頁面一樣維護。
 - `src/views/` 是**孤立的死碼目錄**，不屬於現行結構。裡面只有 `Classics/ThreeCharacterPage.vue` 與 `Classics/CustomPage.vue`，而 `routes.ts` 沒有任何 `views/` 引用、`data/features.ts` 沒有對應項目、`src/` 與 `quasar.config.ts` 全庫零 import。**新頁面一律建在 `src/pages/`**；放進 `src/views/` 的檔案永遠不會被路由到。
 - `src-pwa/` 存在，但 `quasar.config.ts` 沒有啟用 PWA mode（`ssr.pwa: false`，無 `pwa` 區塊），`quasar build` 產出的是 SPA。修 PWA 行為前先確認是否真的有掛上 service worker。
 - **開工前先 `yarn install --immutable`。** `node_modules` 有可能與 `yarn.lock` 不同步（曾實測到樹上是 `vite-plugin-checker@0.14.3` + `quasar@2.20.0`，而 lockfile 鎖的是 `0.14.5` + `2.24.0`）。不同步時 `vite-plugin-checker` 會載入失敗，Quasar 只印一行 `⚠️ quasar.config file > invalid Vite plugin specified (cannot find it): vite-plugin-checker` 就**跳過整個型別檢查**，於是帶著型別錯誤的 build 也會 `Build succeeded`。看到那行 warning 就代表你的樹是壞的，先重裝，不要據此推論專案行為。
