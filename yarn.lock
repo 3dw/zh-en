@@ -2800,10 +2800,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@quasar/extras@npm:^2.0.3":
-  version: 2.0.3
-  resolution: "@quasar/extras@npm:2.0.3"
-  checksum: 10c0/542e5714f4349c02526d653aa6d8eccef8d495a7e4b183490335599a26dd16b841be4c341ca4aca37fdba4cffb70855b16571b9358f6d49bde0371e1ea63f85d
+"@quasar/extras@npm:^2.0.4":
+  version: 2.0.4
+  resolution: "@quasar/extras@npm:2.0.4"
+  checksum: 10c0/f0ed699f7892fd25bd248f78cb208e9db368751a4fb54e2de7c06893888bee1f65d182069ab41e786c571a92d91e79c14719e334c3f2ca955ca5480766a55e08
   languageName: node
   linkType: hard
 
@@ -8204,9 +8204,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"openai@npm:^7.4.0":
-  version: 7.4.0
-  resolution: "openai@npm:7.4.0"
+"openai@npm:^7.5.0":
+  version: 7.5.0
+  resolution: "openai@npm:7.5.0"
   peerDependencies:
     "@aws-sdk/credential-provider-node": ">=3.972.0 <4"
     "@smithy/hash-node": ">=4.3.0 <5"
@@ -8224,7 +8224,7 @@ __metadata:
       optional: true
     zod:
       optional: true
-  checksum: 10c0/c8e0cac506a417e42eae305e8faded9c9b1f3e9fd7cc9393b4cc526d3442ffb86d4d4ba71506b54db6471418eb5d6d9e1d8a20409fd503909bbe9627604217fd
+  checksum: 10c0/b16541492ea03cdc1646db9ae2aaea44571fb779708704108ca94256efa9a65d9ca4044723d1e4f579653f5a6ad84724d5bc1079b9572512820d1668495dc07c
   languageName: node
   linkType: hard
 
@@ -8685,10 +8685,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"quasar@npm:^2.24.0":
-  version: 2.24.0
-  resolution: "quasar@npm:2.24.0"
-  checksum: 10c0/07d10a97963e7feeaa78e079982483605bcde2813e2ed5328ee4f1a2a0eba9c6447fc79218b4c76c03e0e7efd188fc637a75566e1fac8d6b871560112a3820f5
+"quasar@npm:^2.26.0":
+  version: 2.26.0
+  resolution: "quasar@npm:2.26.0"
+  checksum: 10c0/a49cae4a53ae6150906cb3ce73876071d8ccc2d77880fe80b3c6c9494b2ae4d003be95cbd85cf31101f39573d2b5095ec716d1d381fdbe9cfcfffffa1d21004c
   languageName: node
   linkType: hard
 
@@ -11539,7 +11539,7 @@ __metadata:
     "@eslint/js": "npm:^10.0.1"
     "@huggingface/transformers": "npm:^4.2.0"
     "@quasar/app-vite": "npm:^2.6.2"
-    "@quasar/extras": "npm:^2.0.3"
+    "@quasar/extras": "npm:^2.0.4"
     "@types/node": "npm:^26.2.0"
     "@vue/eslint-config-prettier": "npm:^10.2.0"
     "@vue/eslint-config-typescript": "npm:^14.9.0"
@@ -11549,11 +11549,11 @@ __metadata:
     eslint-plugin-vue: "npm:^10.10.0"
     globals: "npm:^17.11.0"
     heic2any: "npm:^0.0.4"
-    openai: "npm:^7.4.0"
+    openai: "npm:^7.5.0"
     pica: "npm:^10.0.3"
     pinia: "npm:^4.0.3"
     prettier: "npm:^3.9.6"
-    quasar: "npm:^2.24.0"
+    quasar: "npm:^2.26.0"
     register-service-worker: "npm:^1.7.2"
     string-width: "npm:8"
     typescript: "npm:~6.0.3"
