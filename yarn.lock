@@ -3410,12 +3410,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/node@npm:^26.6.2":
-  version: 26.6.2
-  resolution: "@types/node@npm:26.6.2"
+"@types/node@npm:^26.6.3":
+  version: 26.6.3
+  resolution: "@types/node@npm:26.6.3"
   dependencies:
     undici-types: "npm:~8.9.0"
-  checksum: 10c0/bb411ff5863a79a28ffa4ebadf2499d44046aa114d25a7a6c78f57def118123a0a7dea99e8fe38849099e9dba2b41b8853a7a282037618559f58653c35e7c5c5
+  checksum: 10c0/51070287167d157d246a5ad83e6ead93aa310bbd9cc880ecd1f244a00c2a31491620f997fbbb6ba4ce164388694827999ec68c1d16c3fb64c1037056e64613c7
   languageName: node
   linkType: hard
 
@@ -5669,9 +5669,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"eslint-plugin-vue@npm:^10.11.0":
-  version: 10.11.0
-  resolution: "eslint-plugin-vue@npm:10.11.0"
+"eslint-plugin-vue@npm:^10.11.1":
+  version: 10.11.1
+  resolution: "eslint-plugin-vue@npm:10.11.1"
   dependencies:
     "@eslint-community/eslint-utils": "npm:^4.9.1"
     natural-compare: "npm:^1.4.0"
@@ -5689,7 +5689,7 @@ __metadata:
       optional: true
     "@typescript-eslint/parser":
       optional: true
-  checksum: 10c0/fd4786cadeb2240e52078edbb285adaf6f3dfaea1428daf32108bd6503bca33aa068301d440b3842ea997a3d52d2d9cce0b7e35558c20f3a38feea50654fd967
+  checksum: 10c0/3ea6027fbfc62e80afabd64ff50215312afe2512954505911820b2480842f432c559ed349a7c6c6655594416e2ddad7f45ba466a52ce1e68d44409715a458f6b
   languageName: node
   linkType: hard
 
@@ -8584,12 +8584,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"prettier@npm:^3.9.8":
-  version: 3.9.8
-  resolution: "prettier@npm:3.9.8"
+"prettier@npm:^3.9.9":
+  version: 3.9.9
+  resolution: "prettier@npm:3.9.9"
   bin:
     prettier: bin/prettier.cjs
-  checksum: 10c0/257e5ef11ba5006d0b0712271705701c065c8003e07763f996ce185d39633902f3fe1f814839eed76f75c97b6d5376d6157bd9f44db18cacb1dbdcb263cc66ae
+  checksum: 10c0/d50ea2537b2ff7dbd5088a214f4d936484e55c665cea2185b477a55b0770be55f3b156a71f63a9a639def6b334667bb327139dc85f2a1041c0a34752cdc74647
   languageName: node
   linkType: hard
 
@@ -11541,19 +11541,19 @@ __metadata:
     "@huggingface/transformers": "npm:^4.3.0"
     "@quasar/app-vite": "npm:^2.6.2"
     "@quasar/extras": "npm:^2.1.0"
-    "@types/node": "npm:^26.6.2"
+    "@types/node": "npm:^26.6.3"
     "@vue/eslint-config-prettier": "npm:^10.2.0"
     "@vue/eslint-config-typescript": "npm:^14.9.0"
     autoprefixer: "npm:^10.6.1"
     axios: "npm:^1.20.0"
     eslint: "npm:^10.11.0"
-    eslint-plugin-vue: "npm:^10.11.0"
+    eslint-plugin-vue: "npm:^10.11.1"
     globals: "npm:^17.12.0"
     heic2any: "npm:^0.0.4"
     openai: "npm:^7.20.0"
     pica: "npm:^10.0.3"
     pinia: "npm:^4.0.3"
-    prettier: "npm:^3.9.8"
+    prettier: "npm:^3.9.9"
     quasar: "npm:^2.33.0"
     register-service-worker: "npm:^1.7.2"
     string-width: "npm:8"
