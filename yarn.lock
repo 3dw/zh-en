@@ -8222,9 +8222,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"openai@npm:^7.20.0":
-  version: 7.20.0
-  resolution: "openai@npm:7.20.0"
+"openai@npm:^7.23.0":
+  version: 7.23.0
+  resolution: "openai@npm:7.23.0"
   peerDependencies:
     "@aws-sdk/credential-provider-node": ">=3.972.0 <4"
     "@smithy/hash-node": ">=4.3.0 <5"
@@ -8245,7 +8245,7 @@ __metadata:
       optional: true
     zod:
       optional: true
-  checksum: 10c0/e8ef2b9a25875812cd4cee982d4f418a6c0cd40ccf144b8c2c2fd188d8d87d6c9033cb149ecde1c2846ced149e1a0d16c7b3cf96f61dbbdcbadb600375dc7624
+  checksum: 10c0/0db651c394f2da0481e62a059198e050ec1f919cbd8f1f11754140123d192e48d77f1f9500a86c199b358c5ed61a67d87f0f8068c8e3e457ff1c75d54fc4d62c
   languageName: node
   linkType: hard
 
@@ -8726,10 +8726,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"quasar@npm:^2.33.0":
-  version: 2.33.0
-  resolution: "quasar@npm:2.33.0"
-  checksum: 10c0/ddac5146dcd23d32c87a45d587c5cdb1c9ca55e2ef72d005049fab16f0d5664f078b88e13a09c816f684f558d16a0f10f95435716c494b6a555ea2958f37a1c8
+"quasar@npm:^2.33.2":
+  version: 2.33.2
+  resolution: "quasar@npm:2.33.2"
+  checksum: 10c0/a220c7b2187c11a10e431d24f2f126167467a9b4e1319ff2881e9403ab9d6abaa9b9e21eeb224f814e41b0440cd5d4de2baacc0d1c1894866f4788743a611f88
   languageName: node
   linkType: hard
 
@@ -10020,12 +10020,12 @@ __metadata:
   linkType: hard
 
 "string-width@npm:8":
-  version: 8.2.2
-  resolution: "string-width@npm:8.2.2"
+  version: 8.3.0
+  resolution: "string-width@npm:8.3.0"
   dependencies:
     get-east-asian-width: "npm:^1.5.0"
     strip-ansi: "npm:^7.1.2"
-  checksum: 10c0/895624534e4e2f229e880bbc30aa77bdeb758e1a0edce203e0a17b8b4f08b8d3c1156516efc50a35e3efd0052d938a73797692111250ac9f52ee384710a01714
+  checksum: 10c0/bc354b27772777c314e6792106f01586e959f36abb3d4b8ad46c4d4ee92d5e906acb10c1f3be97a85ae0ba1b11389094bc5672999fc5f03f12d22a4725fa30fe
   languageName: node
   linkType: hard
 
@@ -11550,11 +11550,11 @@ __metadata:
     eslint-plugin-vue: "npm:^10.11.1"
     globals: "npm:^17.12.0"
     heic2any: "npm:^0.0.4"
-    openai: "npm:^7.20.0"
+    openai: "npm:^7.23.0"
     pica: "npm:^10.0.3"
     pinia: "npm:^4.0.3"
     prettier: "npm:^3.9.9"
-    quasar: "npm:^2.33.0"
+    quasar: "npm:^2.33.2"
     register-service-worker: "npm:^1.7.2"
     string-width: "npm:8"
     typescript: "npm:~6.0.3"
