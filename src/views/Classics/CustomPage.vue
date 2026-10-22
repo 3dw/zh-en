@@ -58,7 +58,7 @@
 
 <script setup lang="ts">
 import { computed, onBeforeUnmount, ref } from 'vue'
-import { ZH_TW_PREFERRED_KEYWORDS, getPreferredVoice } from 'src/utils/speechVoice'
+import { ZH_TW_PREFERRED_KEYWORDS, getPreferredVoice } from '@/utils/speechVoice'
 
 const rawText = ref(`人之初，性本善，性相近，習相遠。
 苟不教，性乃遷，教之道，貴以專。

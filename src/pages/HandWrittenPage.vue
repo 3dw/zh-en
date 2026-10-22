@@ -91,8 +91,8 @@
 import { defineComponent, ref, onMounted } from 'vue'
 import { useQuasar } from 'quasar'
 import axios from 'axios'
-import { speakEnglish } from 'src/utils/speechVoice'
-import { parseAxiosAiError, notifyAiError, notifyGenericError } from 'src/utils/aiError'
+import { speakEnglish } from '@/utils/speechVoice'
+import { parseAxiosAiError, notifyAiError, notifyGenericError } from '@/utils/aiError'
 
 export default defineComponent({
   name: 'HandWrittenPage',

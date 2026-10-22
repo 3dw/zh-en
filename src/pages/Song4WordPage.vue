@@ -113,7 +113,7 @@
 
 <script lang="ts">
 import { defineComponent, ref, onMounted } from 'vue'
-import { speakText } from 'src/utils/speechVoice'
+import { speakText } from '@/utils/speechVoice'
 
 interface LyricWord {
   text: string

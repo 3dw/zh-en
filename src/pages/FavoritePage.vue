@@ -224,11 +224,11 @@
 <script lang="ts">
 import { defineComponent, ref, onMounted, computed, watch, nextTick } from 'vue'
 import { useQuasar } from 'quasar'
-import FlashCard from 'src/components/FlashCard.vue'
+import FlashCard from '@/components/FlashCard.vue'
 import axios from 'axios'
 import { useRoute } from 'vue-router'
-import { getVoicesAsync } from 'src/utils/speechVoice'
-import { parseAxiosAiError, notifyAiError, notifyGenericError } from 'src/utils/aiError'
+import { getVoicesAsync } from '@/utils/speechVoice'
+import { parseAxiosAiError, notifyAiError, notifyGenericError } from '@/utils/aiError'
 
 interface Card {
   english: string

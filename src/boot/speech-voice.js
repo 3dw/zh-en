@@ -1,12 +1,12 @@
-import { boot } from 'quasar/wrappers'
+import { defineBoot } from '#q-app'
 import {
   EN_US_PREFERRED_KEYWORDS,
   ZH_TW_PREFERRED_KEYWORDS,
   getPreferredVoice,
   getSpeechRatePreference,
-} from 'src/utils/speechVoice'
+} from '@/utils/speechVoice'
 
-export default boot(() => {
+export default defineBoot(() => {
   if (typeof window === 'undefined' || !window.speechSynthesis) return
   if (window.__zhEnSpeechPatched) return
 

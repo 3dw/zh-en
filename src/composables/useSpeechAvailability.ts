@@ -5,7 +5,7 @@ import {
   getPreferredVoice,
   getVoicesAsync,
   type ClientPlatform,
-} from 'src/utils/speechVoice'
+} from '@/utils/speechVoice'
 
 const ttsSupported = ref(false)
 const zhTwVoiceAvailable = ref(false)

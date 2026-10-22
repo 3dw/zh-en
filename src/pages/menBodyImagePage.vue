@@ -30,7 +30,7 @@
 
 <script lang="ts">
 import { defineComponent, ref } from 'vue'
-import { speakEnglish } from 'src/utils/speechVoice'
+import { speakEnglish } from '@/utils/speechVoice'
 import menBodyImage from '../assets/learnfromimage/menbody.jpg'
 
 export default defineComponent({

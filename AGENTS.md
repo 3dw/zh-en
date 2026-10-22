@@ -101,9 +101,9 @@ src-pwa/             # PWA 樣板（manifest、custom-service-worker）
    ```ts
    {
      path: '/xxx',
-     component: () => import('layouts/MainLayout.vue'),
+     component: () => import('@/layouts/MainLayout.vue'),
      children: [
-       { path: '', component: () => import('pages/XxxPage.vue'), meta: { title: '中文標題' } },
+       { path: '', component: () => import('@/pages/XxxPage.vue'), meta: { title: '中文標題' } },
      ],
    },
    ```

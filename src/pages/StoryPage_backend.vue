@@ -187,7 +187,7 @@ import {
   parseAiFetchError,
   notifyAiError,
   QuotaError,
-} from 'src/utils/aiError'
+} from '@/utils/aiError'
 
 export default defineComponent({
   name: 'StoryPageBackend',
