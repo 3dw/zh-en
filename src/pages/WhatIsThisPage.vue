@@ -103,8 +103,8 @@ import {
   EN_US_PREFERRED_KEYWORDS,
   ZH_TW_PREFERRED_KEYWORDS,
   speakTextWithPreferredVoice,
-} from 'src/utils/speechVoice'
-import { parseAxiosAiError, notifyAiError, notifyGenericError } from 'src/utils/aiError'
+} from '@/utils/speechVoice'
+import { parseAxiosAiError, notifyAiError, notifyGenericError } from '@/utils/aiError'
 
 export default defineComponent({
   name: 'WhatIsThisPage',

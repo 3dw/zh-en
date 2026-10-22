@@ -1,7 +1,7 @@
-import { boot } from 'quasar/wrappers'
+import { defineBoot } from '#q-app'
 import { createGtag, pageview } from 'vue-gtag'
 
-export default boot(({ app, router }) => {
+export default defineBoot(({ app, router }) => {
   // 設定 Google Analytics (vue-gtag v3 API)
   app.use(
     createGtag({

@@ -89,9 +89,9 @@
 
 <script lang="ts">
 import { defineComponent, computed, nextTick, ref } from 'vue'
-import VoiceInstallGuideCard from 'src/components/VoiceInstallGuideCard.vue'
-import { useSpeechAvailability } from 'src/composables/useSpeechAvailability'
-import { ZH_TW_PREFERRED_KEYWORDS, getPreferredVoice, getVoicesAsync } from 'src/utils/speechVoice'
+import VoiceInstallGuideCard from '@/components/VoiceInstallGuideCard.vue'
+import { useSpeechAvailability } from '@/composables/useSpeechAvailability'
+import { ZH_TW_PREFERRED_KEYWORDS, getPreferredVoice, getVoicesAsync } from '@/utils/speechVoice'
 
 interface Sentence {
   chinese: string

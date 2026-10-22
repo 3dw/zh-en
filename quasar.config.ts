@@ -1,7 +1,7 @@
 // Configuration for your app
 // https://v2.quasar.dev/quasar-cli-vite/quasar-config-js
 
-import { defineConfig } from '#q-app/wrappers'
+import { defineConfig } from '#q-app'
 
 export default defineConfig((/* ctx */) => {
   return {
@@ -34,7 +34,7 @@ export default defineConfig((/* ctx */) => {
     build: {
       target: {
         browser: ['es2022', 'firefox115', 'chrome115', 'safari14'],
-        node: 'node20',
+        node: 'node22',
       },
 
       typescript: {
@@ -44,9 +44,13 @@ export default defineConfig((/* ctx */) => {
       },
 
       vueRouterMode: 'history', // available values: 'hash', 'history'
+      // 保留既有 Options API 頁面與元件的正式版行為。
+      vueOptionsAPI: true,
       // vueRouterBase,
       // vueDevtools,
-      // vueOptionsAPI: false,
+      env: {
+        clientPrefix: 'VITE_',
+      },
 
       // rebuildCache: true, // rebuilds Vite/linter/etc cache on startup
 

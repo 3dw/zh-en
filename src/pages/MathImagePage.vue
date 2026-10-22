@@ -32,7 +32,7 @@
 
 <script lang="ts">
 import { defineComponent, ref } from 'vue'
-import { speakEnglish } from 'src/utils/speechVoice'
+import { speakEnglish } from '@/utils/speechVoice'
 
 interface MathSymbol {
   symbol: string

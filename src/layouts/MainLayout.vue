@@ -244,7 +244,7 @@ import {
   SPEECH_RATE_OPTIONS,
   getSpeechRatePreference,
   setSpeechRatePreference,
-} from 'src/utils/speechVoice'
+} from '@/utils/speechVoice'
 
 export default defineComponent({
   name: 'MainLayout',

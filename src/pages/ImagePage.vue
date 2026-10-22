@@ -23,7 +23,7 @@
 
 <script lang="ts">
 import { defineComponent, ref } from 'vue'
-import { speakEnglish } from 'src/utils/speechVoice'
+import { speakEnglish } from '@/utils/speechVoice'
 import cookingImage from '../assets/cooking.jpg'
 
 export default defineComponent({

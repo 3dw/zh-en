@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed } from 'vue'
-import type { ClientPlatform } from 'src/utils/speechVoice'
+import type { ClientPlatform } from '@/utils/speechVoice'
 
 const props = defineProps<{
   platform: ClientPlatform

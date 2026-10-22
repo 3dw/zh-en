@@ -28,8 +28,8 @@
 
 <script lang="ts">
 import { defineComponent, ref } from 'vue'
-import FlashCard from 'src/components/FlashCard.vue'
-import { getSentenceStructure } from 'src/utils/sentenceStructure'
+import FlashCard from '@/components/FlashCard.vue'
+import { getSentenceStructure } from '@/utils/sentenceStructure'
 
 export default defineComponent({
   name: 'BeginnerPage',

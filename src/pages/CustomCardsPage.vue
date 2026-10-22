@@ -206,18 +206,18 @@
 import { defineComponent, ref, onMounted } from 'vue'
 import { useQuasar } from 'quasar'
 import FlashCard from '../components/FlashCard.vue'
-import VoiceInstallGuideCard from 'src/components/VoiceInstallGuideCard.vue'
-import { useSpeechAvailability } from 'src/composables/useSpeechAvailability'
+import VoiceInstallGuideCard from '@/components/VoiceInstallGuideCard.vue'
+import { useSpeechAvailability } from '@/composables/useSpeechAvailability'
 import {
   EN_US_PREFERRED_KEYWORDS,
   ZH_TW_PREFERRED_KEYWORDS,
   speakTextWithPreferredVoice,
-} from 'src/utils/speechVoice'
+} from '@/utils/speechVoice'
 import {
   parseAiFetchError,
   notifyAiError,
   notifyGenericError,
-} from 'src/utils/aiError'
+} from '@/utils/aiError'
 
 interface Card {
   english: string

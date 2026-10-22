@@ -108,13 +108,13 @@
 <script lang="ts">
 import { defineComponent, ref } from 'vue'
 import { useQuasar } from 'quasar'
-import { speakEnglish } from 'src/utils/speechVoice'
+import { speakEnglish } from '@/utils/speechVoice'
 import {
   parseAiFetchError,
   notifyAiError,
   notifyGenericError,
   QuotaError,
-} from 'src/utils/aiError'
+} from '@/utils/aiError'
 
 interface EmotionImageResult {
   images: string[]

@@ -23,7 +23,7 @@
 
 <script lang="ts">
 import { defineComponent, ref } from 'vue'
-import { speakEnglish } from 'src/utils/speechVoice'
+import { speakEnglish } from '@/utils/speechVoice'
 // 請確認 body.jpg 的匯入路徑無誤
 import bodyImage from '../assets/body.jpg'
 

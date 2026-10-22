@@ -212,7 +212,7 @@
 
 <script lang="ts">
 import { defineComponent, ref, computed, onMounted, onUnmounted } from 'vue'
-import { speakEnglish } from 'src/utils/speechVoice'
+import { speakEnglish } from '@/utils/speechVoice'
 import {
   wordPairs,
   wordCategories,

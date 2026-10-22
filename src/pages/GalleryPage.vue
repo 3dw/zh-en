@@ -56,7 +56,7 @@
 <script lang="ts">
 import { defineComponent, ref, computed, onMounted } from 'vue'
 import { useQuasar } from 'quasar'
-import { EN_US_PREFERRED_KEYWORDS, speakTextWithPreferredVoice } from 'src/utils/speechVoice'
+import { EN_US_PREFERRED_KEYWORDS, speakTextWithPreferredVoice } from '@/utils/speechVoice'
 
 interface Card {
   english: string
