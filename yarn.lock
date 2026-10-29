@@ -7194,13 +7194,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"openai@npm:^7.39.0":
-  version: 7.39.0
-  resolution: "openai@npm:7.39.0"
+"openai@npm:^7.43.0":
+  version: 7.43.0
+  resolution: "openai@npm:7.43.0"
   peerDependencies:
     "@aws-sdk/credential-provider-node": ">=3.972.0 <4"
     "@smithy/hash-node": ">=4.3.0 <5"
     "@smithy/signature-v4": ">=5.4.0 <6"
+    google-auth-library: ">=9.15.1 <11"
     undici: ">=5 <9"
     ws: ^8.21.0
     zod: ^3.25 || ^4.0
@@ -7211,13 +7212,15 @@ __metadata:
       optional: true
     "@smithy/signature-v4":
       optional: true
+    google-auth-library:
+      optional: true
     undici:
       optional: true
     ws:
       optional: true
     zod:
       optional: true
-  checksum: 10c0/c7881f9cb1368f2aa11610a2e492ee1163eb51ddecf8dff9db8d886008b453a54f5ab82701c42ecda12eeeafa83e046e12d344d16a7a8338f6382c7fdab49305
+  checksum: 10c0/09b253ca2131db1f23f782441d6e3bf0161d8c2e72fa20e57f9cac0589902350a1cb1cb83ede99710fb0606120c11af7b30615846f3ca7f3c69aba636322b2d1
   languageName: node
   linkType: hard
 
@@ -10296,7 +10299,7 @@ __metadata:
     eslint-plugin-vue: "npm:^10.11.1"
     globals: "npm:^17.13.0"
     heic2any: "npm:^0.0.4"
-    openai: "npm:^7.39.0"
+    openai: "npm:^7.43.0"
     pica: "npm:^10.0.3"
     pinia: "npm:^4.1.0"
     prettier: "npm:^3.9.10"
