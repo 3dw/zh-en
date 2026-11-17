@@ -49,16 +49,6 @@ export const features: Feature[] = [
     category: '字',
   },
   {
-    id: 'hand-written',
-    title: '英文字母手寫練習',
-    description:
-      '提供英文字母的書寫練習功能，包含大小寫字母的筆順動畫和練習空間。適合初學者練習英文書寫。',
-    keywords: ['字母', '書寫', '練習', '筆順', '初學者', '手寫', 'ABC'],
-    route: '/hand-written',
-    icon: 'edit',
-    category: '字',
-  },
-  {
     id: 'emotion',
     title: '狀態雙語字卡',
     description: '學習表達各種情緒和狀態的英文單字，幫助您更準確地表達自己的感受。',
@@ -238,15 +228,6 @@ export const features: Feature[] = [
     category: '詞',
   },
   {
-    id: 'playback',
-    title: '今日回顧',
-    description: '回顧今天的學習內容，鞏固所學知識，追蹤學習進度。',
-    keywords: ['回顧', '複習', '進度', '學習', '追蹤'],
-    route: '/playback',
-    icon: 'edit',
-    category: '其他',
-  },
-  {
     id: 'speakout',
     featured: true,
     title: '開口說',
@@ -264,17 +245,6 @@ export const features: Feature[] = [
     route: '/main-song-word',
     icon: 'music_note',
     category: '其他',
-  },
-  {
-    id: 'story_backend',
-    title: '英文睡前故事',
-    featured: true,
-    description:
-      '提供豐富的英文故事內容，包含不同難度等級的文章。每篇文章都配有中文翻譯和重點單字解釋，幫助您提升閱讀能力。',
-    keywords: ['故事', '閱讀', '文章', '翻譯', '單字', '閱讀能力', '英文故事'],
-    route: '/story_backend',
-    icon: 'image',
-    category: '句',
   },
   {
     id: 'main-image',

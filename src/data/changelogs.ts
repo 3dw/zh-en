@@ -1,5 +1,30 @@
 export const changelogs = [
   {
+    version: '1.5.1-lite',
+    date: '2026-11-17',
+    changes: [
+      {
+        text: '首頁新增輕量版維運公告與公益學習平台捐款連結',
+        href: 'https://www.alearn.org.tw/donate',
+        target: '_blank',
+        rel: 'noopener noreferrer',
+        type: 'new',
+      },
+      {
+        text: '輕量版移除英文睡前故事的文字、配圖與語音生成',
+        type: 'remove',
+      },
+      {
+        text: '輕量版移除今日回顧的情緒分析與圖片生成頁面、路由及入口',
+        type: 'remove',
+      },
+      {
+        text: '輕量版移除英文字母手寫辨識頁面、路由及入口，保留翻譯、開口說與拍照分析',
+        type: 'remove',
+      },
+    ],
+  },
+  {
     version: '1.5.0',
     date: '2026-07-07',
     changes: [
@@ -87,7 +112,6 @@ export const changelogs = [
       },
       {
         text: '修復英文睡前故事生成功能',
-        route: '/story_backend',
         type: 'improvement',
       },
     ],

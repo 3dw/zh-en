@@ -10,7 +10,6 @@
  *   - formatRetryAfter    — 將秒數格式化為繁體中文可讀提示
  *   - notifyAiError       — 以 q-notify 顯示配額錯誤
  *   - notifyGenericError  — 以 q-notify 顯示一般後端錯誤
- *   - QuotaError          — 自訂例外類別，供已在拋出前 notify 的場景避免重複通知
  */
 
 import type { QVueGlobals } from 'quasar'
@@ -24,19 +23,6 @@ interface BackendErrorBody {
   retryAfterSeconds?: unknown
   status?: number
   success?: boolean
-}
-
-// ── 自訂例外 ──────────────────────────────────────────────────────────────────
-
-/**
- * 代表 AI 配額超限的例外。
- * 當拋出前已呼叫 notifyAiError 時，catch 區塊可檢查此型別以避免重複通知。
- */
-export class QuotaError extends Error {
-  constructor(message: string) {
-    super(message)
-    this.name = 'QuotaError'
-  }
 }
 
 // ── 私有輔助 ──────────────────────────────────────────────────────────────────

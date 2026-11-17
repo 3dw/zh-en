@@ -3,6 +3,39 @@
 自主學習英文，用中文學習英文
 Learn English With Chinese
 
+## 輕量版（`lite-app` 分支）
+
+此分支移除「英文睡前故事」、「今日回顧」及「手寫辨識」：
+
+- 刪除 `StoryPage_backend.vue`、`/story_backend` 路由及首頁／搜尋／側欄入口；舊網址顯示既有的 404 頁面。
+- 刪除今日回顧的 `PlaybackPage.vue`、`/playback` 路由，以及手寫辨識的 `HandWrittenPage.vue`、`/hand-written` 路由；首頁／搜尋／側欄不再提供入口，舊網址顯示 404。
+- 刪除無引用的故事專用 `src/services/openai.ts` 與 `openai` 套件，不再使用 `VITE_OPENAI_API_KEY`。
+- 歷史更新紀錄保留文字，但移除失效的故事連結。
+- 保留自訂字卡翻譯、開口說與拍照分析，未調整這些功能的 API 行為。
+
+### 保留的 AI 功能與成本盤點
+
+以下依前端流程盤點；後端模型、供應商、價格與實際日配額未包含在此 repo，無法據此計算費用。
+各 API 皆呼叫既有的 Cloudflare Workers 後端，與已移除的前端 OpenAI SDK 無關。
+
+| 功能         | 路由                          | API 與成本來源                                                                                                               |
+| ------------ | ----------------------------- | ---------------------------------------------------------------------------------------------------------------------------- |
+| 自訂字卡翻譯 | `/custom_cards`               | `/translate-en-to-zh`、`/translate-zh-to-en`；每次點擊翻譯送出一個文字請求，前端未限制字數。                                 |
+| 開口說       | `/favorites`、`/fav/speakout` | `/convert-speech-to-text`；錄音 5 秒後自動停止並上傳辨識。                                                                   |
+| 拍照分析     | `/what_is_this`               | `/detect-image-zh`；選檔／拍照後上傳圖片並取得中英文描述，並非生成圖片。超過 1.5 MiB 時最多壓縮 5 次，但未保證最終低於門檻。 |
+
+盤點依據：`src/pages/CustomCardsPage.vue`、`FavoritePage.vue`、
+`WhatIsThisPage.vue`。前端共用的 `src/utils/aiError.ts`
+會通知 HTTP 429 與重試時間，但不代表已知後端配額或由前端強制限流。
+
+其他標示或資源：
+
+- 繪圖猜字目前以隨機分數模擬評分，沒有 AI 推論或畫布上傳。
+- 一般字卡朗讀使用 `src/utils/speechVoice.ts` 的瀏覽器／系統語音，沒有呼叫本專案的付費 TTS API，但不保證系統語音一定離線。
+- `@huggingface/transformers` 套件保留；目前 `src/` 沒有接線的匯入或本機模型推論。
+
+此變更僅移除本分支的前端入口與呼叫端，**未停用遠端 `/StoryGeneration`、`/emotions`、`/playback/image` 或 `/detect-letter` 服務，也不會影響舊部署或其他用戶端對後端的呼叫**。
+
 ## Install the dependencies
 
 ```bash

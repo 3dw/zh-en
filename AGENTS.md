@@ -18,7 +18,7 @@
 | 路由     | Vue Router 5，`vueRouterMode: 'history'`                                                                      |
 | 狀態     | Pinia 4（實務上幾乎未用，見下方「狀態」）                                                                     |
 | 樣式     | SCSS（`src/css/app.scss`、`quasar.variables.scss`）                                                           |
-| AI / API | `openai` 7（瀏覽器端）、`@huggingface/transformers` 4                                                         |
+| AI / API | Cloudflare Workers API、`@huggingface/transformers` 4（瀏覽器端）；`lite-app` 不含 OpenAI SDK                 |
 | 其他     | axios、pica（縮圖）、heic2any（HEIC 轉檔）、vue-gtag                                                          |
 | 套件管理 | Yarn 4.9.1（`packageManager` 已鎖定），Node 22.22.3（`.nvmrc` / `.node-version`，`engines: node >= 22.22.0`） |
 
@@ -58,22 +58,20 @@ node ./node_modules/vue-tsc/bin/vue-tsc.js --noEmit -p tsconfig.json
 
 ```
 src/
-  pages/            # 51 個頁面，每個學習模式一頁；含 Flashcards/ 與 Structures/ 子目錄
+  pages/            # 每個學習模式一頁；含 Flashcards/ 與 Structures/ 子目錄
   layouts/
     MainLayout.vue  # 唯一 layout，所有路由都掛在它底下
   components/
     FlashCard.vue   # 主要共用元件
     models.ts
   router/
-    routes.ts       # 328 行路由表，逐頁手動註冊
+    routes.ts       # 逐頁手動註冊的路由表
     index.ts
   data/
     features.ts     # 首頁功能清單／搜尋索引（Feature[]）
     wordPairs.ts    # 跳跳人遊戲字組，含 getCustomWordPairs()
     changelogs.ts   # ChangeLogsPage 資料來源
     words/          # 23 個主題字庫（animals, body, emotions, math, …），由 index.ts 匯出
-  services/
-    openai.ts       # OpenAI client 唯一入口
   utils/
     speechVoice.ts       # 語音朗讀與語速偏好
     sentenceStructure.ts
@@ -141,8 +139,8 @@ src-pwa/             # PWA 樣板（manifest、custom-service-worker）
 
 ## 環境變數
 
-- `VITE_OPENAI_API_KEY` — `src/services/openai.ts` 使用，且帶 `dangerouslyAllowBrowser: true`，金鑰會暴露在前端 bundle。**不要把正式金鑰寫進 repo，也不要新增其他前端機密。**
-- 本機有 `.env`（已被 `.gitignore` 排除），`quasar dev` / `build` 啟動時會印 `App • Using .env files: .env`。新增變數請同時更新 `.env` 與此處說明，並確認它有 `VITE_` 前綴才會被注入前端。
+- `lite-app` 已移除睡前故事專用的 OpenAI 服務與 SDK，不再使用 `VITE_OPENAI_API_KEY`。
+- `VITE_` 環境變數會公開於前端，**不要放入正式金鑰或其他機密**。新增變數時請同步更新本節；本機 `.env` 由 `.gitignore` 排除，不提交。
 
 ## 部署
 
@@ -169,7 +167,7 @@ Cloudflare Pages 自動部署：
 ## 陷阱
 
 - `src/pages/` 裡有多個歷史備份檔：`Game4Page_Backup20250111.vue`、`PlaybackPage_Backup20250131-2.vue`、`PlaybackPage＿Backup20250131.vue`（**全形底線**）、`PlaybackPage_Backup20250202WorkerAIOKVersion.vue`。做全域取代時**不要順手改到備份檔**，也不要拿它們當範本。
-- `StoryPage_backend.vue` 不是備份檔，而是由 `/story_backend` 路由的上線頁面；`_backend` 後綴表示它會呼叫後端，應像其他上線頁面一樣維護。
+- `lite-app` 已移除睡前故事、今日回顧及手寫辨識的正式頁面、路由與入口，並清除故事專用服務；其他 AI 功能保留，成本盤點見 `README.md`。歷史備份檔不作為路由頁面使用。
 - `src/views/` 是**孤立的死碼目錄**，不屬於現行結構。裡面只有 `Classics/ThreeCharacterPage.vue` 與 `Classics/CustomPage.vue`，而 `routes.ts` 沒有任何 `views/` 引用、`data/features.ts` 沒有對應項目、`src/` 與 `quasar.config.ts` 全庫零 import。**新頁面一律建在 `src/pages/`**；放進 `src/views/` 的檔案永遠不會被路由到。
 - `src-pwa/` 存在，但 `quasar.config.ts` 沒有啟用 PWA mode（`ssr.pwa: false`，無 `pwa` 區塊），`quasar build` 產出的是 SPA。修 PWA 行為前先確認是否真的有掛上 service worker。
 - **開工前先 `yarn install --immutable`。** `node_modules` 有可能與 `yarn.lock` 不同步（曾實測到樹上是 `vite-plugin-checker@0.14.3` + `quasar@2.20.0`，而 lockfile 鎖的是 `0.14.5` + `2.24.0`）。不同步時 `vite-plugin-checker` 會載入失敗，Quasar 只印一行 `⚠️ quasar.config file > invalid Vite plugin specified (cannot find it): vite-plugin-checker` 就**跳過整個型別檢查**，於是帶著型別錯誤的 build 也會 `Build succeeded`。看到那行 warning 就代表你的樹是壞的，先重裝，不要據此推論專案行為。

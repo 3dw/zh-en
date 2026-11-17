@@ -205,13 +205,6 @@ const routes: RouteRecordRaw[] = [
     children: [{ path: '', component: () => import('@/pages/BallDirectionPage.vue') }],
   },
   {
-    path: '/hand-written',
-    component: () => import('@/layouts/MainLayout.vue'),
-    children: [
-      { path: '', component: () => import('@/pages/HandWrittenPage.vue'), meta: { title: '手寫' } },
-    ],
-  },
-  {
     path: '/image-paint',
     component: () => import('@/layouts/MainLayout.vue'),
     children: [
@@ -229,18 +222,6 @@ const routes: RouteRecordRaw[] = [
     path: '/fav/:activeTab',
     component: () => import('@/layouts/MainLayout.vue'),
     children: [{ path: '', component: () => import('@/pages/FavoritePage.vue') }],
-  },
-  /* {
-    path: '/story',
-    component: () => import('layouts/MainLayout.vue'),
-    children: [
-      { path: '', component: () => import('pages/StoryPage.vue'), meta: { title: '故事' } },
-    ],
-  }, */
-  {
-    path: '/story_backend',
-    component: () => import('@/layouts/MainLayout.vue'),
-    children: [{ path: '', component: () => import('@/pages/StoryPage_backend.vue') }],
   },
   {
     path: '/what_is_this',
@@ -268,11 +249,6 @@ const routes: RouteRecordRaw[] = [
         meta: { title: '反義詞' },
       },
     ],
-  },
-  {
-    path: '/playback',
-    component: () => import('@/layouts/MainLayout.vue'),
-    children: [{ path: '', component: () => import('@/pages/PlaybackPage.vue') }],
   },
   {
     path: '/rules',

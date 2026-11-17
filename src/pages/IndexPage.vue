@@ -1,6 +1,27 @@
 <template>
   <q-page class="q-pa-md page-background">
     <div class="word-card-list">
+      <q-banner
+        rounded
+        class="bg-amber-1 text-dark q-mb-lg"
+        role="region"
+        aria-label="本站公告"
+      >
+        <template #avatar>
+          <q-icon name="campaign" color="amber-9" aria-hidden="true" />
+        </template>
+        <div class="text-subtitle1 text-weight-bold">本站公告</div>
+        因115年度本專案指定捐款為0，且自主學習促進會網站維運經費遇到困難，自115年度12月起，本站改為輕量版，歡迎捐款支持公益學習平台。
+        <a
+          href="https://www.alearn.org.tw/donate"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="text-primary text-weight-bold text-no-wrap"
+        >
+          瞭解更多
+        </a>
+      </q-banner>
+
       <h1 class="text-dark">自主學英文</h1>
 
       <!-- 搜尋區域 -->
