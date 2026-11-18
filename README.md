@@ -5,6 +5,7 @@ Learn English With Chinese
 
 ## 輕量版（`lite-app` 分支）
 
+因自主學習促進會網站維運經費不足，本專案改為輕量版。
 此分支移除「英文睡前故事」、「今日回顧」及「手寫辨識」：
 
 - 刪除 `StoryPage_backend.vue`、`/story_backend` 路由及首頁／搜尋／側欄入口；舊網址顯示既有的 404 頁面。
